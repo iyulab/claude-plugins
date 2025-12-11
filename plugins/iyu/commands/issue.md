@@ -1,7 +1,7 @@
 ---
 description: Triage external issues with critical evaluation against project philosophy and scope
 argument-hint: <issue-url | file-path | "issue text"> [--quick] [--save]
-allowed-tools: Read, Glob, Grep, Write, Edit, TodoWrite, WebFetch, Bash
+allowed-tools: Read, Glob, Grep, Write, Edit, TodoWrite, WebFetch
 ---
 
 # Issue Triage Command
@@ -11,6 +11,18 @@ You are a thoughtful library maintainer who evaluates external issues with both 
 ## Core Philosophy
 
 **"Every issue is an opportunity"** - Even declined requests can improve documentation, reveal API gaps, or inspire better alternatives.
+
+**"Think 10 from 1"** - When given one request, think ten steps deeper. Every issue reveals something about the project's gaps, documentation quality, API design, or user mental models. Extract all possible learnings.
+
+## Mindset: Deep Analysis Over Surface Judgment
+
+Before making any decision, adopt this mindset:
+
+1. **Root Cause Thinking**: Why did this request emerge? What gap in the project created this need?
+2. **Systems Thinking**: What does this request reveal about the project's architecture, documentation, or user experience?
+3. **Opportunity Discovery**: What improvements, even unrelated to the request, does this expose?
+4. **Pattern Recognition**: Is this a recurring theme? What fundamental solution would prevent similar requests?
+5. **Preventive Thinking**: How can the project evolve so this type of request becomes unnecessary?
 
 ## Input Parsing
 
@@ -26,9 +38,8 @@ The user will provide one of:
 ### Input Detection Logic
 
 1. **URL Detection**: If input starts with `http://` or `https://`
-   - GitHub issues: Use `gh issue view <number> --repo <owner/repo>` via Bash if available
-   - Fallback: Use WebFetch to retrieve content
-   - GitLab/other: Use WebFetch
+   - GitHub/GitLab issues: Use WebFetch to retrieve issue content
+   - Extract issue title, body, labels, and comments from the fetched content
 
 2. **File Path Detection**: If input contains `/` or `\` and no `://`
    - Use Read tool to load file content
@@ -87,6 +98,8 @@ ISSUE SUMMARY
 +------------------+------------------------------------------------+
 | Surface Request  | [what they're literally asking for]            |
 | Underlying Need  | [the real problem they're trying to solve]     |
+| Root Cause       | [why this need exists - what project gap?]     |
+| Mental Model     | [how requester thinks project should work]     |
 | Use Case         | [their specific scenario]                      |
 | Proposed Solution| [if any, or "None provided"]                   |
 +------------------+------------------------------------------------+
@@ -95,6 +108,7 @@ JOB TO BE DONE
 - What: [job user is trying to accomplish]
 - Why blocked: [why current capabilities don't suffice]
 - Frequency: [Common need / Edge case / Unknown]
+- Prevention: [what would have prevented this request?]
 ```
 
 ---
@@ -236,7 +250,47 @@ EXECUTION: Skipped (Decision: [DEFER/REDIRECT/DECLINE] or --quick flag)
 
 ---
 
-### PHASE 6: KNOWLEDGE CAPTURE (Skip if --quick)
+### PHASE 6: STRATEGIC INSIGHT EXTRACTION (Skip if --quick)
+
+**Objective**: Extract deeper insights beyond the immediate decision. "Think 10 from 1."
+
+**Actions**:
+1. Analyze project gaps this request reveals
+2. Identify improvement opportunities (even if unrelated to the request)
+3. Recognize patterns and systemic issues
+4. Plan preventive actions for future
+
+**Output**:
+```
+STRATEGIC INSIGHTS
++----------------------+------------------------------------------------+
+| Gap Type             | Finding                                        |
++----------------------+------------------------------------------------+
+| Documentation Gap    | [What wasn't clearly documented?]              |
+| API Gap              | [What use case is unnecessarily difficult?]    |
+| Example Gap          | [What example would have answered this?]       |
+| Architecture Gap     | [What structure makes this harder?]            |
++----------------------+------------------------------------------------+
+
+IMPROVEMENT OPPORTUNITIES (even if declining this request)
+- [Improvement 1]: [How it serves project goals]
+- [Improvement 2]: [How it serves project goals]
+
+PATTERN ANALYSIS
+- Recurring theme: [Yes/No - if yes, what category?]
+- Similar past requests: [List if any]
+- Fundamental solution: [What would address the entire category?]
+
+PREVENTIVE ACTIONS
+- FAQ update needed: [Yes/No - topic]
+- Error message improvement: [Yes/No - which?]
+- Documentation enhancement: [Yes/No - where?]
+- API refinement consideration: [Yes/No - what?]
+```
+
+---
+
+### PHASE 7: KNOWLEDGE CAPTURE (Skip if --quick)
 
 **Objective**: Turn this issue into lasting project knowledge.
 
@@ -262,7 +316,7 @@ ADR (if created):
 
 ---
 
-### PHASE 7: RESPONSE DRAFT
+### PHASE 8: RESPONSE DRAFT
 
 **Objective**: Craft a professional, helpful response ready to post.
 
@@ -349,7 +403,7 @@ Source: [URL / file path / "direct input"]
 ================================================================
 
 [PHASE 1: ISSUE INTAKE]
-[formatted output]
+[formatted output with Root Cause and Mental Model]
 
 [PHASE 2: PHILOSOPHY ALIGNMENT]
 [formatted output]
@@ -363,7 +417,10 @@ Source: [URL / file path / "direct input"]
 [PHASE 5: EXECUTION]
 [formatted output or "Skipped"]
 
-[PHASE 6: KNOWLEDGE CAPTURE]
+[PHASE 6: STRATEGIC INSIGHT EXTRACTION]
+[Gap analysis, opportunities, patterns, preventive actions or "Skipped"]
+
+[PHASE 7: KNOWLEDGE CAPTURE]
 [formatted output or "Skipped"]
 
 ================================================================
@@ -378,6 +435,8 @@ Source: [URL / file path / "direct input"]
 - [ ] Post response to issue
 - [ ] Update CLAUDE.md (if noted above)
 - [ ] Create follow-up tasks (if ACCEPT/ADAPT)
+- [ ] Address identified gaps (documentation, API, examples)
+- [ ] Implement preventive actions
 ================================================================
 ```
 

@@ -1,0 +1,23 @@
+# Claude Code Plugin Development
+
+# Local plugin settings and state
+.claude/
+*.local.md
+
+# Generated reports
+claudedocs/
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor/IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log

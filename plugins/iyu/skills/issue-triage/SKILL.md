@@ -1,15 +1,27 @@
 ---
 name: Issue Triage
-description: This skill should be used when the user asks to "triage an issue", "evaluate a feature request", "should I accept this issue", "analyze GitHub issue", "review this pull request scope", "is this in scope", "how should I respond to this issue", or discusses whether to accept, reject, or defer an external contribution to their project.
+description: This skill should be used when the user asks to "triage an issue", "evaluate a feature request", "should I accept this issue", "analyze GitHub issue", "review this pull request scope", "is this in scope", "how should I respond to this issue", "decline this request", "accept this contribution", or discusses whether to accept, reject, adapt, defer, or redirect an external contribution to a project.
 ---
 
 # Issue Triage Framework
 
-A systematic approach for library maintainers to evaluate external issues against project philosophy and scope.
+A systematic approach for library maintainers to evaluate external issues against project philosophy and scope, with deep analysis that extracts maximum insight from every request.
 
 ## Core Philosophy
 
-**"Every issue is an opportunity"** - Even declined requests can improve documentation, reveal API gaps, or inspire better alternatives. The goal is not to accept or reject, but to find the best path forward.
+**"Every issue is an opportunity"** - Even declined requests can improve documentation, reveal API gaps, or inspire better alternatives. The goal is not to accept or reject, but to find the best path forward for the project.
+
+**"Think 10 from 1"** - When given one request, think ten steps deeper. Every issue reveals something about the project's gaps, documentation quality, API design, or user mental models. Extract all possible learnings.
+
+## Mindset: Deep Analysis Over Surface Judgment
+
+Before making any decision, adopt this mindset:
+
+1. **Root Cause Thinking**: Why did this request emerge? What gap in the project created this need?
+2. **Systems Thinking**: What does this request reveal about the project's architecture, documentation, or user experience?
+3. **Opportunity Discovery**: What improvements, even unrelated to the request, does this expose?
+4. **Pattern Recognition**: Is this a recurring theme? What fundamental solution would prevent similar requests?
+5. **Preventive Thinking**: How can the project evolve so this type of request becomes unnecessary?
 
 ## When to Apply This Framework
 
@@ -22,16 +34,21 @@ Apply this framework when:
 
 ## The Triage Process
 
-### Step 1: Understand the Request
+### Step 1: Deep Understanding (Not Just Surface Analysis)
 
-Before evaluating, fully understand what is being asked:
+Go beyond what is asked to understand why it was asked:
 
-1. **Surface Request**: What are they literally asking for?
-2. **Underlying Need**: What problem are they actually trying to solve?
-3. **Use Case**: What is their specific scenario?
-4. **Job to be Done**: What job is this feature being hired to do?
+1. **Surface Request**: Identify what the requester is literally asking for
+2. **Underlying Need**: Determine what problem they are actually trying to solve
+3. **Root Cause**: Why does this need exist? What project gap created it?
+4. **Mental Model**: How does the requester think the project should work? Is that accurate?
+5. **Job to be Done**: What job is this feature being hired to do?
 
-Ask: "Why can't they accomplish this with current capabilities?"
+**Critical Questions**:
+- "Why can't this be accomplished with current capabilities?"
+- "If they could, would they have asked differently?"
+- "What would have prevented this request from being necessary?"
+- "What does this request teach us about user expectations vs. reality?"
 
 ### Step 2: Assess Philosophy Alignment
 
@@ -128,6 +145,35 @@ Before making a decision, consider:
 4. What would the maintenance burden look like in 2 years?
 5. Can this be achieved through extension points instead?
 
+## Step 6: Strategic Insight Extraction
+
+**Beyond the immediate decision, extract deeper insights:**
+
+### Project Gap Analysis
+- **Documentation Gap**: Did this request arise because something wasn't clearly documented?
+- **API Gap**: Does the current API make this use case unnecessarily difficult?
+- **Example Gap**: Would a better example have answered this question?
+- **Architecture Gap**: Does the project structure make this harder than it should be?
+
+### Improvement Opportunities
+Even if declining the specific request, identify:
+- Related improvements that ARE aligned with project philosophy
+- Documentation that should be added or clarified
+- API refinements that would serve the underlying need differently
+- Extension points that would enable users to solve this themselves
+
+### Pattern Analysis
+- Is this part of a recurring request pattern?
+- What category of requests does this represent?
+- What fundamental change would address the entire category?
+- Should the project's scope or philosophy documentation be updated?
+
+### Preventive Actions
+- What would prevent similar requests in the future?
+- Should FAQ be updated?
+- Is there a blog post or guide opportunity?
+- Could error messages or warnings guide users better?
+
 ## Knowledge Capture
 
 After each significant triage:
@@ -135,14 +181,26 @@ After each significant triage:
 1. Update CLAUDE.md if scope clarification needed
 2. Add FAQ entry if common question pattern
 3. Consider ADR (Architecture Decision Record) for major decisions
+4. Document discovered gaps and improvement opportunities
+5. Track patterns for future strategic planning
 
 ## Additional Resources
 
 ### Reference Files
 
 For detailed guidance, consult:
-- **`references/decision-examples.md`** - Real-world decision examples with reasoning
-- **`references/response-templates.md`** - Complete response templates for each decision type
+- **`references/decision-examples.md`** - Real-world decision examples with detailed reasoning for each decision type
+- **`references/response-templates.md`** - Complete response templates for ACCEPT, ADAPT, DEFER, REDIRECT, and DECLINE decisions
+- **`references/philosophy-alignment-guide.md`** - Detailed scoring methodology for philosophy alignment assessment
+
+### Example Files
+
+Working examples demonstrating complete triage sessions:
+- **`examples/sample-triage-accept.md`** - Complete ACCEPT decision walkthrough
+- **`examples/sample-triage-decline.md`** - Complete DECLINE decision walkthrough
+- **`examples/sample-triage-adapt.md`** - Complete ADAPT decision walkthrough
+- **`examples/sample-triage-defer.md`** - Complete DEFER decision walkthrough
+- **`examples/sample-triage-redirect.md`** - Complete REDIRECT decision walkthrough
 
 ### Full Workflow Command
 

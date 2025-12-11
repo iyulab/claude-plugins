@@ -1,5 +1,9 @@
 # IYU Plugin
 
+[![Claude Code Plugin](https://img.shields.io/badge/Claude%20Code-Plugin-blueviolet?logo=anthropic&logoColor=white)](https://docs.anthropic.com/en/docs/claude-code/plugins)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)](./plugin.json)
+
 Iyulab's productivity toolkit for library maintainers and developers.
 
 ## Philosophy
@@ -18,12 +22,13 @@ Iyulab's productivity toolkit for library maintainers and developers.
 
 ## Features
 
-This plugin provides two ways to help with issue triage:
+This plugin provides three ways to help with issue triage:
 
-| Component | Activation | Use Case |
-|-----------|------------|----------|
-| **Skill** | Automatic | Conversational issue analysis and advice |
-| **Command** | Manual (`/iyu:issue`) | Full formatted triage report |
+| Component | Type | Activation | Use Case |
+|-----------|------|------------|----------|
+| **Issue Triage** | Skill | Automatic | Conversational issue analysis and advice |
+| `/iyu:issue` | Command | Manual | Full formatted triage report |
+| **Issue Analyzer** | Agent | Automatic | Autonomous issue analysis |
 
 ## Skills (Auto-Activated)
 
@@ -36,13 +41,30 @@ The plugin automatically activates when you discuss issue evaluation. Just ask n
 - "Is this in scope for my project?"
 - "Evaluate this GitHub issue for me"
 - "Help me triage this pull request"
+- "Decline this request appropriately"
 
 Claude will automatically apply the triage framework:
 1. Understand the request (surface vs. underlying need)
-2. Assess philosophy alignment (1-5 scoring)
-3. Evaluate feasibility
+2. Assess philosophy alignment (1-5 scoring across 4 dimensions)
+3. Evaluate feasibility (complexity, breaking changes, maintenance)
 4. Apply decision matrix
 5. Suggest response approach
+
+## Agents
+
+### Issue Analyzer
+
+An autonomous agent that provides structured triage analysis for GitHub/GitLab issues.
+
+**Triggers automatically when:**
+- Analyzing a GitHub/GitLab issue URL
+- Evaluating feature requests against project scope
+- Assessing contribution alignment with project philosophy
+
+**Example:**
+```
+"Analyze this issue: https://github.com/user/repo/issues/123"
+```
 
 ## Commands
 
@@ -98,6 +120,59 @@ INTAKE -> PHILOSOPHY -> FEASIBILITY -> DECISION -> EXECUTION -> KNOWLEDGE -> RES
 2. **Be honest**: The plugin encourages transparent reasoning
 3. **Stay constructive**: Even declined requests get alternative suggestions
 4. **Capture learning**: Each issue improves project documentation
+
+## Troubleshooting
+
+### Skill not activating
+
+If the skill doesn't activate on your queries:
+- Try using explicit trigger phrases like "triage this issue" or "should I accept"
+- Ensure the plugin is properly installed with `/plugin list`
+
+### Issue URL fetch fails
+
+If WebFetch can't retrieve issue content:
+- Verify the URL is publicly accessible
+- For private repos, paste the issue content directly
+- Use the file path option with a local copy
+
+### Missing project context
+
+If you see "No CLAUDE.md found" warning:
+- Create a CLAUDE.md in your project root with your project's philosophy
+- Or use README.md as a fallback (less accurate evaluation)
+
+### Report not saving
+
+If `--save` flag doesn't work:
+- Ensure you have write permissions to the project directory
+- The `claudedocs/` directory will be created automatically
+
+## Plugin Structure
+
+```
+iyu/
+├── .claude-plugin/
+│   └── plugin.json
+├── commands/
+│   └── issue.md
+├── agents/
+│   └── issue-analyzer.md
+├── skills/
+│   └── issue-triage/
+│       ├── SKILL.md
+│       ├── references/
+│       │   ├── decision-examples.md
+│       │   ├── response-templates.md
+│       │   └── philosophy-alignment-guide.md
+│       └── examples/
+│           ├── sample-triage-accept.md
+│           ├── sample-triage-adapt.md
+│           ├── sample-triage-defer.md
+│           ├── sample-triage-redirect.md
+│           └── sample-triage-decline.md
+└── README.md
+```
 
 ## License
 

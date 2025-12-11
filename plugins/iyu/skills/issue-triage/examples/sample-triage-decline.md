@@ -34,6 +34,8 @@ ISSUE SUMMARY
 +------------------+------------------------------------------------+
 | Surface Request  | Integrate Redis caching into core query engine |
 | Underlying Need  | Faster query performance with caching          |
+| Root Cause       | No clear extension point for caching middleware|
+| Mental Model     | Library should handle common production needs  |
 | Use Case         | High-traffic applications with repeated queries|
 | Proposed Solution| Built-in Redis connection and cache management |
 +------------------+------------------------------------------------+
@@ -42,6 +44,7 @@ JOB TO BE DONE
 - What: Cache query results to reduce database load
 - Why blocked: Currently must implement caching at application level
 - Frequency: Common need for production apps, but solution varies widely
+- Prevention: Clearer middleware docs might reduce these requests
 
 [PHASE 2: PHILOSOPHY ALIGNMENT]
 
@@ -108,7 +111,37 @@ DECISION
 
 EXECUTION: Skipped (Decision: DECLINE)
 
-[PHASE 6: KNOWLEDGE CAPTURE]
+[PHASE 6: STRATEGIC INSIGHT EXTRACTION]
+
+STRATEGIC INSIGHTS (Think 10 from 1)
++----------------------+------------------------------------------------+
+| Gap Type             | Finding                                        |
++----------------------+------------------------------------------------+
+| Documentation Gap    | Middleware/extension pattern not prominent     |
+| API Gap              | query.fingerprint() exists but poorly exposed  |
+| Example Gap          | No caching recipe in docs/recipes/             |
+| Architecture Gap     | Extension points not clearly documented        |
++----------------------+------------------------------------------------+
+
+IMPROVEMENT OPPORTUNITIES (even though declining this request)
+- Create prominent "Extension Points" section in documentation
+- Add caching recipe with Redis, Memcached, and in-memory examples
+- Better expose query.fingerprint() method in API docs
+- Consider adding official `@ourlib/cache` adapter package (separate pkg)
+- Blog post: "Why we don't include caching (and how to add it)"
+
+PATTERN ANALYSIS
+- Recurring theme: Yes - "Built-in infrastructure" category
+- Similar past requests: "Add connection pooling", "Add rate limiting"
+- Fundamental solution: Clear separation of concerns in docs + extension recipes
+
+PREVENTIVE ACTIONS
+- FAQ update needed: Yes - "Why no built-in caching?" with alternatives
+- Error message improvement: No
+- Documentation enhancement: Yes - Create /docs/recipes/caching.md
+- API refinement consideration: Yes - Make fingerprint() more discoverable
+
+[PHASE 7: KNOWLEDGE CAPTURE]
 
 KNOWLEDGE CAPTURED
 - CLAUDE.md: Added scope clarification about caching
@@ -167,5 +200,9 @@ to improve our middleware hooks if there's a gap.
 - [x] Post response to issue
 - [x] Update CLAUDE.md (if noted above)
 - [ ] Create follow-up tasks (if ACCEPT/ADAPT)
+- [ ] Address documentation gap: Create /docs/recipes/caching.md
+- [ ] Improve API docs: Make fingerprint() more prominent
+- [ ] Add "Extension Points" section to main documentation
+- [ ] Consider: Blog post on extension patterns
 ================================================================
 ```

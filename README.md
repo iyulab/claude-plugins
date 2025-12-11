@@ -25,6 +25,7 @@ A collection of Claude Code plugins for library maintainers and developers.
 | Component | Type | Activation |
 |-----------|------|------------|
 | Issue Triage | Skill | Auto (conversational) |
+| Issue Analyzer | Agent | Auto (URL analysis) |
 | `/iyu:issue` | Command | Manual (explicit call) |
 
 #### Installation
