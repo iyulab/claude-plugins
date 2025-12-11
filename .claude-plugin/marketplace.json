@@ -1,0 +1,26 @@
+{
+  "name": "claude-code",
+  "owner": {
+    "name": "iyulab",
+    "email": "hello@iyulab.com",
+    "url": "https://github.com/iyulab"
+  },
+  "metadata": {
+    "description": "iyulab's Claude Code plugins for library maintainers and developers",
+    "version": "1.0.0",
+    "homepage": "https://github.com/iyulab/plugins",
+    "license": "MIT"
+  },
+  "plugins": [
+    {
+      "name": "issue-triage",
+      "source": "./plugins/issue-triage",
+      "description": "Systematic issue evaluation workflow for library maintainers - evaluate issues against project philosophy and scope",
+      "version": "1.0.0",
+      "author": {
+        "name": "iyulab"
+      },
+      "keywords": ["issue", "triage", "opensource", "maintainer", "library", "workflow"]
+    }
+  ]
+}

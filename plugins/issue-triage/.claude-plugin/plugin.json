@@ -1,0 +1,9 @@
+{
+  "name": "issue-triage",
+  "version": "1.0.0",
+  "description": "Library maintainer's issue triage workflow - evaluate issues against project philosophy and scope",
+  "author": {
+    "name": "FluxIndex Team"
+  },
+  "keywords": ["issue", "triage", "opensource", "maintainer", "library"]
+}
