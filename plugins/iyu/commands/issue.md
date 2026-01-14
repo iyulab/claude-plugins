@@ -40,7 +40,9 @@ The user will provide one of:
 
 1. **URL Detection**: If input starts with `http://` or `https://`
    - GitHub/GitLab issues: Use WebFetch to retrieve issue content
-   - Extract issue title, body, labels, and comments from the fetched content
+   - **CRITICAL**: Extract ALL comments, not just the issue body
+   - Extract issue title, body, labels, status (open/closed), and ALL comments with timestamps
+   - For GitHub, consider using `gh` CLI for richer data: `gh issue view <number> --repo <owner/repo> --comments`
 
 2. **File Path Detection**: If input contains `/` or `\` and no `://`
    - Use Read tool to load file content
@@ -48,6 +50,27 @@ The user will provide one of:
 
 3. **Text Detection**: If input is quoted or doesn't match above
    - Analyze the text directly
+
+### GitHub Comments Extraction (IMPORTANT)
+
+When fetching GitHub issues, you MUST extract and analyze ALL comments:
+
+1. **Fetch comments separately if needed**:
+   - WebFetch the issue page
+   - If comments are truncated or "Load more" indicated, fetch comments API or use `gh`
+   - Consider: `gh issue view <number> --repo <owner/repo> --comments --json title,body,state,comments,labels,author`
+
+2. **For each comment, extract**:
+   - Author and timestamp
+   - Full comment content
+   - Reactions (if visible)
+   - Whether it's from a maintainer/collaborator
+
+3. **Comment analysis priorities**:
+   - Last 3 comments are most important for current status
+   - Look for resolution indicators: "fixed", "resolved", "closed by", "merged"
+   - Look for unresolved indicators: "still happening", "not fixed", "reopen", "same issue"
+   - Look for spam/noise: single emoji, "me too", off-topic, promotional content
 
 ## Pre-Execution: Project Context Check
 
@@ -74,6 +97,127 @@ Before starting analysis, verify project context exists:
 ## Execution Flow
 
 Execute phases sequentially. Use TodoWrite to track progress for complex issues.
+
+**IMPORTANT**: Always start with PHASE 0 for GitHub/GitLab issues to avoid wasting effort on non-actionable items.
+
+---
+
+### PHASE 0: ACTIONABILITY CHECK (GitHub/GitLab URLs Only)
+
+**Objective**: Determine if this issue requires action BEFORE deep analysis. Save effort by filtering out already-resolved, spam, or non-actionable issues early.
+
+**CRITICAL PRINCIPLE**: Issue status (open/closed) is NOT the final word. You must analyze the comment thread to determine actual actionability.
+
+**When to Execute**:
+- Always for GitHub/GitLab URLs
+- Skip for local files or direct text input (proceed to PHASE 1)
+
+**Actions**:
+
+1. **Fetch Issue Metadata**:
+   - Issue status: `open` / `closed`
+   - Labels (especially: `wontfix`, `duplicate`, `invalid`, `spam`)
+   - Linked PRs or commits (indicates fix in progress/completed)
+   - Last activity timestamp
+
+2. **Analyze Comment Thread** (Most Important):
+   - Read ALL comments, focusing on the last 3-5 comments
+   - Identify the final resolution state from conversation flow
+   - Look for these patterns:
+
+   **Resolution Indicators** (suggests NO ACTION needed):
+   - Maintainer says: "Fixed in...", "Resolved by...", "Closing as..."
+   - PR/commit linked with fix
+   - Requester confirms: "Thanks, this works now", "Issue resolved"
+   - Marked as duplicate with link to another issue
+
+   **Unresolved Indicators** (suggests ACTION needed despite closed status):
+   - "Still happening", "Not fixed", "Same issue persists"
+   - "Can someone reopen?", "I don't have permission to reopen"
+   - Recent comments (< 30 days) on old closed issue reporting same problem
+   - No maintainer response to recent complaints
+
+   **Spam/Noise Indicators** (suggests SKIP):
+   - Issue body is empty or single line without context
+   - Only contains: single emoji, "me too", "+1" without details
+   - Promotional content, unrelated to project
+   - Incomprehensible or machine-generated text
+   - Hostile/abusive language
+
+3. **Determine Actionability**:
+
+   | Scenario | Status | Comment Thread Signal | Actionability |
+   |----------|--------|----------------------|---------------|
+   | Clearly resolved | Closed | Maintainer confirmed fix, requester happy | ❌ SKIP |
+   | Duplicate handled | Closed | Linked to resolved duplicate | ❌ SKIP |
+   | Unresolved complaint | Closed | Recent "still broken" comments | ✅ PROCEED |
+   | Reopened informally | Closed | User reports same issue, no reopen rights | ✅ PROCEED |
+   | Fresh issue | Open | Active discussion, awaiting response | ✅ PROCEED |
+   | Stale but valid | Open | No response but legitimate request | ✅ PROCEED |
+   | Spam/noise | Any | Empty, promotional, or abusive | ❌ SKIP |
+   | Wontfix policy | Closed | Maintainer explained won't implement | ⚠️ REVIEW |
+
+**Output**:
+```
+ACTIONABILITY CHECK
++------------------+------------------------------------------------+
+| Issue Status     | [Open / Closed]                                |
+| Last Activity    | [date] ([X days/months ago])                   |
+| Comment Count    | [N comments]                                   |
+| Labels           | [list or "None"]                               |
++------------------+------------------------------------------------+
+
+COMMENT THREAD ANALYSIS
++------------------+------------------------------------------------+
+| Final State      | [Resolved / Unresolved / Disputed / Unknown]   |
+| Key Signal       | [Quote or summary of decisive comment]         |
+| Signal Source    | [Maintainer / Requester / Community]           |
+| Last 3 Comments  |                                                |
+|  1. [@user, date]| [summary]                                      |
+|  2. [@user, date]| [summary]                                      |
+|  3. [@user, date]| [summary]                                      |
++------------------+------------------------------------------------+
+
+ACTIONABILITY VERDICT
++------------------+------------------------------------------------+
+| Decision         | [PROCEED / SKIP / REVIEW]                      |
+| Confidence       | [High / Medium / Low]                          |
+| Reason           | [1-2 sentence explanation]                     |
++------------------+------------------------------------------------+
+```
+
+**If SKIP**:
+```
+================================================================
+                    ISSUE TRIAGE: SKIPPED
+================================================================
+Issue: [title]
+Source: [URL]
+
+REASON: [Clear explanation why no action needed]
+- Status: [Closed/Open]
+- Final State: [Resolved/Spam/Duplicate/etc.]
+- Evidence: [Key quote or signal]
+
+No further analysis required.
+================================================================
+```
+Then STOP - do not proceed to PHASE 1.
+
+**If REVIEW** (edge case):
+```
+ACTIONABILITY: REVIEW RECOMMENDED
+
+The issue state is ambiguous:
+- [Reason 1]
+- [Reason 2]
+
+Recommend: [Manual check / Proceed with caution / Ask maintainer]
+```
+Then ask user whether to proceed or skip.
+
+**If PROCEED**:
+Continue to PHASE 1: ISSUE INTAKE.
 
 ---
 
@@ -103,6 +247,22 @@ ISSUE SUMMARY
 | Mental Model     | [how requester thinks project should work]     |
 | Use Case         | [their specific scenario]                      |
 | Proposed Solution| [if any, or "None provided"]                   |
++------------------+------------------------------------------------+
+
+COMMENT THREAD SUMMARY (GitHub/GitLab only)
++------------------+------------------------------------------------+
+| Total Comments   | [N]                                            |
+| Participants     | [list of usernames]                            |
+| Maintainer Input | [Yes - summary / No / Unknown]                 |
+| Community Sentiment | [Supportive / Mixed / Negative / Neutral]   |
++------------------+------------------------------------------------+
+| Key Discussion Points                                           |
+| 1. [Topic]: [Summary of discussion]                             |
+| 2. [Topic]: [Summary of discussion]                             |
++------------------+------------------------------------------------+
+| Unresolved Questions (from comments)                            |
+| - [Question raised but not answered]                            |
+| - [Clarification still needed]                                  |
 +------------------+------------------------------------------------+
 
 JOB TO BE DONE
@@ -152,37 +312,7 @@ ISSUE CLASSIFICATION
 3. **Evidence Gathering**: Use Grep/Glob/Read to investigate codebase
 4. **Cause Chain Analysis**: Trace the symptom back through layers
 
-**Analysis Framework**:
-```
-ROOT CAUSE ANALYSIS
-+------------------+------------------------------------------------+
-| Reported Symptom | [What user describes]                          |
-| Actual Behavior  | [What's technically happening]                 |
-| Expected Behavior| [What should happen]                           |
-+------------------+------------------------------------------------+
-
-HYPOTHESIS TREE
-├─ Hypothesis 1: [Possible cause]
-│  ├─ Evidence For: [Supporting findings]
-│  ├─ Evidence Against: [Contradicting findings]
-│  └─ Confidence: [High/Medium/Low]
-├─ Hypothesis 2: [Possible cause]
-│  ├─ Evidence For: [Supporting findings]
-│  ├─ Evidence Against: [Contradicting findings]
-│  └─ Confidence: [High/Medium/Low]
-└─ ...
-
-IDENTIFIED ROOT CAUSE
-+------------------+------------------------------------------------+
-| Root Cause       | [The actual underlying problem]                |
-| Confidence       | [High / Medium / Low]                          |
-| Evidence         | [Key findings supporting this conclusion]      |
-| Location         | [file:line or component]                       |
-+------------------+------------------------------------------------+
-
-CAUSE CHAIN
-[User Action] → [Component A] → [Component B] → [ROOT CAUSE] → [Symptom]
-```
+**Output**: Symptom vs actual behavior, hypothesis tree with evidence, identified root cause with location, cause chain visualization.
 
 ---
 
@@ -223,40 +353,7 @@ CAUSE CHAIN
 | 🟡 Medium | Related pattern, should be reviewed |
 | 🟢 Low | Loosely related, monitor only |
 
-**Output**:
-```
-SIMILAR PATTERN ANALYSIS
-+------------------+------------------------------------------------+
-| Root Cause Pattern | [Description of the problematic pattern]     |
-| Search Scope     | [Directories/files analyzed]                   |
-| Patterns Found   | [N total matches]                              |
-+------------------+------------------------------------------------+
-
-DETECTED PATTERNS
-+------+----------+------------------+--------------------------------+
-| Risk | Location | Pattern Match    | Assessment                     |
-+------+----------+------------------+--------------------------------+
-| 🔴   | [file:ln]| [pattern desc]   | [why this is critical risk]    |
-| 🟠   | [file:ln]| [pattern desc]   | [why this is high risk]        |
-| 🟡   | [file:ln]| [pattern desc]   | [why this needs review]        |
-| 🟢   | [file:ln]| [pattern desc]   | [why this is low concern]      |
-+------+----------+------------------+--------------------------------+
-
-AGGREGATE RISK ASSESSMENT
-+------------------+------------------------------------------------+
-| Critical (🔴)    | [count] patterns - IMMEDIATE ACTION REQUIRED   |
-| High (🟠)        | [count] patterns - Address in this fix         |
-| Medium (🟡)      | [count] patterns - Schedule review             |
-| Low (🟢)         | [count] patterns - Monitor                     |
-+------------------+------------------------------------------------+
-| Recommendation   | [Fix N only / Fix N+M / Comprehensive refactor]|
-+------------------+------------------------------------------------+
-
-PREVENTIVE FIXES
-For each Critical/High risk pattern:
-- [file:line]: [Specific fix recommendation]
-- [file:line]: [Specific fix recommendation]
-```
+**Output**: Pattern table with `[Risk 🔴🟠🟡🟢] [Location] [Pattern] [Assessment]`, aggregate counts by risk level, recommendation (Fix N only / Fix N+M / Comprehensive refactor).
 
 ---
 
@@ -292,47 +389,7 @@ For each Critical/High risk pattern:
    - Try Tavily MCP first (if available): More structured results
    - Fallback to WebSearch: Built-in capability
 
-**Output**:
-```
-SOLUTION RESEARCH
-+------------------+------------------------------------------------+
-| Research Trigger | [Why research was initiated]                   |
-| Query Used       | [Search query]                                 |
-| Sources Checked  | [N sources]                                    |
-+------------------+------------------------------------------------+
-
-FINDINGS
-+----------------------+----------------------------------------------+
-| Best Practice        | [Recommended approach from authoritative src]|
-| Source               | [URL or reference]                           |
-| Applicability        | [High/Medium/Low] - [why]                    |
-+----------------------+----------------------------------------------+
-| Alternative 1        | [Another valid approach]                     |
-| Source               | [URL or reference]                           |
-| Trade-offs           | [Pros and cons vs best practice]             |
-+----------------------+----------------------------------------------+
-| Alternative 2        | [If applicable]                              |
-| ...                  |                                              |
-+----------------------+----------------------------------------------+
-
-SECURITY CONSIDERATIONS (if applicable)
-- [Security finding 1]
-- [Security finding 2]
-
-RECOMMENDED APPROACH
-+------------------+------------------------------------------------+
-| Recommendation   | [Specific approach to use]                     |
-| Rationale        | [Why this is best for this context]            |
-| Implementation   | [High-level steps]                             |
-| References       | [Key URLs for implementation details]          |
-+------------------+------------------------------------------------+
-```
-
-**If Research Skipped**:
-```
-SOLUTION RESEARCH: Skipped
-- Reason: [--no-research flag / --quick flag / Low complexity]
-```
+**Output**: Best practice with source, alternatives with trade-offs, recommended approach with rationale. If skipped, note the reason.
 
 ---
 
@@ -605,80 +662,29 @@ After careful consideration, this doesn't align with [specific reason].
 [Appreciate their engagement, keep door open]
 ```
 
-**Tone Checklist**:
-- [ ] Professional but warm
-- [ ] Confident but not dismissive
-- [ ] Educational - help them understand
-- [ ] Grateful - they care about your project
-- [ ] Constructive - always provide a path forward
+**Response Principles (Human Touch)**:
+
+1. **Lead with gratitude** - Always thank first, they invested time in your project
+2. **Acknowledge their need** - Show you understand their actual problem
+3. **Explain the "why"** - Reasoning builds trust and educates
+4. **Be specific** - Vague responses frustrate; concrete guidance empowers
+5. **Offer a path forward** - Even DECLINE should suggest alternatives
+6. **End encouragingly** - Keep the door open for future engagement
+
+**Tone Guidelines**:
+- Use "we" for project decisions (inclusive, not personal)
+- Avoid jargon unless explaining it
+- Match formality to the requester's tone
+- Never condescend, even for misguided requests
+- Assume good intent always
 
 ---
 
 ## Final Report Format
 
-```
-================================================================
-                    ISSUE TRIAGE REPORT
-================================================================
-Generated: [timestamp]
-Issue: [title or first 50 chars]
-Source: [URL / file path / "direct input"]
-================================================================
+Structure: Header → Phase outputs in sequence → Response Draft → Quick Actions checklist.
 
-[PHASE 1: ISSUE INTAKE]
-[formatted output with Root Cause and Mental Model]
-
-[PHASE 1.5: BUG/ISSUE CLASSIFICATION]
-[Type, Bug Confidence, Detection Reason, Deep Analysis status]
-
-[PHASE 1.6: ROOT CAUSE DEEP ANALYSIS] (if bug detected)
-[Hypothesis tree, identified root cause, cause chain]
-- Or "Skipped - Not a bug/error issue"
-
-[PHASE 1.7: SIMILAR PATTERN DETECTION] (if bug detected)
-[Detected patterns table with risk levels, aggregate assessment]
-- Or "Skipped - Not a bug/error issue"
-
-[PHASE 1.8: SOLUTION RESEARCH] (if complex bug)
-[Research findings, best practices, recommended approach]
-- Or "Skipped - [reason]"
-
-[PHASE 2: PHILOSOPHY ALIGNMENT]
-[formatted output]
-
-[PHASE 3: FEASIBILITY REVIEW]
-[formatted output]
-
-[PHASE 4: DECISION]
-[formatted output]
-
-[PHASE 5: EXECUTION]
-[formatted output or "Skipped"]
-
-[PHASE 6: STRATEGIC INSIGHT EXTRACTION]
-[Gap analysis, opportunities, patterns, preventive actions or "Skipped"]
-
-[PHASE 7: KNOWLEDGE CAPTURE]
-[formatted output or "Skipped"]
-
-================================================================
-                    RESPONSE DRAFT
-================================================================
-
-[Complete response ready to copy/paste]
-
-================================================================
-                    QUICK ACTIONS
-================================================================
-- [ ] Post response to issue
-- [ ] Update CLAUDE.md (if noted above)
-- [ ] Create follow-up tasks (if ACCEPT/ADAPT)
-- [ ] Address identified gaps (documentation, API, examples)
-- [ ] Implement preventive actions
-- [ ] Fix critical/high risk patterns (if bug with patterns detected)
-- [ ] Schedule review for medium risk patterns
-================================================================
-```
+Skip phases as appropriate (--quick skips 5-8, non-bugs skip 1.6-1.8).
 
 ---
 

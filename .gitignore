@@ -3,6 +3,7 @@
 # Local plugin settings and state
 .claude/
 *.local.md
+CLAUDE.md
 
 # Generated reports
 claudedocs/

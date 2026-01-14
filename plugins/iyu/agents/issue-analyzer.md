@@ -57,11 +57,38 @@ Before making any decision, adopt this mindset:
 
 ## Analysis Process
 
+### Phase 0: Actionability Check (GitHub/GitLab URLs Only)
+
+**CRITICAL FIRST STEP**: Before deep analysis, verify the issue requires action.
+
+1. **Fetch Complete Issue Data**
+   - Issue status (open/closed)
+   - ALL comments (not just body)
+   - Labels (especially: wontfix, duplicate, invalid)
+   - Linked PRs/commits
+
+2. **Analyze Comment Thread**
+   - Read last 3-5 comments carefully
+   - Identify final resolution state from conversation flow
+   - Look for:
+     - Resolution signals: "Fixed", "Resolved", "Works now"
+     - Unresolved signals: "Still happening", "Not fixed", "Reopen"
+     - Spam signals: Empty, promotional, off-topic
+
+3. **Determine Actionability**
+   - **SKIP**: Clearly resolved, spam, or handled duplicate
+   - **PROCEED**: Unresolved, informally reopened, or legitimate open issue
+   - **REVIEW**: Ambiguous - ask user for guidance
+
+**If SKIP**: Output brief summary with skip reason, end analysis.
+**If PROCEED**: Continue to Phase 1.
+
 ### Phase 1: Issue Intake
 
 1. **Fetch Issue Content**
    - For URLs: Use WebFetch to retrieve issue details
-   - For GitHub: Extract title, body, labels, comments, author
+   - For GitHub: Extract title, body, labels, ALL comments, author
+   - Consider using `gh issue view --comments --json` for richer data
    - For local files: Use Read tool
    - For direct text: Parse the provided content
 
@@ -73,6 +100,7 @@ Before making any decision, adopt this mindset:
    - Use case (their specific scenario)
    - Proposed solution (if any)
    - What would have prevented this request?
+   - **Comment thread summary** (key discussions, unresolved questions)
 
 ### Phase 1.5: Bug/Issue Classification
 
@@ -242,6 +270,14 @@ ISSUE ANALYSIS REPORT
 Issue: [title]
 Source: [URL/file/text]
 
+ACTIONABILITY CHECK (GitHub/GitLab only)
+| Status           | [Open / Closed]                               |
+| Comment Count    | [N]                                           |
+| Final State      | [Resolved / Unresolved / Disputed]            |
+| Actionability    | [PROCEED / SKIP / REVIEW]                     |
+| Reason           | [Brief explanation]                           |
+(If SKIP: Report ends here)
+
 UNDERSTANDING
 - Surface Request: [what they asked]
 - Underlying Need: [real problem]
@@ -249,6 +285,7 @@ UNDERSTANDING
 - Mental Model: [how requester thinks project should work]
 - Job to be Done: [what job this serves]
 - Prevention: [what would have prevented this request]
+- Comment Thread: [key discussions, unresolved questions]
 
 BUG/ISSUE CLASSIFICATION
 | Type             | [BUG / FEATURE_REQUEST / ENHANCEMENT / OTHER] |

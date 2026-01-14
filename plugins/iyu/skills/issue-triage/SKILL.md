@@ -1,9 +1,9 @@
 ---
-name: Issue Triage
-description: This skill should be used when the user asks to "triage an issue", "evaluate a feature request", "should I accept this issue", "analyze GitHub issue", "review this pull request scope", "is this in scope", "how should I respond to this issue", "decline this request", "accept this contribution", "find similar bugs", "detect patterns", "root cause analysis", "fix this bug comprehensively", or discusses whether to accept, reject, adapt, defer, or redirect an external contribution to a project.
+name: Issue & PR Triage
+description: This skill should be used when the user asks to "triage an issue", "evaluate a feature request", "should I accept this issue", "analyze GitHub issue", "review this pull request", "review this PR", "should I merge this PR", "is this PR ready", "code review this", "review this contribution", "is this in scope", "how should I respond to this issue", "decline this request", "accept this contribution", "find similar bugs", "detect patterns", "root cause analysis", "fix this bug comprehensively", "give feedback on this PR", "is this secure", "security review", or discusses whether to accept, reject, adapt, defer, merge, or redirect an external contribution (issue or PR) to a project.
 ---
 
-# Issue Triage Framework
+# Issue & PR Triage Framework
 
 A systematic approach for library maintainers to evaluate external issues against project philosophy and scope, with deep analysis that extracts maximum insight from every request.
 
@@ -33,6 +33,39 @@ Apply this framework when:
 - Determining library vs. application responsibility
 
 ## The Triage Process
+
+### Step 0: Actionability Check (GitHub/GitLab URLs)
+
+**CRITICAL**: Before deep analysis, determine if the issue requires action at all.
+
+**Why this matters**: Issues may be:
+- Already resolved (closed with fix confirmed)
+- Informally reopened (user reports same issue but can't reopen)
+- Spam or noise (empty, promotional, off-topic)
+- Duplicates (handled elsewhere)
+
+**Quick Check**:
+1. **Read the ENTIRE comment thread**, not just the issue body
+2. Focus on the **last 3-5 comments** for current status
+3. Look for resolution signals vs. unresolved complaints
+
+**Resolution Indicators** (NO ACTION needed):
+- Maintainer confirms fix: "Fixed in PR #X", "Resolved by commit Y"
+- Requester confirms: "Thanks, works now", "Issue resolved"
+- Marked duplicate with link to resolved issue
+
+**Unresolved Indicators** (ACTION needed despite closed status):
+- "Still happening", "Not fixed", "Same issue"
+- "Can someone reopen?" (user lacks permission)
+- Recent comments on old closed issue
+
+**Spam Indicators** (SKIP):
+- Empty or single-line issue without context
+- "me too" / "+1" only, no details
+- Promotional or off-topic content
+
+**If clearly resolved or spam** → Skip to brief summary, no further analysis needed.
+**If unresolved or ambiguous** → Proceed to Step 1.
 
 ### Step 1: Deep Understanding (Not Just Surface Analysis)
 
@@ -272,11 +305,100 @@ Working examples demonstrating complete triage sessions:
 - **`examples/sample-triage-defer.md`** - Complete DEFER decision walkthrough
 - **`examples/sample-triage-redirect.md`** - Complete REDIRECT decision walkthrough
 
-### Full Workflow Command
+### Full Workflow Commands
 
-For a complete formatted triage report with all phases, use the `/iyu:issue` command:
+For a complete formatted triage report with all phases:
+
+**For Issues:**
 ```bash
 /iyu:issue <url | file | "text">
 /iyu:issue <input> --quick    # Decision only, skip execution
 /iyu:issue <input> --save     # Save report to file
 ```
+
+**For Pull Requests:**
+```bash
+/iyu:pr <pr-url | #number>
+/iyu:pr <input> --quick           # Critical issues only
+/iyu:pr <input> --security-focus  # Detailed security review
+/iyu:pr <input> --save            # Save report to file
+```
+
+---
+
+## Pull Request Review Framework
+
+When reviewing PRs, apply the same philosophical foundation with PR-specific considerations.
+
+### PR Review Philosophy
+
+**"Every contribution is a gift"** - Someone invested their time to improve your project. Honor that, even when changes are needed.
+
+**"Mentor, not gatekeeper"** - Help contributors succeed. Guide toward better code rather than finding reasons to reject.
+
+**"Accept and improve > Reject and explain"** - When feasible, merge and fix minor issues yourself. Lower contribution barriers.
+
+### PR Decision Types
+
+| Decision | When to Use |
+|----------|-------------|
+| **APPROVE** | Ready to merge as-is |
+| **APPROVE_WITH_SUGGESTIONS** | Approve with non-blocking ideas |
+| **MERGE_WITH_FIXES** | Accept; maintainer fixes minor issues |
+| **REQUEST_CHANGES** | Good direction but needs specific fixes |
+| **REDIRECT** | Wrong approach; guide to better path |
+| **DECLINE** | Fundamentally misaligned with project |
+
+### PR Decision Matrix
+
+```
+                    | Quality HIGH        | Quality LOW          |
+--------------------|---------------------|----------------------|
+Philosophy HIGH     | APPROVE             | MERGE_WITH_FIXES     |
+Philosophy MEDIUM   | APPROVE_WITH_NOTES  | REQUEST_CHANGES      |
+Philosophy LOW      | REDIRECT            | DECLINE              |
+```
+
+**Security Override**: Any security vulnerability = REQUEST_CHANGES or DECLINE
+
+### Code Review Severity Levels
+
+| Level | Meaning | Action |
+|-------|---------|--------|
+| 🔴 Blocker | Must fix before merge | REQUEST_CHANGES |
+| 🟠 Major | Should fix, could commit to fixing | MERGE_WITH_FIXES |
+| 🟡 Minor | Nice to have, non-blocking | SUGGESTION |
+| 🟢 Nitpick | Style preference, optional | COMMENT |
+| ✨ Praise | Something done well | CELEBRATE |
+
+### Security Review Checklist
+
+Always check for:
+- Input validation (SQL injection, XSS, command injection)
+- Authentication/authorization gaps
+- Secrets/credentials in code
+- Sensitive data exposure in logs
+- New dependency security
+- Error handling that leaks info
+
+### Community-Nurturing Response Patterns
+
+**Always**:
+1. Lead with gratitude
+2. Celebrate what's good first
+3. Explain "why" for every criticism
+4. Be specific and actionable
+5. Offer to help ("I can fix this")
+6. End encouragingly
+
+**For First-Time Contributors**:
+- Extra welcoming tone
+- More explanatory feedback
+- Offer mentoring
+- Suggest "good first issues" for next contribution
+
+**For Returning Contributors**:
+- Acknowledge their history
+- Trust their judgment more
+- Peer-level discussion
+- Consider for maintainer path

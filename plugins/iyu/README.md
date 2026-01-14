@@ -2,13 +2,17 @@
 
 [![Claude Code Plugin](https://img.shields.io/badge/Claude%20Code-Plugin-blueviolet?logo=anthropic&logoColor=white)](https://docs.anthropic.com/en/docs/claude-code/plugins)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)](./plugin.json)
+[![Version](https://img.shields.io/badge/version-1.3.0-blue.svg)](./plugin.json)
 
 Iyulab's productivity toolkit for library maintainers and developers.
 
 ## Philosophy
 
-**"Every issue is an opportunity"** - This plugin helps you move beyond simple accept/reject decisions to find the best path forward for your project.
+**"Every issue is an opportunity"** - Move beyond simple accept/reject decisions to find the best path forward for your project.
+
+**"Every contribution is a gift"** - Honor the effort contributors invest. Mentor, don't gatekeep.
+
+**"Accept and improve > Reject and explain"** - When feasible, merge and fix minor issues yourself. Lower contribution barriers.
 
 **"Fix N, Prevent M"** - When resolving a bug (N), automatically detect and fix similar latent defects (M) across your codebase.
 
@@ -24,13 +28,33 @@ Iyulab's productivity toolkit for library maintainers and developers.
 
 ## Features
 
-This plugin provides comprehensive issue triage and bug resolution:
+This plugin provides comprehensive issue triage, PR review, and bug resolution:
 
 | Component | Type | Activation | Use Case |
 |-----------|------|------------|----------|
-| **Issue Triage** | Skill | Automatic | Conversational issue analysis and advice |
-| `/iyu:issue` | Command | Manual | Full formatted triage report |
+| **Issue & PR Triage** | Skill | Automatic | Conversational analysis and advice |
+| `/iyu:issue` | Command | Manual | Full formatted issue triage report |
+| `/iyu:pr` | Command | Manual | Professional PR review with security focus |
 | **Issue Analyzer** | Agent | Automatic | Autonomous issue analysis |
+| **PR Reviewer** | Agent | Automatic | Autonomous PR review |
+
+### New in v1.3.0: Professional PR Review
+
+When reviewing pull requests, the plugin provides:
+
+1. **Security-Aware Review** - OWASP-informed vulnerability scanning
+2. **Community-Nurturing Feedback** - Warm, constructive responses
+3. **Flexible Decisions** - Beyond approve/reject: MERGE_WITH_FIXES lets you accept and improve
+4. **Code Quality Assessment** - Severity-classified findings (🔴🟠🟡🟢✨)
+
+| Decision | When to Use |
+|----------|-------------|
+| APPROVE | Ready to merge as-is |
+| APPROVE_WITH_SUGGESTIONS | Approve with non-blocking ideas |
+| MERGE_WITH_FIXES | Accept; maintainer fixes minor issues |
+| REQUEST_CHANGES | Good direction, needs specific fixes |
+| REDIRECT | Wrong approach; guide to better path |
+| DECLINE | Fundamentally misaligned with project |
 
 ### New in v1.2.0: Deep Bug Resolution
 
@@ -111,6 +135,48 @@ Use this command when you need a complete, structured triage report.
 /iyu:issue "User requests adding feature X..."
 ```
 
+### /iyu:pr
+
+**Professional PR review with security awareness and human-friendly feedback**
+
+Use this command for thorough, community-nurturing PR reviews.
+
+```bash
+# Full PR review
+/iyu:pr https://github.com/user/repo/pull/123
+
+# Quick review - critical issues only
+/iyu:pr https://github.com/user/repo/pull/123 --quick
+
+# Security-focused review (detailed vulnerability scan)
+/iyu:pr https://github.com/user/repo/pull/123 --security-focus
+
+# Review and save report
+/iyu:pr #42 --save
+```
+
+**PR Review Workflow**:
+```
+STATUS CHECK -> UNDERSTANDING -> CODE QUALITY -> SECURITY
+-> PHILOSOPHY ALIGNMENT -> DECISION -> COMMUNITY ENGAGEMENT -> RESPONSE
+```
+
+**Code Review Severity Levels**:
+| Level | Meaning |
+|-------|---------|
+| 🔴 Blocker | Must fix before merge |
+| 🟠 Major | Should fix, or maintainer can fix post-merge |
+| 🟡 Minor | Nice to have, non-blocking |
+| 🟢 Nitpick | Optional style preference |
+| ✨ Praise | Celebrate good work |
+
+**Response Principles**:
+- Lead with gratitude
+- Celebrate what's good first
+- Explain "why" for every criticism
+- Offer to help ("I can fix this")
+- End encouragingly
+
 **Workflow**:
 
 ```
@@ -185,18 +251,20 @@ iyu/
 ├── .claude-plugin/
 │   └── plugin.json
 ├── commands/
-│   └── issue.md
+│   ├── issue.md                              # Issue triage command
+│   └── pr.md                                 # PR review command (NEW in v1.3.0)
 ├── agents/
-│   └── issue-analyzer.md
+│   ├── issue-analyzer.md                     # Issue analysis agent
+│   └── pr-reviewer.md                        # PR review agent (NEW in v1.3.0)
 ├── skills/
 │   └── issue-triage/
-│       ├── SKILL.md
+│       ├── SKILL.md                          # Combined issue & PR triage skill
 │       ├── references/
 │       │   ├── decision-examples.md
 │       │   ├── response-templates.md
 │       │   ├── philosophy-alignment-guide.md
-│       │   ├── pattern-detection-guide.md      # NEW in v1.2.0
-│       │   └── research-methodology.md         # NEW in v1.2.0
+│       │   ├── pattern-detection-guide.md
+│       │   └── research-methodology.md
 │       └── examples/
 │           ├── sample-triage-accept.md
 │           ├── sample-triage-adapt.md
