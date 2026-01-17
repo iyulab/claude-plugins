@@ -1,16 +1,16 @@
 ---
-description: Execute development tasks - auto-detect from roadmap or use provided input
+description: Execute development tasks - auto-discover from project plans or use provided input
 argument-hint: [task-description] [--dry-run] [--no-commit]
 allowed-tools: Read, Glob, Grep, Write, Edit, TodoWrite, WebFetch, WebSearch, Bash
 ---
 
 # Development Phase Runner
 
-Execute development tasks based on roadmap or input.
+Execute development tasks based on project development plans or direct input.
 
 ## Philosophy
 
-**"Roadmap-driven, philosophy-aligned"** - Trace changes to planned work, align with project principles.
+**"Plan-driven, philosophy-aligned"** - Find development plans, trace changes to planned work, align with project principles.
 
 **"Root cause over symptom"** - No surface fixes. Solve underlying problems.
 
@@ -32,13 +32,13 @@ iyu:run **leverages** Claude's capabilities and official plugins:
 
 ## Input Modes
 
-### Mode A: No Input (Roadmap-Driven)
+### Mode A: No Input (Plan-Driven)
 ```bash
 /iyu:run
 ```
-1. Scan ROADMAP.md for next pending phase
-2. If no pending phases → EXIT "All phases complete"
-3. Extract tasks from phase scope
+1. **Discover development plan** from project sources
+2. If no pending tasks → EXIT "All tasks complete"
+3. Extract tasks from current phase/section
 4. Execute full workflow
 
 ### Mode B: With Input (Input-Driven)
@@ -57,22 +57,40 @@ iyu:run **leverages** Claude's capabilities and official plugins:
 
 ## Process
 
-### Phase 1: Roadmap Scan
+### Phase 1: Development Plan Discovery
 
+**Search Order** (stop at first found):
+1. **CLAUDE.md** - Project instructions may contain development plan section
+2. **ROADMAP.md** / **roadmap.md** - Dedicated roadmap file
+3. **TASKS.md** / **TODO.md** - Task tracking files
+4. **docs/** - Check for planning documents (roadmap.md, tasks.md, plan.md, etc.)
+5. **README.md** - May contain "Roadmap", "Planned Features", "TODO" sections
+
+**Discovery Commands**:
+```bash
+# Check explicit plan files
+Glob: **/ROADMAP.md, **/TASKS.md, **/TODO.md, docs/*.md
+
+# Check for plan sections in docs
+Grep: "## Roadmap|## TODO|## Planned|## Tasks|## Development Plan" in *.md
 ```
-Check ROADMAP.md or docs/roadmap.md
-Phase status: [ ] pending, [x] done, [~] in-progress
+
+**Phase/Task Status Markers**:
+```
+[ ] pending    [x] done    [~] in-progress    [-] blocked
 ```
 
 **Output**:
 ```
-ROADMAP: [file path]
-Next Phase: [phase name]
+PLAN SOURCE: [file path or "CLAUDE.md section"]
+Next Phase: [phase name or "Unstructured tasks"]
+Tasks Found: [N pending]
 Status: [READY / BLOCKED / NONE_PENDING]
 ```
 
-- **NONE_PENDING**: All phases complete → EXIT
+- **NONE_PENDING**: All tasks complete → EXIT
 - **BLOCKED**: Dependency not met → EXIT
+- **NO_PLAN_FOUND**: No development plan discovered → EXIT with guidance
 
 ### Phase 2: Task Extraction
 
@@ -241,7 +259,7 @@ LESSONS LEARNED
 ## Quick Reference
 
 ```bash
-# Auto-execute next roadmap phase
+# Auto-discover development plan and execute next phase/tasks
 /iyu:run
 
 # Execute specific task
@@ -256,7 +274,7 @@ LESSONS LEARNED
 
 ## Error Handling
 
-- **No roadmap + no input**: EXIT - nothing to do
-- **No pending phases**: EXIT - all complete
+- **No plan found + no input**: EXIT - suggest creating ROADMAP.md or TASKS.md
+- **No pending tasks**: EXIT - all complete
 - **Task failure**: Log, attempt recovery, report if unresolvable
 - **Test failure**: Block commit, require fix
