@@ -51,10 +51,37 @@ iyu:run **leverages** Claude's capabilities and official plugins:
 
 ## Input Modes
 
-### Mode A: No Input (Plan-Driven)
+### Mode A: No Input (Context-First Discovery)
 ```bash
 /iyu:run
 ```
+
+**Priority Order**:
+1. **Session Context First** - Check recent conversation for pending/follow-up work
+2. **Plan-Driven Fallback** - If no session context, discover from project sources
+
+#### Step 1: Session Context Check
+Before searching project files, examine recent conversation turns for:
+- "next task", "follow-up work", "remaining work" mentions
+- "Next:", "TODO:", "Remaining:" in previous outputs
+- Incomplete task lists or TodoWrite items still pending
+- Explicit "continue with...", "proceed to..." statements
+- Previous `/iyu:run` completion summaries with "NEXT PHASE" sections
+
+**If session context found**:
+```
+SESSION CONTEXT DETECTED
++------------------+--------------------------------------------+
+| Source           | [previous turn / todo list / completion]   |
+| Pending Work     | [task description]                         |
+| Confidence       | [HIGH / MEDIUM]                            |
++------------------+--------------------------------------------+
+```
+→ Proceed with detected pending work (skip Phase 1: Plan Discovery)
+
+**If no session context** → Continue to Phase 1: Plan Discovery
+
+#### Step 2: Plan-Driven Discovery (Fallback)
 1. **Discover development plan** from project sources
 2. If no pending tasks → EXIT "All tasks complete"
 3. Extract tasks from current phase/section
@@ -336,7 +363,7 @@ LESSONS LEARNED
 ## Quick Reference
 
 ```bash
-# Auto-discover development plan and execute next phase/tasks
+# Continue from session context OR auto-discover from project plans
 /iyu:run
 
 # Execute specific task
