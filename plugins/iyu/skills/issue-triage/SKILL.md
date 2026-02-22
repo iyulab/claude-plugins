@@ -1,6 +1,6 @@
 ---
 name: Issue & PR Triage
-description: This skill should be used when the user asks to "triage an issue", "evaluate a feature request", "should I accept this issue", "analyze GitHub issue", "review this pull request", "review this PR", "should I merge this PR", "is this PR ready", "code review this", "review this contribution", "is this in scope", "how should I respond to this issue", "decline this request", "accept this contribution", "find similar bugs", "detect patterns", "root cause analysis", "fix this bug comprehensively", "give feedback on this PR", "is this secure", "security review", or discusses whether to accept, reject, adapt, defer, merge, or redirect an external contribution (issue or PR) to a project.
+description: Use when discussing whether to accept, reject, or redirect an external issue or PR. Triggers on "triage this issue", "evaluate this feature request", "should I accept/merge this", "is this in scope", "review this PR/contribution", "how should I respond to this issue".
 ---
 
 # Issue & PR Triage Framework

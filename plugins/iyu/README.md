@@ -2,306 +2,112 @@
 
 [![Claude Code Plugin](https://img.shields.io/badge/Claude%20Code-Plugin-blueviolet?logo=anthropic&logoColor=white)](https://docs.anthropic.com/en/docs/claude-code/plugins)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-1.4.1-blue.svg)](./plugin.json)
+[![Version](https://img.shields.io/badge/version-1.6.0-blue.svg)](./plugin.json)
 
-Iyulab's productivity toolkit for library maintainers and developers.
+Productivity toolkit for open-source library maintainers and developers.
 
 ## Philosophy
 
-**"Every issue is an opportunity"** - Move beyond simple accept/reject decisions to find the best path forward for your project.
+**"Every issue is an opportunity"** - Move beyond accept/reject to find the best path forward.
 
-**"Every contribution is a gift"** - Honor the effort contributors invest. Mentor, don't gatekeep.
-
-**"Accept and improve > Reject and explain"** - When feasible, merge and fix minor issues yourself. Lower contribution barriers.
-
-**"Fix N, Prevent M"** - When resolving a bug (N), automatically detect and fix similar latent defects (M) across your codebase.
-
-## Mindset: Critical but Constructive
-
-All IYU commands share a common mindset—**passionate, skeptical, but welcoming**:
-
-| Principle | Meaning |
-|-----------|---------|
-| **Validate before execute** | Never accept commands/requests at face value. Question, analyze, then act. |
-| **1 → 10 thinking** | From one request, derive ten implications. What's implied? What's missing? |
-| **Proactive research** | When uncertain, research first. Use WebSearch for best practices and patterns. |
-| **Be your own QA** | Test, verify, simulate. Don't wait for failures—anticipate them. |
-| **Defend the architecture** | Protect project coherence. A "no" today prevents tech debt tomorrow. |
-| **Educate, don't dismiss** | When declining, teach. Help others understand the "why". |
+**"Every contribution is a gift"** - Mentor, don't gatekeep. Merge and improve when feasible.
 
 ## Installation
 
 ```bash
-# Add the marketplace
 /plugin marketplace add iyulab/claude-plugins
-
-# Install the plugin
 /plugin install iyu@iyulab-plugins
 ```
 
-## Features
+## Components
 
-This plugin provides comprehensive issue triage, PR review, and bug resolution:
-
-| Component | Type | Activation | Use Case |
-|-----------|------|------------|----------|
-| **Issue & PR Triage** | Skill | Automatic | Conversational analysis and advice |
-| `/iyu:issue` | Command | Manual | Full formatted issue triage report |
-| `/iyu:pr` | Command | Manual | Professional PR review with security focus |
-| `/iyu:run` | Command | Manual | Roadmap-driven development execution |
-| **Issue Analyzer** | Agent | Automatic | Autonomous issue analysis |
-| **PR Reviewer** | Agent | Automatic | Autonomous PR review |
-
-### New in v1.4.1: Critical but Constructive Mindset
-
-All commands now include a shared mindset framework:
-
-1. **Command Validation (Phase 0)** - `/iyu:run` validates commands before execution
-2. **Internal Consistency Check** - Detect contradictions and ambiguities
-3. **Historical Coherence** - Check for conflicts with recent work
-4. **Implicit Requirement Extraction** - Derive 10 tasks from 1 command
-5. **Risk Simulation** - Anticipate failures before they happen
-
-### v1.4.0: Development Phase Runner
-
-Autonomous development execution with roadmap integration:
-
-1. **Dual Input Mode** - Auto-detect from roadmap OR use provided task description
-2. **Philosophy Alignment** - Every change validated against project principles
-3. **Root Cause Focus** - No surface fixes, solve underlying problems
-4. **Bold Refactoring** - Fix inefficiencies; propose large refactors as next phase
-
-| Mode | Trigger | Behavior |
-|------|---------|----------|
-| Roadmap-driven | `/iyu:run` (no input) | Scan ROADMAP.md, execute next pending phase |
-| Input-driven | `/iyu:run "task"` | Derive scope from input, execute |
-
-### New in v1.3.0: Professional PR Review
-
-When reviewing pull requests, the plugin provides:
-
-1. **Security-Aware Review** - OWASP-informed vulnerability scanning
-2. **Community-Nurturing Feedback** - Warm, constructive responses
-3. **Flexible Decisions** - Beyond approve/reject: MERGE_WITH_FIXES lets you accept and improve
-4. **Code Quality Assessment** - Severity-classified findings (🔴🟠🟡🟢✨)
-
-| Decision | When to Use |
-|----------|-------------|
-| APPROVE | Ready to merge as-is |
-| APPROVE_WITH_SUGGESTIONS | Approve with non-blocking ideas |
-| MERGE_WITH_FIXES | Accept; maintainer fixes minor issues |
-| REQUEST_CHANGES | Good direction, needs specific fixes |
-| REDIRECT | Wrong approach; guide to better path |
-| DECLINE | Fundamentally misaligned with project |
-
-### New in v1.2.0: Deep Bug Resolution
-
-When an issue is detected as a bug, the plugin automatically:
-
-1. **Root Cause Analysis** - Goes beyond symptoms to find the true underlying cause
-2. **Similar Pattern Detection** - Finds all similar code patterns that may have latent defects
-3. **Solution Research** - Researches best practices and latest methods for complex bugs
-
-| Feature | Trigger | Output |
-|---------|---------|--------|
-| Bug Detection | Auto (labels, keywords, patterns) | BUG / FEATURE_REQUEST / ENHANCEMENT |
-| Root Cause Analysis | Bug detected | Hypothesis tree, cause chain |
-| Pattern Detection | Bug detected | Risk-rated pattern list (Critical/High/Medium/Low) |
-| Solution Research | Complex bug detected | Best practices with sources |
-
-## Skills (Auto-Activated)
-
-### Issue Triage
-
-The plugin automatically activates when you discuss issue evaluation. Just ask naturally:
-
-- "Should I accept this feature request?"
-- "How should I respond to this issue?"
-- "Is this in scope for my project?"
-- "Evaluate this GitHub issue for me"
-- "Help me triage this pull request"
-- "Decline this request appropriately"
-- "Find similar bugs in the codebase"
-- "Do a root cause analysis on this bug"
-- "Fix this bug comprehensively"
-
-Claude will automatically apply the triage framework:
-1. Understand the request (surface vs. underlying need)
-2. Assess philosophy alignment (1-5 scoring across 4 dimensions)
-3. Evaluate feasibility (complexity, breaking changes, maintenance)
-4. Apply decision matrix
-5. Suggest response approach
-
-## Agents
-
-### Issue Analyzer
-
-An autonomous agent that provides structured triage analysis for GitHub/GitLab issues.
-
-**Triggers automatically when:**
-- Analyzing a GitHub/GitLab issue URL
-- Evaluating feature requests against project scope
-- Assessing contribution alignment with project philosophy
-
-**Example:**
-```
-"Analyze this issue: https://github.com/user/repo/issues/123"
-```
+| Component | Type | Activation | Description |
+|-----------|------|------------|-------------|
+| **Mindset** | Skill | Auto | Shared "Critical but Constructive" philosophy |
+| **Issue & PR Triage** | Skill | Auto | Conversational triage advice with decision matrices |
+| `/iyu:issue` | Command | Manual | Full issue triage report |
+| `/iyu:pr` | Command | Manual | PR review with security focus |
+| `/iyu:run` | Command | Manual | Plan-driven development execution |
+| `/iyu:run-cycle` | Command | Manual | Iterative development cycles |
+| **Issue Analyzer** | Agent | Auto | Autonomous issue analysis |
+| **PR Reviewer** | Agent | Auto | Autonomous PR review |
 
 ## Commands
 
 ### /iyu:issue
 
-**Systematic issue evaluation with full formatted report**
-
-Use this command when you need a complete, structured triage report.
+Systematic issue evaluation against project philosophy.
 
 ```bash
-# Triage a GitHub/GitLab issue
 /iyu:issue https://github.com/user/repo/issues/123
-
-# Quick decision only (skip deep analysis phases)
 /iyu:issue https://github.com/user/repo/issues/123 --quick
-
-# Triage and save report to file
 /iyu:issue ./docs/feature-request.md --save
-
-# Skip web research even for complex bugs
-/iyu:issue https://github.com/user/repo/issues/123 --no-research
-
-# Triage from pasted text
-/iyu:issue "User requests adding feature X..."
+/iyu:issue "Add support for Redis caching" --no-research
 ```
 
 ### /iyu:pr
 
-**Professional PR review with security awareness and human-friendly feedback**
+PR review with security awareness and community-nurturing feedback.
 
 ```bash
-# Full PR review
 /iyu:pr https://github.com/user/repo/pull/123
-
-# Quick review - critical issues only
-/iyu:pr https://github.com/user/repo/pull/123 --quick
-
-# Security-focused review
-/iyu:pr https://github.com/user/repo/pull/123 --security-focus
+/iyu:pr #42 --quick
+/iyu:pr #42 --security-focus --save
 ```
-
-**PR Review Workflow**:
-```
-STATUS CHECK -> UNDERSTANDING -> CODE QUALITY -> SECURITY
--> PHILOSOPHY ALIGNMENT -> DECISION -> COMMUNITY ENGAGEMENT -> RESPONSE
-```
-
-**Code Review Severity Levels**:
-| Level | Meaning |
-|-------|---------|
-| 🔴 Blocker | Must fix before merge |
-| 🟠 Major | Should fix, or maintainer can fix post-merge |
-| 🟡 Minor | Nice to have, non-blocking |
-| 🟢 Nitpick | Optional style preference |
-| ✨ Praise | Celebrate good work |
-
-**Response Principles**:
-- Lead with gratitude
-- Celebrate what's good first
-- Explain "why" for every criticism
-- Offer to help ("I can fix this")
-- End encouragingly
-
-**Workflow**:
-
-```
-INTAKE -> [BUG DETECTION] -> [ROOT CAUSE] -> [PATTERN DETECTION] -> [RESEARCH]
-       -> PHILOSOPHY -> FEASIBILITY -> DECISION -> EXECUTION -> KNOWLEDGE -> RESPONSE
-```
-
-Phases in brackets are conditionally executed:
-- `BUG DETECTION`: Auto-classifies issue type
-- `ROOT CAUSE`: Only for bugs (High/Medium confidence)
-- `PATTERN DETECTION`: Only for bugs - finds similar code patterns
-- `RESEARCH`: Only for complex bugs (5+ files, unfamiliar territory, etc.)
-
-**Decision Matrix**:
-
-| | Philosophy Aligned | Philosophy Misaligned |
-|---|---|---|
-| **High Feasibility** | ACCEPT | REDIRECT |
-| **Medium Feasibility** | ADAPT | DEFER / REDIRECT |
-| **Low Feasibility** | DEFER | DECLINE |
-
-**Decision Types**:
-- **ACCEPT**: Fully aligned, implement as requested
-- **ADAPT**: Good idea, implement differently
-- **DEFER**: Valuable but not now, add to roadmap
-- **REDIRECT**: Out of scope, provide alternatives
-- **DECLINE**: Fundamentally misaligned, explain why
 
 ### /iyu:run
 
-**Roadmap-driven or input-driven development execution**
+Plan-driven or input-driven development execution.
 
 ```bash
-# Auto-detect next phase from roadmap
-/iyu:run
-
-# Input-driven task execution
-/iyu:run "Implement caching layer for API"
-/iyu:run "Fix memory leak in worker threads"
-
-# Plan only, no execution
-/iyu:run --dry-run
-
-# Execute without commit
-/iyu:run --no-commit
+/iyu:run                                    # Auto-discover from plans
+/iyu:run "Implement caching layer for API"  # Input-driven
+/iyu:run --dry-run                          # Plan only
 ```
 
-**Execution Flow**:
+### /iyu:run-cycle
+
+Iterative development cycles with evaluation and continuity tracking.
+
+```bash
+/iyu:run-cycle 5      # 5 cycles
+/iyu:run-cycle 3 2    # 3 cycles starting from cycle 2
+/iyu:run-cycle --dry-run
 ```
-SCAN → EXTRACT → ALIGN → PLAN → EXECUTE → REVIEW → CLEANUP → COMMIT
-```
 
-**Key Features**:
-- Philosophy alignment check before execution
-- Root cause focus (no surface fixes)
-- Similar pattern detection across codebase
-- Auto version bump (MINOR/BUILD only, never MAJOR)
-- Integration with `/iyu:issue` for bugs discovered during execution
+Each cycle: Scope → Research → Implement → Test → Evaluate → Carry-Forward.
 
-## Best Practices
+Cycles maintain continuity — unresolved issues and pending decisions automatically propagate through the cycle chain.
 
-1. **Document your project philosophy**: Ensure CLAUDE.md describes your project's core principles
-2. **Be honest**: The plugin encourages transparent reasoning
-3. **Stay constructive**: Even declined requests get alternative suggestions
-4. **Capture learning**: Each issue improves project documentation
+## Decision Matrices
 
-## Troubleshooting
+**Issue Triage:**
 
-### Skill not activating
+| | Philosophy HIGH | Philosophy LOW |
+|--|----------------|----------------|
+| Feasibility HIGH | ACCEPT | REDIRECT |
+| Feasibility MED | ADAPT | DEFER/REDIRECT |
+| Feasibility LOW | DEFER | DECLINE |
 
-If the skill doesn't activate on your queries:
-- Try using explicit trigger phrases like "triage this issue" or "should I accept"
-- Ensure the plugin is properly installed with `/plugin list`
+**PR Review:**
 
-### Issue URL fetch fails
+| | Quality HIGH | Quality LOW |
+|--|-------------|-------------|
+| Philosophy HIGH | APPROVE | MERGE_WITH_FIXES |
+| Philosophy MED | APPROVE_WITH_NOTES | REQUEST_CHANGES |
+| Philosophy LOW | REDIRECT | DECLINE |
 
-If WebFetch can't retrieve issue content:
-- Verify the URL is publicly accessible
-- For private repos, paste the issue content directly
-- Use the file path option with a local copy
+**Severity Levels:**
+| 🔴 Blocker | 🟠 Major | 🟡 Minor | 🟢 Nitpick | ✨ Praise |
 
-### Missing project context
+## Skills (Auto-Activated)
 
-If you see "No CLAUDE.md found" warning:
-- Create a CLAUDE.md in your project root with your project's philosophy
-- Or use README.md as a fallback (less accurate evaluation)
+The plugin activates automatically when discussing issue evaluation or PR review:
 
-### Report not saving
-
-If `--save` flag doesn't work:
-- Ensure you have write permissions to the project directory
-- The `claudedocs/` directory will be created automatically
+- "Should I accept this feature request?"
+- "Is this in scope for my project?"
+- "Help me triage this pull request"
+- "Review this PR for me"
 
 ## Plugin Structure
 
@@ -310,27 +116,20 @@ iyu/
 ├── .claude-plugin/
 │   └── plugin.json
 ├── commands/
-│   ├── issue.md                              # Issue triage command
-│   ├── pr.md                                 # PR review command
-│   └── run.md                                # Development runner (NEW in v1.4.0)
+│   ├── issue.md
+│   ├── pr.md
+│   ├── run.md
+│   └── run-cycle.md
 ├── agents/
-│   ├── issue-analyzer.md                     # Issue analysis agent
-│   └── pr-reviewer.md                        # PR review agent (NEW in v1.3.0)
+│   ├── issue-analyzer.md
+│   └── pr-reviewer.md
 ├── skills/
+│   ├── mindset/
+│   │   └── SKILL.md
 │   └── issue-triage/
-│       ├── SKILL.md                          # Combined issue & PR triage skill
+│       ├── SKILL.md
 │       ├── references/
-│       │   ├── decision-examples.md
-│       │   ├── response-templates.md
-│       │   ├── philosophy-alignment-guide.md
-│       │   ├── pattern-detection-guide.md
-│       │   └── research-methodology.md
 │       └── examples/
-│           ├── sample-triage-accept.md
-│           ├── sample-triage-adapt.md
-│           ├── sample-triage-defer.md
-│           ├── sample-triage-redirect.md
-│           └── sample-triage-decline.md
 └── README.md
 ```
 

@@ -18,18 +18,20 @@ A collection of Claude Code plugins for library maintainers and developers.
 
 ## Available Plugins
 
-### iyu (v1.4.0)
+### iyu (v1.6.0)
 
-**Iyulab's productivity toolkit - roadmap-driven development, issue triage, PR review, and deep bug resolution**
+**Productivity toolkit for open-source library maintainers — iterative development, issue triage, PR review, and deep bug resolution**
 
 | Component | Type | Activation | Description |
 |-----------|------|------------|-------------|
-| Issue & PR Triage | Skill | Auto (conversational) | Natural language triage advice |
+| Mindset | Skill | Auto | Shared "Critical but Constructive" philosophy |
+| Issue & PR Triage | Skill | Auto (conversational) | Decision matrices and triage advice |
 | Issue Analyzer | Agent | Auto (URL analysis) | Autonomous issue analysis |
 | PR Reviewer | Agent | Auto (PR URL) | Autonomous PR review |
 | `/iyu:issue` | Command | Manual | Full issue triage report |
-| `/iyu:pr` | Command | Manual | Professional PR review |
-| `/iyu:run` | Command | Manual | Roadmap-driven development |
+| `/iyu:pr` | Command | Manual | PR review with security focus |
+| `/iyu:run` | Command | Manual | Plan-driven development execution |
+| `/iyu:run-cycle` | Command | Manual | Iterative development cycles |
 
 #### Installation
 
