@@ -5,17 +5,25 @@ description: Use when discussing whether to accept, reject, or redirect an exter
 
 # Issue & PR Triage Framework
 
-A framework for evaluating external Issues/PRs against project philosophy.
+Evaluate external Issues/PRs against project philosophy. The goal is not just to decide on the request — it's to **discover latent work** the request reveals.
 
 ## Core Philosophy
 
-**"Every issue is an opportunity"** - Even declines can improve documentation or reveal API gaps.
+- **"Every issue is an opportunity"** — Even declines improve documentation or reveal API gaps.
+- **"Think 10 from 1"** — One request implies ten insights. What's missing? What should change?
+- **"Every contribution is a gift"** — Honor the contributor's time.
+- **"Mentor, not gatekeeper"** — Help them succeed.
 
-**"Think 10 from 1"** - Extract ten insights from one request.
+## Philosophy Alignment
 
-**"Every contribution is a gift"** - Honor the contributor's time investment.
+| Dimension | Question |
+|-----------|----------|
+| Core Mission Fit | Serves project's core purpose? |
+| Scope Alignment | Library vs application responsibility? |
+| Pattern Consistency | Consistent with existing architecture? |
+| User Base Impact | Benefits majority or niche? |
 
-**"Mentor, not gatekeeper"** - Help them succeed.
+**Overall**: High (4-5 avg) / Medium (3-3.9) / Low (1-2.9)
 
 ## Issue Decision Matrix
 
@@ -37,46 +45,24 @@ Philosophy MED   | APPROVE_WITH_NOTES   | REQUEST_CHANGES      |
 Philosophy LOW   | REDIRECT             | DECLINE              |
 ```
 
-## Quick Reference
+## Verdicts
 
-### Issue Verdicts
-- **ACCEPT**: Implement as requested
-- **ADAPT**: Implement differently
-- **DEFER**: Not now, provide roadmap
-- **REDIRECT**: Out of scope, provide alternatives
-- **DECLINE**: Philosophy mismatch, explain respectfully
+**Issues**: ACCEPT / ADAPT / DEFER / REDIRECT / DECLINE
+**PRs**: APPROVE / APPROVE_WITH_NOTES / MERGE_WITH_FIXES / REQUEST_CHANGES / REDIRECT / DECLINE
 
-### PR Verdicts
-- **APPROVE**: Ready to merge
-- **MERGE_WITH_FIXES**: Merge, maintainer fixes
-- **REQUEST_CHANGES**: Specific fixes needed
-- **REDIRECT**: Different approach needed
-- **DECLINE**: Philosophy mismatch
+## Severity (PR Review)
 
-### Severity Levels (PR)
-| 🔴 Blocker | 🟠 Major | 🟡 Minor | 🟢 Nitpick | ✨ Praise |
+| 🔴 Blocker | 🟠 Major | 🟡 Minor | ✨ Praise (required) |
 
-### Bug Risk Levels
+## Bug Risk (Issue Triage)
+
 | 🔴 Critical | 🟠 High | 🟡 Medium | 🟢 Low |
 
 ## Commands
 
-For full workflow:
-
 ```bash
-# Issue triage
-/iyu:issue <url | file | "text">
-/iyu:issue <input> --quick
-
-# PR review
-/iyu:pr <pr-url | #number>
-/iyu:pr <input> --quick
-/iyu:pr <input> --security-focus
+/iyu:issue <url | file | "text">      # Full triage
+/iyu:issue <input> --quick             # Decision only
+/iyu:pr <pr-url | #number>            # Full review
+/iyu:pr <input> --quick               # Blockers only
 ```
-
-## Integration
-
-This framework **leverages** Claude's capabilities:
-- Code review: Claude performs, iyu provides severity classification framework
-- Security review: Claude detects, iyu applies "security issues are always Blocker" policy
-- Communication: Claude writes, iyu provides response structure per Decision

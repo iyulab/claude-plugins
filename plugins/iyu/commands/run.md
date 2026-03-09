@@ -5,20 +5,19 @@ disable-model-invocation: true
 allowed-tools: Read, Glob, Grep, Write, Edit, TodoWrite, WebFetch, WebSearch, Bash
 ---
 
-# Development Phase Runner
+# Development Runner
 
-Execute development tasks based on project plans or direct input.
+Execute a single development phase. For iterative multi-cycle work, use `/iyu:run-cycle`.
 
 ## Input Modes
 
 ### Mode A: No Input (Context-First Discovery)
-```bash
-/iyu:run
-```
 
 **Priority Order**:
-1. **Session Context** — Check recent conversation for pending/follow-up work
-2. **Plan Discovery** — If no session context, discover from project sources
+1. **Session Context** — pending/follow-up work from conversation
+2. **Plan Discovery** — CLAUDE.md → ROADMAP.md / TASKS.md / TODO.md → docs/ → README.md
+
+**Outcomes**: READY → proceed | NONE_PENDING → exit | BLOCKED → exit with info | NO_PLAN_FOUND → exit with guidance
 
 ### Mode B: With Input
 ```bash
@@ -27,41 +26,21 @@ Execute development tasks based on project plans or direct input.
 
 **Flags**: `--dry-run` (plan only) | `--no-commit` (skip commit)
 
----
-
 ## Process
 
 ### Phase 1: Scope Discovery
 
-**Session context first** — look for:
-- "next task", "follow-up work", "remaining work" mentions
-- Incomplete TodoWrite items, explicit "continue with..." statements
-- Previous `/iyu:run` completion summaries with "NEXT PHASE" sections
+Session context first. If nothing: search project files (stop at first found). If nothing found: exit — do not invent scope.
 
-**If no session context** → Search project files (stop at first found):
-1. CLAUDE.md — development plan section
-2. ROADMAP.md / TASKS.md / TODO.md
-3. docs/ — planning documents
-4. README.md — "Roadmap", "Planned Features" sections
+### Phase 2: Philosophy Alignment
 
-**Outcomes**:
-- READY → Proceed to Phase 2
-- NONE_PENDING → EXIT "All tasks complete"
-- BLOCKED → EXIT with blocker info
-- NO_PLAN_FOUND → EXIT "No plan found — create ROADMAP.md or provide task input"
+Before execution, evaluate scope against CLAUDE.md / README.md:
 
-### Phase 2: Task Extraction & Alignment
-
-Break scope into concrete tasks, then evaluate philosophy alignment:
-
-| Dimension | Score 1-5 |
-|-----------|-----------|
+| Dimension | Question |
+|-----------|----------|
 | Core Mission Fit | Serves core purpose? |
-| Scope Boundaries | Within scope? |
-| Architecture Patterns | Consistent with patterns? |
-| Naming/Style | Follows conventions? |
-
-**Decision**:
+| Scope Alignment | Within library responsibility? |
+| Pattern Consistency | Consistent with existing patterns? |
 
 |  | Scope IN | Scope OUT |
 |--|----------|-----------|
@@ -69,33 +48,25 @@ Break scope into concrete tasks, then evaluate philosophy alignment:
 | Mission MED | ADAPT | PARTIAL |
 | Mission LOW | PARTIAL | REJECT |
 
+**Latent discovery**: While reading the codebase for alignment, actively look for related issues, inconsistencies, or improvements that should be addressed alongside the explicit task.
+
 **If --dry-run, stop here.**
 
 ### Phase 3: Execution
 
-Track progress with TodoWrite (required).
+Per-task: execute → test → complete.
 
-Per-task: execute → test → mark complete.
+**Root cause mindset**: When problems surface, ask "why" 5 times. Fix all instances, not just the trigger.
 
-**Root cause mindset**: When problems surface, ask "why" 5 times. Fix all instances, not just the trigger. When a bug is discovered, apply `/iyu:issue` root cause analysis framework.
+### Phase 4: Verify & Commit
 
-### Phase 4: Review & Commit
+All tasks complete, tests passing, build succeeds.
 
-Verify: all tasks complete, tests passing, build succeeds.
-
-**Version Rules**: NEVER bump MAJOR — MINOR for features, PATCH for fixes.
-
-## Integration
-
-| Situation | Use |
-|-----------|-----|
-| Bug discovered | `/iyu:issue` root cause analysis framework |
-| Code review needed | `feature-dev:code-reviewer` agent |
-| Commit | `/commit` or built-in commit |
+**Version rules**: NEVER bump MAJOR — MINOR for features, PATCH for fixes.
 
 ## Error Handling
 
-- **No plan + no input**: EXIT with guidance to create ROADMAP.md or TASKS.md
-- **No pending tasks**: EXIT "All complete"
+- **No plan + no input**: Exit with guidance to create ROADMAP.md or provide input
+- **No pending tasks**: Exit "All complete"
 - **Task failure**: Log, attempt recovery, report if unresolvable
 - **Test failure**: Block commit, require fix

@@ -16,7 +16,7 @@
       "name": "iyu",
       "source": "./plugins/iyu",
       "description": "Iyulab's productivity toolkit - iterative development cycles, issue triage, PR review, security-aware code review, community-nurturing feedback, pattern detection, and deep bug resolution",
-      "version": "1.6.0",
+      "version": "1.7.0",
       "author": {
         "name": "iyulab"
       },
