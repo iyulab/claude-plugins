@@ -71,32 +71,37 @@ If no roadmap exists, create one at `claudedocs/cycle-logs/ROADMAP.md`:
 
 ### STEP 1: Scope
 
-Define this cycle's scope from the roadmap. If continuing from a previous cycle, address Carry-Forward items first.
+Define this cycle's scope from the roadmap.
 
-### STEP 2: Research & Implement
+**Inherited defects are mandatory scope.** If the previous cycle's Carry-Forward contains actionable items (not human-judgment), they are the FIRST priority of this cycle. New roadmap work comes AFTER inherited defects are resolved. If inherited defects consume the entire cycle, that is acceptable — reduce new scope, not defect resolution.
+
+### STEP 2: Implement
 
 **Research first** when encountering unfamiliar territory, external integrations, or security/performance concerns. Use WebSearch.
 
-Then implement. Progress incrementally.
+Implement the scope. Progress incrementally. This includes fixing inherited defects.
 
-### STEP 3: Test & Verify
+### STEP 3: Review & Evaluate
 
-Run the project's test suite, linter, and build. On failure: fix and re-run.
+Objective quality review — examine this cycle's work critically:
 
-### STEP 4: Defect Discovery
+- Run the project's test suite, linter, and build. On failure: **fix and re-run immediately**.
+- Review the implementation against scope goals — does it meet intent?
+- Check for bugs, unhandled edge cases, architecture violations
+- Check for latent issues in surrounding code discovered during this cycle's work
+- Check for philosophy drift — scope creep, application-level concerns leaking into library
 
-The core of quality control. Instead of scoring, **find what's wrong**:
+**Every actionable defect found here must be fixed before leaving this step.** Loop: discover → fix → re-verify until no actionable defects remain. Only items requiring human judgment are exempt.
 
-- **Bugs**: Incorrect behavior, unhandled edge cases
-- **Architecture violations**: Inconsistencies with existing patterns
-- **Latent issues**: Problems in surrounding code discovered during this cycle's work — things nobody asked about but should be fixed
-- **Philosophy drift**: Scope creep, application-level concerns leaking into library
+### STEP 4: Carry-Forward
 
-**If zero defects found** → This is the early termination signal.
+Record **only** what cannot be resolved autonomously:
 
-### STEP 5: Carry-Forward
+- **Pending Human Decisions**: Decisions requiring human input (breaking API, major architecture, ambiguous scope)
+- **Discovered but out-of-scope**: Issues found in unrelated areas, to be addressed in future cycles
+- **Next Recommendation**: What the next cycle should tackle
 
-Record unresolved defects, architectural discoveries, and latent issues for the next cycle.
+**Do NOT carry forward defects that could have been fixed in STEP 3.** If you can fix it, fix it now.
 
 ---
 
@@ -114,12 +119,12 @@ Date: {YYYY-MM-DD}
 ## Scope & Implementation
 {What was tackled, files changed, key decisions}
 
-## Defects Found
-{List of bugs, violations, latent issues discovered — or "None" for early termination signal}
+## Review & Resolution
+{Defects found during review and how each was resolved — or "No defects found"}
 
 ## Carry-Forward
-- Unresolved: {issues to pass to next cycle, or "None"}
 - Pending Human Decisions: {decisions needing human input, or "None"}
+- Discovered out-of-scope: {issues in unrelated areas, or "None"}
 - Next Recommendation: {what next cycle should tackle}
 ```
 
@@ -128,15 +133,17 @@ Date: {YYYY-MM-DD}
 ## Execution Rules
 
 1. **No interruptions**: Make all decisions autonomously. Do not ask for confirmation.
-2. **Self-recovery**: Fix test failures, compilation errors, and continue.
-3. **Logs required**: Always write cycle log before next cycle.
-4. **Quality first**: Reduce scope if needed to achieve high quality.
-5. **Research actively**: Use WebSearch to gather evidence. No guesswork.
-6. **Defect honesty**: Never hide issues. "It works" ≠ "It's good".
-7. **Early termination**: If STEP 4 finds **zero defects**, terminate early — the project is stable.
-8. **Human judgment deferral**: For decisions requiring human input (breaking API, major architecture), record in Carry-Forward and continue.
-9. **Continuity chain**: Always read the previous cycle's Carry-Forward before setting scope.
-10. **Latent work priority**: Actively seek issues beyond the explicit scope — the best cycles fix things nobody asked about.
+2. **Fix what you find**: Defects discovered in review MUST be resolved in the same cycle. Do not defer fixable work.
+3. **Inherited defects first**: Carry-Forward from the previous cycle is mandatory scope — resolve before new work.
+4. **Self-recovery**: Fix test failures, compilation errors, and continue.
+5. **Logs required**: Always write cycle log before next cycle.
+6. **Quality first**: Reduce new scope if needed — never reduce defect resolution.
+7. **Research actively**: Use WebSearch to gather evidence. No guesswork.
+8. **Defect honesty**: Never hide issues. "It works" ≠ "It's good".
+9. **Early termination**: If STEP 3 review finds **zero actionable defects** AND no inherited defects remain (only human-judgment items), terminate early — the project is stable.
+10. **Human judgment deferral**: For decisions requiring human input (breaking API, major architecture), record in Carry-Forward and continue with everything else.
+11. **Continuity chain**: Always read the previous cycle's Carry-Forward before setting scope.
+12. **Latent work priority**: Actively seek issues beyond the explicit scope — the best cycles fix things nobody asked about.
 
 ## Commit
 
