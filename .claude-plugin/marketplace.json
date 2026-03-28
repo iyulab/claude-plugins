@@ -15,8 +15,8 @@
     {
       "name": "iyu",
       "source": "./plugins/iyu",
-      "description": "Iyulab's productivity toolkit - iterative development cycles, issue triage, PR review, security-aware code review, community-nurturing feedback, pattern detection, and deep bug resolution",
-      "version": "1.7.2",
+      "description": "Iyulab's productivity toolkit - iterative development cycles, issue triage, PR review with project philosophy alignment",
+      "version": "1.8.0",
       "author": {
         "name": "iyulab"
       },

@@ -1,7 +1,7 @@
 {
   "name": "iyu",
-  "version": "1.7.2",
-  "description": "iyulab's productivity toolkit - iterative development cycles, roadmap-driven development, issue triage, PR review, deep bug resolution with root-cause focus",
+  "version": "1.8.0",
+  "description": "iyulab's productivity toolkit - iterative development cycles, issue triage, PR review with project philosophy alignment",
   "author": {
     "name": "iyulab",
     "url": "https://github.com/iyulab"

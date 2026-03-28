@@ -2,7 +2,7 @@
 
 [![Claude Code Plugin](https://img.shields.io/badge/Claude%20Code-Plugin-blueviolet?logo=anthropic&logoColor=white)](https://docs.anthropic.com/en/docs/claude-code/plugins)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-1.6.0-blue.svg)](./plugin.json)
+[![Version](https://img.shields.io/badge/version-1.8.0-blue.svg)](./plugin.json)
 
 Productivity toolkit for open-source library maintainers and developers.
 
@@ -23,14 +23,12 @@ Productivity toolkit for open-source library maintainers and developers.
 
 | Component | Type | Activation | Description |
 |-----------|------|------------|-------------|
-| **Mindset** | Skill | Auto | Shared "Critical but Constructive" philosophy |
+| **Mindset** | Skill | Auto | Shared "Critical but Constructive" philosophy + reference materials |
 | **Issue & PR Triage** | Skill | Auto | Conversational triage advice with decision matrices |
-| `/iyu:issue` | Command | Manual | Full issue triage report |
-| `/iyu:pr` | Command | Manual | PR review with security focus |
-| `/iyu:run` | Command | Manual | Plan-driven development execution |
-| `/iyu:run-cycle` | Command | Manual | Iterative development cycles |
-| **Issue Analyzer** | Agent | Auto | Autonomous issue analysis |
-| **PR Reviewer** | Agent | Auto | Autonomous PR review |
+| `/iyu:issue` | Skill | Manual | Full issue triage report (isolated context) |
+| `/iyu:pr` | Skill | Manual | PR review with security focus (isolated context) |
+| `/iyu:run` | Skill | Manual | Plan-driven development execution |
+| `/iyu:run-cycle` | Skill | Manual | Iterative development cycles with Stop hook |
 
 ## Commands
 
@@ -115,21 +113,22 @@ The plugin activates automatically when discussing issue evaluation or PR review
 iyu/
 ├── .claude-plugin/
 │   └── plugin.json
-├── commands/
-│   ├── issue.md
-│   ├── pr.md
-│   ├── run.md
-│   └── run-cycle.md
-├── agents/
-│   ├── issue-analyzer.md
-│   └── pr-reviewer.md
 ├── skills/
 │   ├── mindset/
+│   │   ├── SKILL.md
+│   │   └── references/
+│   ├── issue-triage/
 │   │   └── SKILL.md
-│   └── issue-triage/
-│       ├── SKILL.md
-│       ├── references/
-│       └── examples/
+│   ├── issue/
+│   │   ├── SKILL.md
+│   │   └── references/
+│   ├── pr/
+│   │   ├── SKILL.md
+│   │   └── references/
+│   ├── run/
+│   │   └── SKILL.md
+│   └── run-cycle/
+│       └── SKILL.md
 └── README.md
 ```
 

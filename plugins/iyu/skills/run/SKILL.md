@@ -1,4 +1,5 @@
 ---
+name: run
 description: Execute development tasks — auto-discover from project plans or use provided input
 argument-hint: [task-description] [--dry-run] [--no-commit]
 disable-model-invocation: true

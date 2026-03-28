@@ -1,8 +1,18 @@
 ---
-description: Execute iterative development cycles — scope→research→implement→test→evaluate→improve loop
+name: run-cycle
+description: Execute iterative development cycles — scope→implement→review→carry-forward loop
 argument-hint: "[total_cycles] [start_cycle]" [--dry-run] [--no-commit]
 disable-model-invocation: true
 allowed-tools: Read, Glob, Grep, Write, Edit, TodoWrite, WebFetch, WebSearch, Bash
+hooks:
+  Stop:
+    - hooks:
+        - type: prompt
+          prompt: |
+            Check if all planned development cycles are complete.
+            The skill was invoked with arguments: $ARGUMENTS
+            If cycles remain incomplete or carry-forward defects are unresolved, respond with block.
+            If all cycles are done or early termination conditions are met, allow.
 ---
 
 # Development Cycle Runner
@@ -11,8 +21,8 @@ Execute iterative development cycles. Complete all cycles sequentially **without
 
 ## Parameters
 
-- Total cycles: `$ARGUMENTS[0]` (default: 5)
-- Starting cycle number: `$ARGUMENTS[1]` (default: 1)
+- Total cycles: `$0` (default: 5)
+- Starting cycle number: `$1` (default: 1)
 - `--dry-run`: Preparation + roadmap only (no execution)
 - `--no-commit`: Skip final commit
 

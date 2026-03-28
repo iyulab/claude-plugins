@@ -1,8 +1,11 @@
 ---
+name: issue
 description: Triage external issues with critical evaluation against project philosophy and scope
 argument-hint: <issue-url | file-path | "issue text"> [--quick] [--save] [--no-research]
 disable-model-invocation: true
-allowed-tools: Read, Glob, Grep, Write, Edit, TodoWrite, WebFetch, WebSearch, Bash
+context: fork
+agent: Explore
+allowed-tools: Read, Glob, Grep, WebFetch, WebSearch, TodoWrite, Bash(gh *)
 ---
 
 # Issue Triage
@@ -44,12 +47,12 @@ Don't take the request at face value:
 
 If classified as a bug:
 - **Root Cause Analysis**: Symptom ≠ cause. Build hypothesis tree, trace cause chain: `[Action] → [Component] → [ROOT CAUSE] → [Symptom]`
-- **Similar Pattern Detection**: After identifying root cause, search for the same pattern elsewhere. Classify by risk (Critical/High/Medium/Low).
-- **Solution Research**: For complex bugs (5+ files, unfamiliar territory, security/performance), use WebSearch for latest approaches.
+- **Similar Pattern Detection**: After identifying root cause, search for the same pattern elsewhere. Classify by risk (Critical/High/Medium/Low). See [pattern-detection-guide.md](../mindset/references/pattern-detection-guide.md).
+- **Solution Research**: For complex bugs (5+ files, unfamiliar territory, security/performance), use WebSearch for latest approaches. See [research-methodology.md](references/research-methodology.md).
 
 ### Phase 2: Philosophy Alignment
 
-Read CLAUDE.md / README.md. Evaluate:
+Read CLAUDE.md / README.md. Evaluate using the [philosophy-alignment-guide.md](../mindset/references/philosophy-alignment-guide.md):
 
 | Dimension | Question |
 |-----------|----------|
@@ -72,15 +75,11 @@ Evaluate: Technical Complexity, Breaking Changes, Maintenance Burden, Dependenci
 | Feasibility MED | ADAPT | DEFER/REDIRECT |
 | Feasibility LOW | DEFER | DECLINE |
 
-- **ACCEPT**: Implement as requested
-- **ADAPT**: Good idea, implement differently
-- **DEFER**: Valuable but not now, provide roadmap
-- **REDIRECT**: Out of scope, provide alternative path
-- **DECLINE**: Fundamentally misaligned, explain respectfully
+For decision examples, see [decision-examples.md](../mindset/references/decision-examples.md).
 
 ### Phase 5: "Think 10 from 1" (skip if --quick)
 
-The most important phase. Extract latent insights beyond the immediate request:
+Extract latent insights beyond the immediate request:
 
 - **Documentation gap**: What wasn't clearly documented?
 - **API gap**: Does current API make this use case unnecessarily difficult?
@@ -90,7 +89,7 @@ The most important phase. Extract latent insights beyond the immediate request:
 
 ### Phase 6: Response Draft
 
-Structure by decision type and contributor context. Draft a response suitable for posting on GitHub.
+Structure by decision type and contributor context. For templates, see [response-templates.md](references/response-templates.md).
 
 ### Quick Mode (--quick)
 
