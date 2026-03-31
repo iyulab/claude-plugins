@@ -16,7 +16,7 @@
       "name": "iyu",
       "source": "./plugins/iyu",
       "description": "Iyulab's productivity toolkit - iterative development cycles, issue triage, PR review with project philosophy alignment",
-      "version": "1.8.0",
+      "version": "1.8.1",
       "author": {
         "name": "iyulab"
       },

@@ -67,11 +67,29 @@ Before any execution, evaluate the full scope against CLAUDE.md / README.md:
 
 Adjust, reduce, or reject scope items that score low. This is done **once** at preparation — individual cycles inherit the result.
 
-### 5. Roadmap Establishment
+### 5. Investigation & Design
+
+Before establishing a roadmap or writing code, assess what you don't know.
+
+**Skip conditions** — ALL must be true to skip this step:
+- Every scope item is an isolated, pattern-following change
+- Identical patterns already exist in the codebase
+- No new external dependencies or API changes
+- No performance/security implications
+
+**Otherwise, for each non-trivial scope item**:
+1. **Codebase survey** — Read related code, trace call paths, map existing patterns and conventions
+2. **External research** — WebSearch for best practices, library docs, known pitfalls. Do not guess.
+3. **Approach decision** — If multiple viable approaches exist, compare trade-offs and select with rationale.
+
+Record findings briefly — they inform the roadmap and per-cycle scope decisions.
+
+### 6. Roadmap Establishment
 
 If no roadmap exists, create one at `claudedocs/cycle-logs/ROADMAP.md`:
 - Phased plan aligned to total cycle count
 - Goals and scope per cycle
+- Incorporate investigation findings into cycle ordering and scope sizing
 
 **If --dry-run, stop here.**
 
@@ -87,7 +105,7 @@ Define this cycle's scope from the roadmap.
 
 ### STEP 2: Implement
 
-**Research first** when encountering unfamiliar territory, external integrations, or security/performance concerns. Use WebSearch.
+**Do not start coding until you understand what you're changing.** If this cycle introduces new patterns, APIs, or unfamiliar territory not covered in Preparation step 5, investigate first — read related code, WebSearch for best practices. The Preparation phase covers broad scope; per-cycle investigation covers specifics that emerge during implementation.
 
 Implement the scope. Progress incrementally. This includes fixing inherited defects.
 
