@@ -10,6 +10,10 @@ allowed-tools: Read, Glob, Grep, Write, Edit, TodoWrite, WebFetch, WebSearch, Ba
 
 Execute a single development phase. For iterative multi-cycle work, use `/iyu:run-cycle`.
 
+## Unscoped Bash rationale
+
+`allowed-tools` includes `Bash` without scope. Development execution requires arbitrary build/test/lint/git commands across unknown projects — scoping would require per-project edits. Accepted deliberately; narrow-surface skills (`issue`, `pr`) use `Bash(gh *)` instead.
+
 ## Input Modes
 
 ### Mode A: No Input (Context-First Discovery)

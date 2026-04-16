@@ -1,5 +1,5 @@
 ---
-name: Issue & PR Triage
+name: issue-pr-triage
 description: Use when discussing whether to accept, reject, or redirect an external issue or PR. Triggers on "triage this issue", "evaluate this feature request", "should I accept/merge this", "is this in scope", "review this PR/contribution", "how should I respond to this issue".
 ---
 

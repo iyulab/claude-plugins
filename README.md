@@ -18,20 +18,18 @@ A collection of Claude Code plugins for library maintainers and developers.
 
 ## Available Plugins
 
-### iyu (v1.6.0)
+### iyu (v1.9.0)
 
-**Productivity toolkit for open-source library maintainers — iterative development, issue triage, PR review, and deep bug resolution**
+**Productivity toolkit for open-source library maintainers — adaptive iterative development, issue triage, PR review**
 
 | Component | Type | Activation | Description |
 |-----------|------|------------|-------------|
-| Mindset | Skill | Auto | Shared "Critical but Constructive" philosophy |
-| Issue & PR Triage | Skill | Auto (conversational) | Decision matrices and triage advice |
-| Issue Analyzer | Agent | Auto (URL analysis) | Autonomous issue analysis |
-| PR Reviewer | Agent | Auto (PR URL) | Autonomous PR review |
-| `/iyu:issue` | Command | Manual | Full issue triage report |
-| `/iyu:pr` | Command | Manual | PR review with security focus |
-| `/iyu:run` | Command | Manual | Plan-driven development execution |
-| `/iyu:run-cycle` | Command | Manual | Iterative development cycles |
+| `mindset` | Skill | Auto (background) | Shared "Critical but Constructive" philosophy |
+| `issue-pr-triage` | Skill | Auto (conversational) | Decision matrices and triage advice |
+| `/iyu:issue` | Skill | Manual | Full issue triage report |
+| `/iyu:pr` | Skill | Manual | PR review with security focus |
+| `/iyu:run` | Skill | Manual | Plan-driven development execution |
+| `/iyu:run-cycle` | Skill | Manual | Adaptive iterative cycles (re-plan → execute → verify → reflect) |
 
 #### Installation
 
@@ -56,7 +54,8 @@ The plugin automatically activates when you discuss issue evaluation or PR revie
 |---------|-------------|
 | `/iyu:issue` | Systematic issue evaluation with root cause analysis |
 | `/iyu:pr` | Professional PR review with security awareness |
-| `/iyu:run` | Roadmap-driven development execution |
+| `/iyu:run` | Plan-driven development execution |
+| `/iyu:run-cycle` | Adaptive iterative development cycles |
 
 ##### /iyu:issue
 
@@ -96,6 +95,21 @@ The plugin automatically activates when you discuss issue evaluation or PR revie
 # Plan only, no execution
 /iyu:run --dry-run
 ```
+
+##### /iyu:run-cycle
+
+```bash
+# 5 adaptive cycles (default)
+/iyu:run-cycle
+
+# 10 cycles with adaptive re-planning
+/iyu:run-cycle 10
+
+# Preparation + directional roadmap only
+/iyu:run-cycle 5 --dry-run
+```
+
+Each cycle runs Re-plan → Design → Execute → Verify → Reflect → Derive-Next. The roadmap is directional — later cycles may reshape it based on what earlier cycles reveal.
 
 #### Decision Matrices
 

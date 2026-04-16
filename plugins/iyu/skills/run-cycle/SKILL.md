@@ -1,6 +1,6 @@
 ---
 name: run-cycle
-description: Execute iterative development cycles — scope→implement→review→carry-forward loop
+description: Execute adaptive iterative development cycles — each cycle is a self-contained plan/execute/verify/reflect loop that may reshape the roadmap
 argument-hint: "[total_cycles] [start_cycle]" [--dry-run] [--no-commit]
 disable-model-invocation: true
 allowed-tools: Read, Glob, Grep, Write, Edit, TodoWrite, WebFetch, WebSearch, Bash
@@ -17,22 +17,38 @@ hooks:
 
 # Development Cycle Runner
 
-Execute iterative development cycles. Complete all cycles sequentially **without interruption**.
+Execute iterative development cycles. Each cycle is a **self-contained micro-loop** — re-plan, design (if needed), execute, verify, reflect, derive-next. The initial roadmap is **directional, not binding**: later cycles may reshape it based on what earlier cycles reveal.
+
+## Why this shape
+
+A single upfront N-cycle plan followed by sequential execution is indistinguishable from one large implementation — the "cycle" structure adds no discovery value. Real iterative work requires each cycle to:
+
+1. Re-check assumptions made at the start
+2. Absorb what previous cycles learned
+3. Be able to **change the plan** when reality diverges
+
+The structure below keeps per-cycle overhead bounded while leaving room for mid-flight re-planning.
+
+## Unscoped Bash rationale
+
+`allowed-tools` includes `Bash` without scope. Development execution requires arbitrary build/test/lint/git commands across unknown projects — scoping would require per-project edits. Accepted deliberately; narrow-surface skills (`issue`, `pr`) use `Bash(gh *)` instead.
 
 ## Parameters
 
 - Total cycles: `$0` (default: 5)
 - Starting cycle number: `$1` (default: 1)
-- `--dry-run`: Preparation + roadmap only (no execution)
+- `--dry-run`: Preparation + directional roadmap only
 - `--no-commit`: Skip final commit
 
-## Preparation
+---
 
-### 1. Conversation Context (HIGHEST PRIORITY)
+## Preparation (light)
+
+The preparation phase is **thin by design**. Deep analysis belongs to each cycle's STEP 1, where it can be informed by what's actually happening.
+
+### 1. Conversation Context (highest priority)
 
 Check the preceding conversation for scope — explicit tasks, agreed-upon next steps, "continue with..." statements.
-
-**If conversation provides clear scope** → Use directly, skip plan discovery.
 
 ### 2. Previous Cycle Logs
 
@@ -40,23 +56,15 @@ Check the preceding conversation for scope — explicit tasks, agreed-upon next 
 Glob: claudedocs/cycle-logs/cycle-*.md
 ```
 
-Review the most recent log — especially **Carry-Forward** section. These are inherited obligations.
+Review the most recent log's **Carry-Forward** and **Roadmap Revisions** sections. These are inherited obligations and prior re-planning decisions.
 
-### 3. Development Plan Discovery
+### 3. Plan Discovery (only if no scope from above)
 
-**Only if no scope from conversation or previous cycles.**
+Stop at first found: CLAUDE.md → ROADMAP.md / TASKS.md / TODO.md → docs/ → README.md. If nothing found, ask the user. Do not invent scope.
 
-Search order (stop at first found):
-1. CLAUDE.md — development plan section
-2. ROADMAP.md / TASKS.md / TODO.md
-3. docs/ — planning documents
-4. README.md — "Roadmap", "Planned Features" sections
+### 4. Philosophy Alignment (high-level only)
 
-**If nothing found** → Ask the user. Do not invent scope.
-
-### 4. Philosophy Alignment (once, not per-cycle)
-
-Before any execution, evaluate the full scope against CLAUDE.md / README.md:
+Evaluate the overall goal — not every future cycle — against CLAUDE.md / README.md:
 
 | Dimension | Question |
 |-----------|----------|
@@ -65,31 +73,15 @@ Before any execution, evaluate the full scope against CLAUDE.md / README.md:
 | Pattern Consistency | Consistent with existing patterns? |
 | Dependency Direction | No upstream→downstream leakage? |
 
-Adjust, reduce, or reject scope items that score low. This is done **once** at preparation — individual cycles inherit the result.
+Reject scope items that score low **at the overall level**. Per-cycle drift checks (STEP 0) catch localized issues later.
 
-### 5. Investigation & Design
+### 5. Directional Roadmap
 
-Before establishing a roadmap or writing code, assess what you don't know.
+Create `claudedocs/cycle-logs/ROADMAP.md` if missing:
 
-**Skip conditions** — ALL must be true to skip this step:
-- Every scope item is an isolated, pattern-following change
-- Identical patterns already exist in the codebase
-- No new external dependencies or API changes
-- No performance/security implications
-
-**Otherwise, for each non-trivial scope item**:
-1. **Codebase survey** — Read related code, trace call paths, map existing patterns and conventions
-2. **External research** — WebSearch for best practices, library docs, known pitfalls. Do not guess.
-3. **Approach decision** — If multiple viable approaches exist, compare trade-offs and select with rationale.
-
-Record findings briefly — they inform the roadmap and per-cycle scope decisions.
-
-### 6. Roadmap Establishment
-
-If no roadmap exists, create one at `claudedocs/cycle-logs/ROADMAP.md`:
-- Phased plan aligned to total cycle count
-- Goals and scope per cycle
-- Incorporate investigation findings into cycle ordering and scope sizing
+- High-level phased goals — not detailed per-cycle scope
+- Marked as **directional**, revisable by per-cycle Derive-Next
+- Include known unknowns and investigation needs, not presumed answers
 
 **If --dry-run, stop here.**
 
@@ -97,39 +89,89 @@ If no roadmap exists, create one at `claudedocs/cycle-logs/ROADMAP.md`:
 
 ## Per-Cycle Process
 
-### STEP 1: Scope
+Every cycle runs these six steps in order. Steps are **differentiated by weight** — STEP 0 is always light, STEP 1 runs only when triggered, STEP 4 reflection is always mandatory.
 
-Define this cycle's scope from the roadmap.
+### STEP 0: Re-plan (always, light)
 
-**Inherited defects are mandatory scope.** If the previous cycle's Carry-Forward contains actionable items (not human-judgment), they are the FIRST priority of this cycle. New roadmap work comes AFTER inherited defects are resolved. If inherited defects consume the entire cycle, that is acceptable — reduce new scope, not defect resolution.
+The first thing any cycle does is check whether the plan it inherited is still correct.
 
-### STEP 2: Implement
+**Bounded inputs** (keep this cheap — target <5 minutes):
 
-**Do not start coding until you understand what you're changing.** If this cycle introduces new patterns, APIs, or unfamiliar territory not covered in Preparation step 5, investigate first — read related code, WebSearch for best practices. The Preparation phase covers broad scope; per-cycle investigation covers specifics that emerge during implementation.
+- Previous cycle's Carry-Forward + Roadmap Revisions
+- Current state of the directional roadmap
+- Any changes to CLAUDE.md / README.md since the last cycle (diff only, not full re-read)
 
-Implement the scope. Progress incrementally. This includes fixing inherited defects.
+**Decisions**:
 
-### STEP 3: Review & Evaluate
+1. **Inherited defects first** — if previous Carry-Forward contains actionable items, they are this cycle's priority scope
+2. **Drift check** — 1–2 sentence judgment: has anything in the project invalidated the next planned step?
+3. **Trigger check** — see below
 
-Objective quality review — examine this cycle's work critically:
+**Output**: This cycle's scope, either as-planned or adjusted.
 
-- Run the project's test suite, linter, and build. On failure: **fix and re-run immediately**.
-- Review the implementation against scope goals — does it meet intent?
-- Check for bugs, unhandled edge cases, architecture violations
-- Check for latent issues in surrounding code discovered during this cycle's work
-- Check for philosophy drift — scope creep, application-level concerns leaking into library
+### Trigger matrix
 
-**Every actionable defect found here must be fixed before leaving this step.** Loop: discover → fix → re-verify until no actionable defects remain. Only items requiring human judgment are exempt.
+| Trigger | Signal | Action |
+|---------|--------|--------|
+| 🔴 HARD STOP | Philosophy fundamentally violated by inherited plan, OR architecture change invalidates 3+ future cycles, OR critical dependency deprecated | Log blocker in Carry-Forward, **terminate run-cycle**, escalate to human |
+| 🟠 RE-PLAN | Roadmap order/split needs change, but overall goals remain valid | Adjust roadmap autonomously, record in **Roadmap Revisions** log section |
+| 🟡 SCOPE ADJUST | This cycle's scope needs trimming or expansion only | Adjust inline, proceed to STEP 1 |
+| ⚪ NONE | Plan still valid | Proceed with inherited scope |
 
-### STEP 4: Carry-Forward
+HARD STOP is **deliberately narrow**. Agent autonomy covers RE-PLAN and SCOPE ADJUST; human judgment is reserved for structural invalidation. If in doubt between RE-PLAN and HARD STOP, choose RE-PLAN and record the reasoning — the next cycle can escalate further if needed.
 
-Record **only** what cannot be resolved autonomously:
+### STEP 1: Design (conditional)
 
-- **Pending Human Decisions**: Decisions requiring human input (breaking API, major architecture, ambiguous scope)
-- **Discovered but out-of-scope**: Issues found in unrelated areas, to be addressed in future cycles
-- **Next Recommendation**: What the next cycle should tackle
+**Skip if ALL true** (and record "skipped — pattern-following change" in the log):
 
-**Do NOT carry forward defects that could have been fixed in STEP 3.** If you can fix it, fix it now.
+- Scope is an isolated, pattern-following change
+- Identical patterns already exist in the codebase
+- No new external dependencies or API changes
+- No performance/security implications
+
+**Otherwise**:
+
+1. **Codebase survey** — trace call paths, map existing patterns and conventions
+2. **External research** — WebSearch for best practices, library docs, known pitfalls. Do not guess.
+3. **Approach decision** — if multiple viable approaches exist, compare trade-offs and pick one with a 1-line rationale
+
+Record findings briefly in the cycle log. Do not pad this step when skip conditions hold.
+
+### STEP 2: Execute
+
+Implement the scope. Progress incrementally. **Inherited defects are fixed first**, before new roadmap work.
+
+**Root cause mindset**: When problems surface, ask "why" until the real cause emerges. Fix all instances of a pattern, not just the symptom that triggered investigation.
+
+### STEP 3: Verify
+
+- Run the project's test suite, linter, and build
+- On failure: **fix and re-run immediately** within this cycle — do not defer
+- If a failure exposes a trigger-class issue (HARD STOP / RE-PLAN), loop back to STEP 0 rather than forcing progress
+
+### STEP 4: Reflect & Evaluate (always, mandatory)
+
+Objective quality review. This is the step that makes cycles cumulative rather than sequential.
+
+Assess four dimensions:
+
+1. **Scope fit**: Does the implementation meet the cycle's intent?
+2. **Latent defects**: Bugs, unhandled edges, architecture violations in or around the changes
+3. **Philosophy drift**: Scope creep, library/application boundary leakage, pattern deviation
+4. **Roadmap impact**: Does this cycle's outcome change what future cycles should do?
+
+**Every actionable defect found here is fixed before leaving STEP 4.** Loop: discover → fix → re-verify. Only items requiring human judgment are exempt (breaking API, major architecture, ambiguous scope).
+
+### STEP 5: Derive Next
+
+Record **only** what cannot be resolved autonomously, or what reshapes future cycles:
+
+- **Carry-Forward (actionable)**: Things to address next cycle
+- **Pending Human Decisions**: Breaking API, major architecture, ambiguous scope
+- **Roadmap Revisions**: If STEP 4's roadmap-impact judgment said "yes" — record the change to `ROADMAP.md` and log it
+- **Next Recommendation**: What the next cycle should prioritize
+
+**Do NOT carry forward defects that could have been fixed in STEP 4.** If you can fix it, fix it now.
 
 ---
 
@@ -141,18 +183,22 @@ Write `claudedocs/cycle-logs/cycle-{NN}.md` after each cycle:
 # Cycle {NN}: {Title}
 Date: {YYYY-MM-DD}
 
-## Inherited → Addressed
-{What was carried from previous cycle and how it was handled, or "First cycle"}
+## Re-plan
+{Trigger detected (if any) and scope decision — or "Plan valid, inherited scope"}
 
 ## Scope & Implementation
-{What was tackled, files changed, key decisions}
+{What was tackled, files changed, key design decisions}
 
-## Review & Resolution
-{Defects found during review and how each was resolved — or "No defects found"}
+## Verification & Defect Resolution
+{Test/build status, defects discovered and resolved — or "No defects found"}
+
+## Reflection
+{Scope fit, philosophy drift assessment, roadmap impact judgment}
 
 ## Carry-Forward
+- Actionable: {items for next cycle, or "None"}
 - Pending Human Decisions: {decisions needing human input, or "None"}
-- Discovered out-of-scope: {issues in unrelated areas, or "None"}
+- Roadmap Revisions: {changes made to ROADMAP.md, or "None"}
 - Next Recommendation: {what next cycle should tackle}
 ```
 
@@ -160,25 +206,25 @@ Date: {YYYY-MM-DD}
 
 ## Execution Rules
 
-1. **No interruptions**: Make all decisions autonomously. Do not ask for confirmation.
-2. **Fix what you find**: Defects discovered in review MUST be resolved in the same cycle. Do not defer fixable work.
-3. **Inherited defects first**: Carry-Forward from the previous cycle is mandatory scope — resolve before new work.
-4. **Self-recovery**: Fix test failures, compilation errors, and continue.
-5. **Logs required**: Always write cycle log before next cycle.
-6. **Quality first**: Reduce new scope if needed — never reduce defect resolution.
-7. **Research actively**: Use WebSearch to gather evidence. No guesswork.
-8. **Defect honesty**: Never hide issues. "It works" ≠ "It's good".
-9. **Early termination**: If STEP 3 review finds **zero actionable defects** AND no inherited defects remain (only human-judgment items), terminate early — the project is stable.
-10. **Human judgment deferral**: For decisions requiring human input (breaking API, major architecture), record in Carry-Forward and continue with everything else.
-11. **Continuity chain**: Always read the previous cycle's Carry-Forward before setting scope.
-12. **Latent work priority**: Actively seek issues beyond the explicit scope — the best cycles fix things nobody asked about.
+1. **No interruptions within a cycle**: Decide autonomously. Do not ask for confirmation mid-cycle.
+2. **HARD STOP escalation is allowed**: When a HARD STOP trigger fires, terminate and report — do not force progress.
+3. **Fix what you find**: STEP 4 defects MUST be resolved in the same cycle. Do not defer fixable work.
+4. **Inherited defects first**: Previous Carry-Forward actionables are mandatory at STEP 0.
+5. **Roadmap is directional**: Revise it when evidence requires. Log revisions explicitly in Carry-Forward.
+6. **Quality over scope**: Reduce new scope if needed — never reduce defect resolution or reflection depth.
+7. **Research actively**: WebSearch before guessing. Record sources.
+8. **Defect honesty**: Record issues openly. "It works" ≠ "It's good".
+9. **Early termination**: If STEP 4 finds zero actionable defects AND no inherited defects remain AND roadmap is stable, terminate early.
+10. **Continuity chain**: Always read the previous cycle's Carry-Forward and Roadmap Revisions before STEP 0.
+11. **Latent work priority**: The best cycles fix things nobody asked about — surface them in Reflection.
+12. **Cost discipline**: STEP 0 is bounded (~5 min). If drift check seems to require deep analysis, that is a RE-PLAN signal — handle it explicitly rather than letting STEP 0 bloat.
 
 ## Commit
 
-- Commit **once** after all cycles complete (or on early termination)
+- Commit **once** after all cycles complete (or on HARD STOP / early termination)
 - Use built-in `/commit`
 - **NEVER bump MAJOR version**
 
 ## Start
 
-Begin immediately: Preparation → Cycle 1 → Cycle 2 → ... → Cycle N.
+Begin: Preparation → Cycle 1 → Cycle 2 → ... → Cycle N (or until HARD STOP / early termination).
