@@ -1,10 +1,10 @@
 {
   "name": "iyu",
-  "version": "1.9.0",
-  "description": "iyulab's productivity toolkit - iterative development cycles, issue triage, PR review with project philosophy alignment",
+  "version": "1.9.1",
+  "description": "Productivity toolkit for library maintainers - adaptive iterative development, issue triage, PR review with project philosophy alignment",
   "author": {
     "name": "iyulab",
     "url": "https://github.com/iyulab"
   },
-  "keywords": ["cycle", "iterative", "roadmap", "development", "issue", "triage", "pr-review", "code-review", "security", "opensource", "maintainer", "library", "bug", "pattern-detection", "root-cause", "refactoring", "iyulab"]
+  "keywords": ["cycle", "iterative", "roadmap", "development", "issue", "triage", "pr-review", "code-review", "security", "opensource", "maintainer", "library", "bug", "pattern-detection", "root-cause", "refactoring"]
 }
