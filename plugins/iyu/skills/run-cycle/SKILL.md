@@ -153,20 +153,27 @@ Implement the scope. Progress incrementally. **Inherited defects are fixed first
 
 Objective quality review. This is the step that makes cycles cumulative rather than sequential.
 
-Assess four dimensions:
+Assess five dimensions:
 
 1. **Scope fit**: Does the implementation meet the cycle's intent?
 2. **Latent defects**: Bugs, unhandled edges, architecture violations in or around the changes
-3. **Philosophy drift**: Scope creep, library/application boundary leakage, pattern deviation
-4. **Roadmap impact**: Does this cycle's outcome change what future cycles should do?
+3. **Structural improvement opportunities**: Better patterns, refactoring candidates, orphan code/files/docs found during the cycle
+4. **Philosophy drift**: Scope creep, library/application boundary leakage, pattern deviation
+5. **Roadmap impact**: Does this cycle's outcome change what future cycles should do?
 
-**Every actionable defect found here is fixed before leaving STEP 4.** Loop: discover → fix → re-verify. Only items requiring human judgment are exempt (breaking API, major architecture, ambiguous scope).
+**Defect vs. improvement distinction**:
+- **Defects** (bugs, broken edges, violations) → fix before leaving STEP 4. Loop: discover → fix → re-verify.
+- **Structural improvements** (better patterns, refactoring candidates) → do NOT fix silently; carry to STEP 5 as proposals for human decision.
+- **Orphans** (unused code, unreferenced files, stale docs) → remove immediately, note in cycle log.
+
+Only items requiring human judgment on defects are exempt from STEP 4 fixes (breaking API, major architecture, ambiguous scope).
 
 ### STEP 5: Derive Next
 
 Record **only** what cannot be resolved autonomously, or what reshapes future cycles:
 
 - **Carry-Forward (actionable)**: Things to address next cycle
+- **Structural Improvement Proposals**: Refactoring candidates and better patterns found in STEP 4 — with rationale and recommended approach. Human decides when/whether to act.
 - **Pending Human Decisions**: Breaking API, major architecture, ambiguous scope
 - **Roadmap Revisions**: If STEP 4's roadmap-impact judgment said "yes" — record the change to `ROADMAP.md` and log it
 - **Next Recommendation**: What the next cycle should prioritize
@@ -197,6 +204,7 @@ Date: {YYYY-MM-DD}
 
 ## Carry-Forward
 - Actionable: {items for next cycle, or "None"}
+- Structural Improvement Proposals: {refactoring candidates with rationale, or "None"}
 - Pending Human Decisions: {decisions needing human input, or "None"}
 - Roadmap Revisions: {changes made to ROADMAP.md, or "None"}
 - Next Recommendation: {what next cycle should tackle}
@@ -208,7 +216,7 @@ Date: {YYYY-MM-DD}
 
 1. **No interruptions within a cycle**: Decide autonomously. Do not ask for confirmation mid-cycle.
 2. **HARD STOP escalation is allowed**: When a HARD STOP trigger fires, terminate and report — do not force progress.
-3. **Fix what you find**: STEP 4 defects MUST be resolved in the same cycle. Do not defer fixable work.
+3. **Fix what you find**: STEP 4 **defects** (bugs, broken edges) MUST be resolved in the same cycle. **Structural improvements** go to Carry-Forward as proposals — do not refactor silently. **Orphans** (unused code, stale docs) are removed immediately and noted in the log.
 4. **Inherited defects first**: Previous Carry-Forward actionables are mandatory at STEP 0.
 5. **Roadmap is directional**: Revise it when evidence requires. Log revisions explicitly in Carry-Forward.
 6. **Quality over scope**: Reduce new scope if needed — never reduce defect resolution or reflection depth.
@@ -216,7 +224,7 @@ Date: {YYYY-MM-DD}
 8. **Defect honesty**: Record issues openly. "It works" ≠ "It's good".
 9. **Early termination**: If STEP 4 finds zero actionable defects AND no inherited defects remain AND roadmap is stable, terminate early.
 10. **Continuity chain**: Always read the previous cycle's Carry-Forward and Roadmap Revisions before STEP 0.
-11. **Latent work priority**: The best cycles fix things nobody asked about — surface them in Reflection.
+11. **Latent work priority**: The best cycles surface structural improvements nobody thought to ask about — propose them in Derive-Next with rationale. Do not fold them silently into scope.
 12. **Cost discipline**: STEP 0 is bounded (~5 min). If drift check seems to require deep analysis, that is a RE-PLAN signal — handle it explicitly rather than letting STEP 0 bloat.
 
 ## Commit

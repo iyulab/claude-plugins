@@ -53,7 +53,10 @@ Before execution, evaluate scope against CLAUDE.md / README.md:
 | Mission MED | ADAPT | PARTIAL |
 | Mission LOW | PARTIAL | REJECT |
 
-**Latent discovery**: While reading the codebase for alignment, actively look for related issues, inconsistencies, or improvements that should be addressed alongside the explicit task.
+**Latent discovery**: While reading the codebase for alignment, actively look for structural defects, orphan files/code/docs, and improvement opportunities.
+- **Structural improvements** (better patterns, refactoring candidates): propose separately — do NOT fold into current task scope without explicit alignment-matrix justification.
+- **Orphan files/code/docs** (unused, unreferenced): clean up immediately as part of this task and note in the commit.
+- **Bugs/defects**: treat as in-scope; fix with root-cause mindset.
 
 ### Phase 3: Investigation & Design
 
@@ -83,9 +86,16 @@ Per-task: execute → test → complete.
 
 **Root cause mindset**: When problems surface, ask "why" 5 times. Fix all instances, not just the trigger.
 
+**Defect vs. improvement distinction**:
+- **Bug / defect** → fix now, root-cause first
+- **Structural improvement opportunity** → propose to the user; do not refactor silently
+- **Orphan** → remove + note in commit
+
 ### Phase 5: Verify & Commit
 
 All tasks complete, tests passing, build succeeds.
+
+**Pre-commit orphan sweep**: Before committing, remove any orphan files, unused code, or stale docs discovered during this session. Note removals in the commit message.
 
 **Version rules**: NEVER bump MAJOR — MINOR for features, PATCH for fixes.
 
