@@ -153,13 +153,16 @@ Implement the scope. Progress incrementally. **Inherited defects are fixed first
 
 Objective quality review. This is the step that makes cycles cumulative rather than sequential.
 
-Assess five dimensions:
+**Perspective**: Evaluate as someone who didn't write this — a contributor, reviewer, or end user seeing the result for the first time. Internal consistency is necessary but not sufficient; external coherence is what reveals the issues an author cannot see.
+
+Assess six dimensions:
 
 1. **Scope fit**: Does the implementation meet the cycle's intent?
 2. **Latent defects**: Bugs, unhandled edges, architecture violations in or around the changes
 3. **Structural improvement opportunities**: Better patterns, refactoring candidates, orphan code/files/docs found during the cycle
 4. **Philosophy drift**: Scope creep, library/application boundary leakage, pattern deviation
 5. **Roadmap impact**: Does this cycle's outcome change what future cycles should do?
+6. **User-facing quality** *(when changes touch UI, API contracts, CLI output, or app flow)*: Usability, interaction coherence, convention alignment, flow correctness relative to user mental models. Reference standards concisely when they anchor a finding objectively (e.g., "violates REST uniform interface", "missing affordance — Nielsen #1", "keyboard trap — WCAG 2.1.2").
 
 **Defect vs. improvement distinction**:
 - **Defects** (bugs, broken edges, violations) → fix before leaving STEP 4. Loop: discover → fix → re-verify.
@@ -200,7 +203,7 @@ Date: {YYYY-MM-DD}
 {Test/build status, defects discovered and resolved — or "No defects found"}
 
 ## Reflection
-{Scope fit, philosophy drift assessment, roadmap impact judgment}
+{Scope fit, philosophy drift, roadmap impact — evaluated from an external perspective. User-facing findings (if applicable): usability, flow, convention issues with standards reference.}
 
 ## Carry-Forward
 - Actionable: {items for next cycle, or "None"}
