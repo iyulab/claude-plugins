@@ -1,6 +1,6 @@
 ---
 name: run
-description: Execute development tasks — auto-discover from project plans or use provided input
+description: Executes development tasks — auto-discovers from project plans or uses provided input
 argument-hint: [task-description] [--dry-run] [--no-commit]
 disable-model-invocation: true
 allowed-tools: Read, Glob, Grep, Write, Edit, TodoWrite, WebFetch, WebSearch, Bash

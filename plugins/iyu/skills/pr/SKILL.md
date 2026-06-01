@@ -1,6 +1,6 @@
 ---
 name: pr
-description: Review pull requests with project philosophy alignment
+description: Reviews pull requests with project philosophy alignment
 argument-hint: <pr-url | pr-number> [--quick] [--save] [--security-focus]
 disable-model-invocation: true
 context: fork

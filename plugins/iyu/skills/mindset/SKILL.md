@@ -1,6 +1,6 @@
 ---
-name: iyu-mindset
-description: Shared mindset framework for all iyu commands — critical but constructive approach to open-source maintenance
+name: mindset
+description: Critical-but-constructive maintenance mindset — auto-activates during conversational issue, PR, and development discussions to keep evaluation principled and architecture-defending
 user-invocable: false
 ---
 

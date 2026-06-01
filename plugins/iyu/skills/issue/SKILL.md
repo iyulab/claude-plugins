@@ -1,6 +1,6 @@
 ---
 name: issue
-description: Triage external issues with critical evaluation against project philosophy and scope
+description: Triages external issues with critical evaluation against project philosophy and scope
 argument-hint: <issue-url | file-path | "issue text"> [--quick] [--save] [--no-research]
 disable-model-invocation: true
 context: fork

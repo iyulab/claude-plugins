@@ -18,14 +18,14 @@ A collection of Claude Code plugins for library maintainers and developers.
 
 ## Available Plugins
 
-### iyu (v1.9.1)
+### iyu (v1.10.2)
 
 **Productivity toolkit for open-source library maintainers — adaptive iterative development, issue triage, PR review**
 
 | Component | Type | Activation | Description |
 |-----------|------|------------|-------------|
-| `mindset` | Skill | Auto (background) | Shared "Critical but Constructive" philosophy |
-| `issue-pr-triage` | Skill | Auto (conversational) | Decision matrices and triage advice |
+| `mindset` | Skill | Auto (background) | "Critical but Constructive" mindset for conversational triage/dev discussions |
+| `issue-triage` | Skill | Auto (conversational) | Decision matrices and triage advice |
 | `/iyu:issue` | Skill | Manual | Full issue triage report |
 | `/iyu:pr` | Skill | Manual | PR review with security focus |
 | `/iyu:run` | Skill | Manual | Plan-driven development execution |
@@ -128,7 +128,6 @@ Each cycle runs Re-plan → Design → Execute → Verify → Reflect → Derive
 | 🔴 Blocker | Must fix before merge |
 | 🟠 Major | Should fix, or maintainer fixes post-merge |
 | 🟡 Minor | Nice to have, non-blocking |
-| 🟢 Nitpick | Optional style preference |
 | ✨ Praise | Celebrate good work |
 
 [Read more about iyu plugin](./plugins/iyu/README.md)

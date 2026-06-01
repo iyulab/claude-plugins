@@ -2,7 +2,7 @@
 
 [![Claude Code Plugin](https://img.shields.io/badge/Claude%20Code-Plugin-blueviolet?logo=anthropic&logoColor=white)](https://docs.anthropic.com/en/docs/claude-code/plugins)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-1.9.1-blue.svg)](./plugin.json)
+[![Version](https://img.shields.io/badge/version-1.10.2-blue.svg)](./plugin.json)
 
 Productivity toolkit for open-source library maintainers and developers.
 
@@ -96,7 +96,7 @@ Cycles maintain continuity — unresolved issues and pending decisions automatic
 | Philosophy LOW | REDIRECT | DECLINE |
 
 **Severity Levels:**
-| 🔴 Blocker | 🟠 Major | 🟡 Minor | 🟢 Nitpick | ✨ Praise |
+| 🔴 Blocker | 🟠 Major | 🟡 Minor | ✨ Praise |
 
 ## Skills (Auto-Activated)
 

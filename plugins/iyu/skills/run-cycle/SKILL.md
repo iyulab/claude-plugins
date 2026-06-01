@@ -1,6 +1,6 @@
 ---
 name: run-cycle
-description: Execute adaptive iterative development cycles — each cycle is a self-contained plan/execute/verify/reflect loop that may reshape the roadmap
+description: Executes adaptive iterative development cycles — each cycle is a self-contained plan/execute/verify/reflect loop that may reshape the roadmap
 argument-hint: "[total_cycles] [start_cycle]" [--dry-run] [--no-commit]
 disable-model-invocation: true
 allowed-tools: Read, Glob, Grep, Write, Edit, TodoWrite, WebFetch, WebSearch, Bash
