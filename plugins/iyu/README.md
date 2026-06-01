@@ -2,7 +2,7 @@
 
 [![Claude Code Plugin](https://img.shields.io/badge/Claude%20Code-Plugin-blueviolet?logo=anthropic&logoColor=white)](https://docs.anthropic.com/en/docs/claude-code/plugins)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-1.10.2-blue.svg)](./plugin.json)
+[![Version](https://img.shields.io/badge/version-1.11.0-blue.svg)](./plugin.json)
 
 Productivity toolkit for open-source library maintainers and developers.
 
@@ -29,6 +29,7 @@ Productivity toolkit for open-source library maintainers and developers.
 | `/iyu:pr` | Skill | Manual | PR review with security focus (isolated context) |
 | `/iyu:run` | Skill | Manual | Plan-driven development execution |
 | `/iyu:run-cycle` | Skill | Manual | Iterative development cycles with Stop hook |
+| `/iyu:telemetry-az` | Skill | Manual | Azure App Insights telemetry triage and issue discovery |
 
 ## Commands
 
@@ -76,6 +77,24 @@ Iterative development cycles with evaluation and continuity tracking.
 Each cycle: Scope → Research → Implement → Test → Evaluate → Carry-Forward.
 
 Cycles maintain continuity — unresolved issues and pending decisions automatically propagate through the cycle chain.
+
+### /iyu:telemetry-az
+
+Azure Application Insights telemetry triage. Analyzes telemetry **since the last run**,
+classifies defects / performance regressions / feature-drop signals, runs issue-triage
+"1 → 10" discovery aligned with the project philosophy, and files issues for
+threshold-crossing findings.
+
+```bash
+/iyu:telemetry-az                              # Resume from last watermark, triage, file issues
+/iyu:telemetry-az --since 2026-05-01T00:00:00Z # Override window start
+/iyu:telemetry-az --dry-run                    # Report to chat only, no files, watermark unchanged
+/iyu:telemetry-az --no-issues                  # Write report but file no issues
+```
+
+Per-repo settings live in `claudedocs/telemetry/config.json` (App Insights app id + thresholds);
+the watermark and reports live under `claudedocs/telemetry/`. Issues follow the standard
+`claudedocs/issues/` format. Requires `az login`.
 
 ## Decision Matrices
 
@@ -127,8 +146,11 @@ iyu/
 │   │   └── references/
 │   ├── run/
 │   │   └── SKILL.md
-│   └── run-cycle/
-│       └── SKILL.md
+│   ├── run-cycle/
+│   │   └── SKILL.md
+│   └── telemetry-az/
+│       ├── SKILL.md
+│       └── references/
 └── README.md
 ```
 

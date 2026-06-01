@@ -15,12 +15,12 @@
     {
       "name": "iyu",
       "source": "./plugins/iyu",
-      "description": "Productivity toolkit for library maintainers - adaptive iterative development, issue triage, PR review with project philosophy alignment",
-      "version": "1.10.2",
+      "description": "Productivity toolkit for library maintainers - adaptive iterative development, issue triage, PR review, and telemetry-driven issue discovery with project philosophy alignment",
+      "version": "1.11.0",
       "author": {
         "name": "iyulab"
       },
-      "keywords": ["cycle", "iterative", "development", "issue", "triage", "pr-review", "code-review", "security", "opensource", "maintainer", "library", "community"]
+      "keywords": ["cycle", "iterative", "development", "issue", "triage", "pr-review", "code-review", "security", "opensource", "maintainer", "library", "community", "telemetry", "app-insights", "azure", "monitoring"]
     }
   ]
 }

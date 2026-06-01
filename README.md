@@ -18,7 +18,7 @@ A collection of Claude Code plugins for library maintainers and developers.
 
 ## Available Plugins
 
-### iyu (v1.10.2)
+### iyu (v1.11.0)
 
 **Productivity toolkit for open-source library maintainers — adaptive iterative development, issue triage, PR review**
 
@@ -30,6 +30,7 @@ A collection of Claude Code plugins for library maintainers and developers.
 | `/iyu:pr` | Skill | Manual | PR review with security focus |
 | `/iyu:run` | Skill | Manual | Plan-driven development execution |
 | `/iyu:run-cycle` | Skill | Manual | Adaptive iterative cycles (re-plan → execute → verify → reflect) |
+| `/iyu:telemetry-az` | Skill | Manual | Azure App Insights telemetry triage — defects, regressions, feature drop |
 
 #### Installation
 
@@ -56,6 +57,7 @@ The plugin automatically activates when you discuss issue evaluation or PR revie
 | `/iyu:pr` | Professional PR review with security awareness |
 | `/iyu:run` | Plan-driven development execution |
 | `/iyu:run-cycle` | Adaptive iterative development cycles |
+| `/iyu:telemetry-az` | Azure App Insights telemetry triage and issue discovery |
 
 ##### /iyu:issue
 
@@ -110,6 +112,27 @@ The plugin automatically activates when you discuss issue evaluation or PR revie
 ```
 
 Each cycle runs Re-plan → Design → Execute → Verify → Reflect → Derive-Next. The roadmap is directional — later cycles may reshape it based on what earlier cycles reveal.
+
+##### /iyu:telemetry-az
+
+```bash
+# Analyze Azure Application Insights since the last run, triage, and file issues
+/iyu:telemetry-az
+
+# Override the window start
+/iyu:telemetry-az --since 2026-05-01T00:00:00Z
+
+# Collect + triage + print report only (no files written, watermark not advanced)
+/iyu:telemetry-az --dry-run
+
+# Write the report but create no issue files
+/iyu:telemetry-az --no-issues
+```
+
+Reads per-repo settings from `claudedocs/telemetry/config.json` (App Insights app id +
+thresholds), resumes from a dedicated watermark file, classifies defects / performance
+regressions / feature-drop signals, runs issue-triage "1 → 10" discovery aligned with the
+project philosophy, and files issues only for threshold-crossing findings. Requires `az login`.
 
 #### Decision Matrices
 
