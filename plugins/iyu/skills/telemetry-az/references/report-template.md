@@ -29,7 +29,7 @@ For each material signal:
 
 #### {risk-emoji} {short title} — {class}
 
-- **Surface**: {what telemetry showed — metric, counts, query}
+- **Surface**: {what telemetry showed — metric, counts, affected users (dcount), query}
 - **Root cause**: {Trigger} → {Component} → **{root cause}** → {Symptom}
 - **Similar-pattern risk**: {where else this root cause may recur, or "none found"}
 - **Surrounding gaps**: {missing instrumentation / alerts / docs / API gaps}

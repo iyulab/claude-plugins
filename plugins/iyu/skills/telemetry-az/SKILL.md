@@ -70,6 +70,8 @@ claudedocs/issues/
      thresholds, then continue. Do not invent an `appId`.
 2. Verify Azure auth: `az account show`. If it fails, stop and instruct the user to run
    `az login` (suggest they type `! az login` in the prompt).
+3. The `application-insights` CLI extension auto-installs on the first
+   `az monitor app-insights` call (Azure CLI ≥ 2.71.0) — allow the one-time install prompt.
 
 `config.json` is **non-secret** and may be committed: `appId`/`subscription`/`resourceGroup`
 are resource identifiers, not credentials — access is authorized via `az login` / Azure AD,
@@ -81,19 +83,28 @@ not the app id. (Gitignore it only if your project prefers; the report still mas
 - **First run** (no `.last-run.json`): default the window to the last 7 days and note this
   in the report.
 - Window end = `now()` — captured **once** by the watermark probe (see
-  [kql-queries.md](references/kql-queries.md)), then pinned as the **upper bound** on every
-  data query, never from the local clock.
+  [kql-queries.md](references/kql-queries.md)), then passed as `--end-time` on every data
+  query, never from the local clock.
 
 ### P2: Collect
 
-Run the **watermark probe first** (`print nowUtc = now()`) to capture `nowUtc`; reuse that
-single value for both the query bounds and the new watermark. Then run each data query with
-`az monitor app-insights query --app <appId> --analytics-query "<KQL>"` (add
-`--subscription`/`--resource-group` when set in config). Inject the window start as
-`datetime('<lastRunUtc>')` **and** the captured end as `datetime('<nowUtc>')`, so every data
-query is bounded to `[lastRunUtc, nowUtc]` — consecutive runs neither skip nor double-count.
-Default KQL for the three signal classes lives in
-[kql-queries.md](references/kql-queries.md). Append any `config.customQueries`.
+Capture `<nowUtc>` first via a probe query (`print nowUtc = now()`); reuse that single value
+for both `--end-time` and the new watermark. Then run each data query:
+
+```bash
+az monitor app-insights query --apps <appId> \
+  --start-time "<lastRunUtc>" --end-time "<nowUtc>" \
+  [--subscription <sub>] [--resource-group <rg>] \
+  --analytics-query "<KQL>"
+```
+
+**Critical — pass the window as `--start-time` AND `--end-time` (both).**
+`az monitor app-insights query` defaults to `--offset 1h` and ignores it only when **both**
+time flags are supplied. A KQL `where timestamp` filter alone does NOT widen the window — the
+service applies the offset first, so without these flags the query silently returns only the
+last hour and the rest of `[lastRunUtc, nowUtc]` is lost. Use `--apps` (the canonical name;
+`--app` works only via CLI prefix-matching and is fragile). Default KQL for the three signal
+classes lives in [kql-queries.md](references/kql-queries.md). Append any `config.customQueries`.
 
 Three signal classes:
 
@@ -114,6 +125,8 @@ Assign each signal a Bug Risk level — reuse the `issue-triage` scale:
 
 - Critical/High: production-breaking errors, sharp regressions, feature outages
 - Medium: elevated but non-breaking; Low: minor/noise
+- Weigh **user impact** (`dcount(user_Id)`), not just event counts — a high failure rate hitting
+  few users may rank below a smaller regression affecting many. Always carry affected-user counts.
 
 ### P4: Triage — "1 → 10"
 
@@ -126,6 +139,13 @@ For each material signal, do not stop at the metric. Apply the issue-triage fram
 - **Prevention**: what would have caught this earlier (test, guard, dashboard, alert)
 
 Use WebSearch for unfamiliar exceptions or regression patterns. Do not guess.
+
+**Leverage built-in ML**: Application Insights Smart Detection already runs proactive ML
+analysis — Failure Anomalies (failure-rate deviation vs the last 40 min / 7 days, with cluster
+analysis of the common resultCode/operation/role) and Performance Anomalies (response-time and
+dependency-duration regression vs an ~8-day baseline). If a detection exists for this window,
+cross-reference it: its cluster analysis often hands you the root-cause characterization
+directly. The skill's KQL complements Smart Detection — it does not replace it.
 
 **Philosophy alignment** — decisions must align with the project, per the mindset:
 read the project's CLAUDE.md / README and weigh each finding through

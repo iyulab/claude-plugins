@@ -1,26 +1,27 @@
 # Default KQL queries
 
-These are the baseline queries for the three signal classes. The skill runs the **watermark
-probe first** to capture `nowUtc`, then injects both the window start
-(`datetime('<lastRunUtc>')`, from `.last-run.json` or `--since`) and end
-(`datetime('<nowUtc>')`) into every data query — so each query is bounded to
-`[lastRunUtc, nowUtc]` and consecutive runs neither skip nor double-count events. The same
-`nowUtc` is stored as the new watermark.
+Baseline queries for the three signal classes. The time window is applied at the **CLI level**
+via `--start-time`/`--end-time`, not inside the KQL — `az monitor app-insights query` defaults
+to `--offset 1h` and honors the full window only when **both** time flags are passed. So the
+queries below stay window-agnostic and the skill supplies bounds on the command line.
 
 Run each via:
 
 ```bash
-az monitor app-insights query --app <appId> \
+az monitor app-insights query --apps <appId> \
+  --start-time "<lastRunUtc>" --end-time "<nowUtc>" \
   [--subscription <sub>] [--resource-group <rg>] \
   --analytics-query "<KQL>"
 ```
 
-Append any `config.customQueries` after these. Tune window/aggregation to the project's
-traffic volume — high-traffic apps may need `summarize` by hour rather than raw rows.
+`--start-time` = `lastRunUtc` (from `.last-run.json` or `--since`; `ago(7d)`-equivalent on the
+first run). `--end-time` = `nowUtc` from the probe below. Append any `config.customQueries`.
+Tune aggregation to the project's traffic — high-traffic apps may want `summarize by bin(timestamp, 1h)`.
 
 ## Watermark probe (always run first)
 
-Capture the authoritative current time once, reuse it for the report and `.last-run.json`:
+Capture the authoritative current time once; reuse it for `--end-time`, the report, and
+`.last-run.json` (run it without time flags — `now()` does not scan data):
 
 ```kql
 print nowUtc = now()
@@ -28,27 +29,23 @@ print nowUtc = now()
 
 ## Class 1 — Defects
 
-New / spiking exceptions in the window, grouped by type and operation:
+New / spiking exceptions, grouped by type and operation (carry affected-user count):
 
 ```kql
-let win = datetime('{{lastRunUtc}}');
-let end = datetime('{{nowUtc}}');
 exceptions
-| where timestamp between (win .. end)
-| summarize count=count(), firstSeen=min(timestamp), lastSeen=max(timestamp)
+| summarize count=count(), users=dcount(user_Id),
+    firstSeen=min(timestamp), lastSeen=max(timestamp)
     by problemId, type, outerMessage, operation_Name
 | order by count desc
 | take 50
 ```
 
-Failed requests (server errors) and error rate by operation:
+Failed requests and error rate by operation. Failure follows the App Insights convention
+`success == false` (server failures are `resultCode >= 400`); `dcount(user_Id)` drives urgency:
 
 ```kql
-let win = datetime('{{lastRunUtc}}');
-let end = datetime('{{nowUtc}}');
 requests
-| where timestamp between (win .. end)
-| summarize total=count(), failed=countif(success == false),
+| summarize total=count(), failed=countif(success == false), users=dcount(user_Id),
     failRate=round(100.0 * countif(success == false) / count(), 2)
     by operation_Name, resultCode
 | where failed > 0
@@ -58,16 +55,13 @@ requests
 
 ## Class 2 — Performance regression
 
-Request duration percentiles in the window (compare to `.last-run.json` baseline; flag when
-worse by `thresholds.perfRegressionPct`):
+Request duration percentiles (compare to `.last-run.json` baseline; flag when worse by
+`thresholds.perfRegressionPct`). p95/p99 resist outlier noise better than the mean:
 
 ```kql
-let win = datetime('{{lastRunUtc}}');
-let end = datetime('{{nowUtc}}');
 requests
-| where timestamp between (win .. end)
 | summarize p50=percentile(duration, 50), p95=percentile(duration, 95),
-    p99=percentile(duration, 99), count=count()
+    p99=percentile(duration, 99), count=count(), users=dcount(user_Id)
     by operation_Name
 | order by p95 desc
 | take 50
@@ -76,10 +70,7 @@ requests
 Dependency latency (DB / downstream calls):
 
 ```kql
-let win = datetime('{{lastRunUtc}}');
-let end = datetime('{{nowUtc}}');
 dependencies
-| where timestamp between (win .. end)
 | summarize p50=percentile(duration, 50), p95=percentile(duration, 95), count=count()
     by type, target, name
 | order by p95 desc
@@ -88,14 +79,11 @@ dependencies
 
 ## Class 3 — Feature drop / usage decline
 
-Custom event volume in the window (compare to baseline; flag drops ≥ `thresholds.usageDropPct`,
-and events present in baseline but absent now):
+Custom event volume (compare to baseline; flag drops ≥ `thresholds.usageDropPct`, and events
+present in baseline but absent now):
 
 ```kql
-let win = datetime('{{lastRunUtc}}');
-let end = datetime('{{nowUtc}}');
 customEvents
-| where timestamp between (win .. end)
 | summarize count=count(), users=dcount(user_Id) by name
 | order by count desc
 | take 100
@@ -104,23 +92,39 @@ customEvents
 Page views (for UI-facing apps):
 
 ```kql
-let win = datetime('{{lastRunUtc}}');
-let end = datetime('{{nowUtc}}');
 pageViews
-| where timestamp between (win .. end)
 | summarize views=count(), users=dcount(user_Id), avgDuration=avg(duration) by name
 | order by views desc
 | take 100
 ```
 
+## Optional — in-query anomaly detection
+
+For projects with enough history, KQL's native time-series anomaly detection
+(`series_decompose_anomalies`) flags deviations against a learned seasonal/trend baseline,
+complementing the previous-run delta. Run over a longer lookback than the incremental window
+(e.g. 14–30 days via `--start-time`/`--end-time`), so the model has signal:
+
+```kql
+requests
+| make-series reqs=count() default=0 on timestamp step 1h by operation_Name
+| extend (anomalies, score, baseline) = series_decompose_anomalies(reqs, 1.5)
+| mv-expand timestamp, reqs, anomalies, score
+| where anomalies != 0
+| project operation_Name, timestamp, reqs, score, direction=anomalies
+```
+
+This mirrors what App Insights **Smart Detection** does server-side (Failure/Performance
+Anomalies). Prefer cross-referencing an existing Smart Detection result when one covers the
+window; use this query when you need anomaly signal on a custom metric or table.
+
 ## Notes
 
-- `{{lastRunUtc}}` and `{{nowUtc}}` are placeholders the skill replaces before sending each
-  query. `{{nowUtc}}` comes from the watermark probe, captured once per run and reused as both
-  the window upper bound and the stored watermark.
-- For first runs (no watermark) the skill substitutes an `ago(7d)`-equivalent start for `win`
-  and notes it; `end` is still the probe's `nowUtc`.
-- If a table does not exist for the app (e.g. no `pageViews` for a backend service), the
-  query errors — the skill records this as a gap, it is not a defect.
+- Queries are window-agnostic; the window comes from `--start-time`/`--end-time` (see top).
+  Do not add `where timestamp > …` — it cannot widen past the CLI offset and only adds noise.
+- If a table does not exist for the app (e.g. no `pageViews` for a backend service), the query
+  errors — the skill records this as a gap, it is not a defect.
 - Keep `take` bounded so a noisy window can't return an unbounded result set; raise it via a
   `customQueries` entry when a project genuinely needs deeper rows.
+- `series_decompose_anomalies` needs sufficient history; on sparse data it yields few or no
+  anomalies — that is not a defect.

@@ -18,7 +18,7 @@ A collection of Claude Code plugins for library maintainers and developers.
 
 ## Available Plugins
 
-### iyu (v1.11.0)
+### iyu (v1.11.1)
 
 **Productivity toolkit for open-source library maintainers — adaptive iterative development, issue triage, PR review**
 
