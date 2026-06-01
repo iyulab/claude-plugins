@@ -113,7 +113,7 @@ The first thing any cycle does is check whether the plan it inherited is still c
 
 | Trigger | Signal | Action |
 |---------|--------|--------|
-| 🔴 HARD STOP | Philosophy fundamentally violated by inherited plan, OR architecture change invalidates 3+ future cycles, OR critical dependency deprecated | Log blocker in Carry-Forward, **terminate run-cycle**, escalate to human |
+| 🔴 HARD STOP | Philosophy fundamentally violated by inherited plan, OR architecture change invalidates 3+ future cycles, OR critical dependency deprecated | Log blocker in Carry-Forward, emit a single line `HUMAN-NEEDED: <one-line reason>` in the response, **terminate run-cycle**, escalate to human |
 | 🟠 RE-PLAN | Roadmap order/split needs change, but overall goals remain valid | Adjust roadmap autonomously, record in **Roadmap Revisions** log section |
 | 🟡 SCOPE ADJUST | This cycle's scope needs trimming or expansion only | Adjust inline, proceed to STEP 1 |
 | ⚪ NONE | Plan still valid | Proceed with inherited scope |
@@ -218,7 +218,8 @@ Date: {YYYY-MM-DD}
 ## Execution Rules
 
 1. **No interruptions within a cycle**: Decide autonomously. Do not ask for confirmation mid-cycle.
-2. **HARD STOP escalation is allowed**: When a HARD STOP trigger fires, terminate and report — do not force progress.
+2. **HARD STOP escalation is allowed**: When a HARD STOP trigger fires, emit `HUMAN-NEEDED: <reason>` and terminate and report — do not force progress.
+2.5. **Option-question self-resolution**: When a non-blocker decision has multiple reasonable options, do NOT ask the user. Self-decide by this priority and proceed: 근본/structural fit > 정석/balanced > 표준/convention > 세련/minimal change > project-philosophy alignment. Log the options and the chosen rationale in one line. Reserve `HUMAN-NEEDED:` for true blockers only (unrecoverable error, structure-invalidating change, required external credential/dependency, or a decision only the user can make).
 3. **Fix what you find**: STEP 4 **defects** (bugs, broken edges) MUST be resolved in the same cycle. **Structural improvements** go to Carry-Forward as proposals — do not refactor silently. **Orphans** (unused code, stale docs) are removed immediately and noted in the log.
 4. **Inherited defects first**: Previous Carry-Forward actionables are mandatory at STEP 0.
 5. **Roadmap is directional**: Revise it when evidence requires. Log revisions explicitly in Carry-Forward.
