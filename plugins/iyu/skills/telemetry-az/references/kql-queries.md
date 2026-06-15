@@ -21,11 +21,16 @@ Tune aggregation to the project's traffic — high-traffic apps may want `summar
 ## Watermark probe (always run first)
 
 Capture the authoritative current time once; reuse it for `--end-time`, the report, and
-`.last-run.json` (run it without time flags — `now()` does not scan data):
+`.last-run.json` (run it without time flags — `now()` does not scan data). The probe also
+emits `windowDays` **in-band** so the skill never needs shell date arithmetic (`allowed-tools`
+is `Bash(az *)` — no `date`). User-analytics normalization divides by this value:
 
 ```kql
-print nowUtc = now()
+print nowUtc = now(), windowDays = (now() - datetime('<lastRunUtc>')) / 1d
 ```
+
+On the **first run** (no `lastRunUtc`), skip the subtraction and use `windowDays = 7` to match
+the 7-day default window.
 
 ## Class 1 — Defects
 
@@ -98,6 +103,78 @@ pageViews
 | take 100
 ```
 
+## Class 4 — User analytics (run-over-run)
+
+Purpose 2: who is using the app and how, trended against prior runs. **Cadence caveat:** the
+incremental window varies in length between runs, so raw counts are not comparable run-over-run.
+Two complementary reads:
+
+**(a) Window aggregates → normalize to per-day rates in the skill.** These use the incremental
+`--start-time`/`--end-time` window; the skill divides each count by `windowDays` before storing
+in `history[]` or comparing to the prior run.
+
+Active users in the window (skill computes `usersPerDay = users / windowDays`):
+
+```kql
+requests
+| summarize users=dcount(user_Id), sessions=dcount(session_Id), events=count()
+```
+
+Feature preference — custom events ranked (skill stores per-day rate + rank):
+
+```kql
+customEvents
+| summarize count=count(), users=dcount(user_Id) by name
+| order by count desc
+| take 25
+```
+
+Page preference (UI-facing apps):
+
+```kql
+pageViews
+| summarize views=count(), users=dcount(user_Id), avgDuration=avg(duration) by name
+| order by views desc
+| take 25
+```
+
+Engagement — events per session:
+
+```kql
+customEvents
+| summarize events=count() by session_Id
+| summarize eventsPerSession=avg(events), p50=percentile(events, 50)
+```
+
+**(b) Cadence-independent daily trend.** Run over a **fixed lookback** (e.g. 14 days) with a
+daily bin, independent of the incremental window — this yields a real growth shape every run
+even when the incremental window is a single day. This is the **one query that intentionally
+overrides the watermark window**: pass `--offset 14d` and **no** `--start-time`/`--end-time`,
+so the CLI scans `now() − 14d → now()` without any computed start (consistent with the
+file's "time comes from CLI flags, not KQL" rule — the KQL itself stays window-agnostic):
+
+```bash
+az monitor app-insights query --apps <appId> --offset 14d \
+  [--subscription <sub>] [--resource-group <rg>] --analytics-query "<KQL below>"
+```
+
+```kql
+requests
+| make-series users=dcount(user_Id) default=0 on timestamp step 1d
+| mv-expand timestamp, users
+| project timestamp, users=tolong(users)
+```
+
+**Trap — verify the scan window actually widened.** `make-series … default=0` pads missing
+days with zeros. If `--offset 14d` did not widen the scan (e.g. the flags were dropped and the
+default 1h offset applied), the series is silently padded to a *fake flat 14-day line* — no
+error, just wrong. Confirm the series spans ~14 populated days before trusting its slope.
+
+The skill reads the slope/direction of this series for the "↑ rising / ↓ falling / → flat"
+trend, and cross-checks it against the per-day-rate delta from (a). Daily `dcount` is itself a
+per-day rate, so this series needs no normalization. Rank shifts in features/pages are read by
+diffing this run's ordering against `history[-1]` (risen / fallen / new / vanished).
+
 ## Optional — in-query anomaly detection
 
 For projects with enough history, KQL's native time-series anomaly detection
@@ -122,6 +199,8 @@ window; use this query when you need anomaly signal on a custom metric or table.
 
 - Queries are window-agnostic; the window comes from `--start-time`/`--end-time` (see top).
   Do not add `where timestamp > …` — it cannot widen past the CLI offset and only adds noise.
+  The **sole exception** is the Class 4(b) daily-trend query, which uses a fixed `--offset 14d`
+  (no start/end) to read a cadence-independent lookback — the KQL still carries no time filter.
 - If a table does not exist for the app (e.g. no `pageViews` for a backend service), the query
   errors — the skill records this as a gap, it is not a defect.
 - Keep `take` bounded so a noisy window can't return an unbounded result set; raise it via a

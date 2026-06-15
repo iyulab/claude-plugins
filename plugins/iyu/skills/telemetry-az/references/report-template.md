@@ -38,9 +38,38 @@ For each material signal:
 - **Decision**: {filed issue | logged only | dedup of existing | needs human}
 - **Issue**: {link to claudedocs/issues/ISSUE-… or "—"}
 
+### User Analytics
+
+Run-over-run reading (purpose 2). All comparisons use **per-day rates** (cadence-normalized);
+window length this run: {windowDays} d. Trend covers the last {n} run(s) — say "history
+insufficient" if fewer than ~3.
+
+**Active users**
+
+- **Per-day users**: {usersPerDay} ({+/-Δ%} vs prior run) — trend {↑ rising | ↓ falling | → flat}
+- **Daily series (14d)**: {brief shape, e.g. "steady ~410, dip on 06-12"}
+- **Interpretation**: {most likely explanation — labeled a hypothesis if unproven}
+- **Recommendation**: {concrete next step, or "—" if none warranted}
+
+**Feature & page preferences**
+
+| Item | Type | Per-day | Δ vs prior | Movement |
+|------|------|---------|-----------|----------|
+| {export} | feature | {88} | {+12%} | {risen | fallen | new | vanished} |
+| {/dashboard} | page | {240} | {-4%} | {flat} |
+
+- **Interpretation**: {what the shift in what users reach for suggests}
+- **Recommendation**: {action, or "—"}
+
+**Engagement**
+
+- **Events/session**: {n} ({Δ vs prior}); **avg page duration**: {n} — {one-line read}
+
+**Cross-links**: {any usage drop surfaced here that was handed to a Feature-drop (Class 3) finding — link that finding/issue; else "none — analytics is report-only"}
+
 ### Gaps & caveats
 
-- {empty/errored queries, tables absent, partial runs, watermark notes}
+- {empty/errored queries, tables absent, partial runs, watermark notes, insufficient history}
 
 ### Dedup
 
@@ -49,7 +78,8 @@ For each material signal:
 ### Watermark
 
 - Advanced to: {nowUtc} {or "NOT advanced (--dry-run / partial run)"}
-- Baseline updated: {metrics stored for next regression comparison}
+- Baseline updated: {perf percentiles + per-day user-analytics rates for next comparison}
+- History: {pushed run snapshot; now holding {n}/12 runs}
 ```
 
 ## Rules

@@ -2,7 +2,7 @@
 
 [![Claude Code Plugin](https://img.shields.io/badge/Claude%20Code-Plugin-blueviolet?logo=anthropic&logoColor=white)](https://docs.anthropic.com/en/docs/claude-code/plugins)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-1.11.1-blue.svg)](./plugin.json)
+[![Version](https://img.shields.io/badge/version-1.12.0-blue.svg)](./plugin.json)
 
 Productivity toolkit for open-source library maintainers and developers.
 
@@ -29,7 +29,7 @@ Productivity toolkit for open-source library maintainers and developers.
 | `/iyu:pr` | Skill | Manual | PR review with security focus (isolated context) |
 | `/iyu:run` | Skill | Manual | Plan-driven development execution |
 | `/iyu:run-cycle` | Skill | Manual | Iterative development cycles with Stop hook |
-| `/iyu:telemetry-az` | Skill | Manual | Azure App Insights telemetry triage and issue discovery |
+| `/iyu:telemetry-az` | Skill | Manual | Azure App Insights telemetry triage, issue discovery + run-over-run user analytics |
 
 ## Commands
 
@@ -84,6 +84,12 @@ Azure Application Insights telemetry triage. Analyzes telemetry **since the last
 classifies defects / performance regressions / feature-drop signals, runs issue-triage
 "1 → 10" discovery aligned with the project philosophy, and files issues for
 threshold-crossing findings.
+
+It also produces a **run-over-run user-analytics report** (purpose 2): active-user
+growth/decline, feature & page preference shifts, and engagement trends — compared against
+prior runs via a bounded history (last 12 runs). Comparisons are **cadence-normalized**
+(per-day rates), so deltas hold whether you run it daily or weekly. User analytics is
+report-only insight; it files an issue only when a usability drop is itself a defect.
 
 ```bash
 /iyu:telemetry-az                              # Resume from last watermark, triage, file issues
