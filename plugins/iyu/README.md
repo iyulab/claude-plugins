@@ -78,6 +78,8 @@ Each cycle: Scope → Research → Implement → Test → Evaluate → Carry-For
 
 Cycles maintain continuity — unresolved issues and pending decisions automatically propagate through the cycle chain.
 
+When primary work finishes early and cycles remain, run-cycle does not stop immediately: it runs a **documentation consistency check** (README, `docs/`, CLAUDE.md, CHANGELOG, examples) and spends the remaining cycles syncing any stale or missing docs before terminating.
+
 ### /iyu:telemetry-az
 
 Azure Application Insights telemetry triage. Analyzes telemetry **since the last run**,

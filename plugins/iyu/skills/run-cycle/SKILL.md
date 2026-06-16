@@ -226,7 +226,7 @@ Date: {YYYY-MM-DD}
 6. **Quality over scope**: Reduce new scope if needed — never reduce defect resolution or reflection depth.
 7. **Research actively**: WebSearch before guessing. Record sources.
 8. **Defect honesty**: Record issues openly. "It works" ≠ "It's good".
-9. **Early termination**: If STEP 4 finds zero actionable defects AND no inherited defects remain AND roadmap is stable, terminate early.
+9. **Early termination + doc-sync gate**: If STEP 4 finds zero actionable defects AND no inherited defects remain AND roadmap is stable, do NOT terminate immediately while cycles remain. First run a **documentation consistency check** against the work completed so far: scan README, `docs/`, CLAUDE.md, and other primary docs (CHANGELOG, API docs, usage examples) for drift from the current code/behavior. If any are stale, out of sync, or missing newly-added surface, spend the remaining cycle(s) bringing them current — treat this as in-scope work, run it through STEP 2→4, and log it as a doc-sync cycle. Terminate early only once docs are verified consistent (or no remaining cycles). If primary work AND docs are both confirmed current, terminate early and note "docs verified consistent" in the cycle log.
 10. **Continuity chain**: Always read the previous cycle's Carry-Forward and Roadmap Revisions before STEP 0.
 11. **Latent work priority**: The best cycles surface structural improvements nobody thought to ask about — propose them in Derive-Next with rationale. Do not fold them silently into scope.
 12. **Cost discipline**: STEP 0 is bounded (~5 min). If drift check seems to require deep analysis, that is a RE-PLAN signal — handle it explicitly rather than letting STEP 0 bloat.
