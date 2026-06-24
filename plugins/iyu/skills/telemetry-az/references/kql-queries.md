@@ -1,5 +1,15 @@
 # Default KQL queries
 
+## Contents
+
+- [Watermark probe](#watermark-probe-always-run-first) — always run first
+- [Class 1 — Defects](#class-1--defects)
+- [Class 2 — Performance regression](#class-2--performance-regression)
+- [Class 3 — Feature drop / usage decline](#class-3--feature-drop--usage-decline)
+- [Class 4 — User analytics (run-over-run)](#class-4--user-analytics-run-over-run)
+- [Optional — in-query anomaly detection](#optional--in-query-anomaly-detection)
+- [Notes](#notes)
+
 Baseline queries for the three signal classes. The time window is applied at the **CLI level**
 via `--start-time`/`--end-time`, not inside the KQL — `az monitor app-insights query` defaults
 to `--offset 1h` and honors the full window only when **both** time flags are passed. So the

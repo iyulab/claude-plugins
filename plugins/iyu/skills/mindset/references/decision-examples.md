@@ -2,6 +2,11 @@
 
 Real-world examples demonstrating the decision framework in action.
 
+## Contents
+
+- Worked examples by verdict: [ACCEPT](#accept-example-typescript-type-definitions), [ADAPT](#adapt-example-custom-error-messages), [DEFER](#defer-example-graphql-support), [REDIRECT](#redirect-example-orm-features), [DECLINE](#decline-example-built-in-redis-caching)
+- [Pattern Recognition](#pattern-recognition) — signs pointing to each verdict
+
 ## ACCEPT Example: TypeScript Type Definitions
 
 **Issue**: "Add TypeScript type definitions for the public API"

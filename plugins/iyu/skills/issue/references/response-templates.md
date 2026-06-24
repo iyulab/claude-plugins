@@ -2,6 +2,10 @@
 
 Templates for each iyu decision type, ready to customize.
 
+## Contents
+
+- [ACCEPT](#accept) · [ADAPT](#adapt) · [DEFER](#defer) · [REDIRECT](#redirect) · [DECLINE](#decline)
+
 ## ACCEPT
 
 ```markdown

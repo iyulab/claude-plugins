@@ -2,6 +2,16 @@
 
 Detailed methodology for evaluating how well an issue aligns with project philosophy and scope.
 
+## Contents
+
+- [Overview](#overview)
+- [The Four Dimensions](#the-four-dimensions) — Core Mission Fit, Scope Alignment, Pattern Consistency, User Base Impact
+- [Calculating Overall Alignment](#calculating-overall-alignment) — average, interpretation, weighting
+- [Red Flags](#red-flags)
+- [Scoring Worksheet Template](#scoring-worksheet-template)
+- [Common Scoring Pitfalls](#common-scoring-pitfalls)
+- [Integration with Feasibility](#integration-with-feasibility)
+
 ## Overview
 
 Philosophy alignment scoring determines whether a request fits the project's identity, mission, and established patterns. This guide provides detailed criteria for consistent, defensible scoring.
