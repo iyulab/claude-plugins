@@ -266,8 +266,31 @@ This is the project-specific judgment a generic harness cannot supply, and it is
 
 ## Commit
 
+Before the single end-of-run commit, run a **lightweight release-readiness check** (skip entirely on `--no-commit` / `--dry-run`). It *verifies and packages* — it never performs a release.
+
+**Checklist** (items the project lacks are N/A — skip them, do not invent them):
+
+1. **Version consistency** — if any version-bearing file changed this run, confirm all agree (e.g. `plugin.json`, `marketplace.json`, README badges, package manifest, intended tag). A mismatch is a defect: fix it before committing.
+2. **Changelog** — if the project keeps a CHANGELOG / release notes, confirm this run's changes are recorded. A missing entry is additive/low-risk: add it now.
+3. **Docs** — confirm the doc-sync floor (ladder ②) ran and reported consistent; do not re-run it here.
+4. **Evidence** — package the actual STEP 3 verification output (test counts, build result, lint status). Assertions are not evidence (rule 7.5); if you cannot show the output, it is not verified.
+
+Record the outcome as a `## Release Readiness` block in the final cycle log:
+
+```markdown
+## Release Readiness
+- Version: {all version files agree at X.Y.Z, or "n/a"}
+- Changelog: {entry present for this run, or "n/a"}
+- Docs: {doc-sync verified consistent}
+- Evidence: {e.g. `npm test` 142 passed; build ok; lint clean}
+- Tag/publish: deferred to human/CI (not performed)
+```
+
+Then:
+
 - Commit **once** after all cycles complete (or on HARD STOP / early termination)
 - Use built-in `/commit`
+- **Do NOT perform the release** — no tagging, publishing, or pushing; that stays with the human / CI
 - **NEVER bump MAJOR version**
 
 ## Start

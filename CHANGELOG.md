@@ -8,6 +8,15 @@ bugs or docs. MAJOR is never bumped automatically.
 > History is reconstructed from git from v1.11.0 onward. Earlier versions live in
 > the git log only.
 
+## [1.14.0] — 2026-06-24
+
+### Added
+- **Release-readiness check (`run-cycle`)** — a lightweight checklist absorbed into
+  the end-of-run commit step (skipped on `--no-commit` / `--dry-run`). Verifies version
+  consistency across version-bearing files, CHANGELOG coverage, doc-sync, and packages
+  the actual verification output as an evidence block in the final cycle log. It verifies
+  and packages only — it never tags, publishes, or pushes; the release stays with human/CI.
+
 ## [1.13.0] — 2026-06-24
 
 Identity release — formalizes the plugin's constitution and generalizes the
