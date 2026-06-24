@@ -6,6 +6,25 @@
 
 A collection of Claude Code plugins for library maintainers and developers.
 
+## Why these plugins — a thin governance layer, not a heavier harness
+
+As mainstream harness / loop-engineering tooling grows heavier — an "OS wrapped around the model" — these plugins make the opposite bet: **stay thin and ride Claude Code's native loop, tools, and context management**, adding only the judgment a generic harness cannot supply. A custom layer is always slower to evolve than the harness beneath it, so the goal is to *fill gaps, never fence off* native features.
+
+Three governing principles (the plugin's constitution):
+
+- **Minimal Intervention** — hook around the native loop, never rewrite it. The thinner the layer, the longer it lives.
+- **Critical but Constructive (Rule of Law)** — a maintainer, not a typist. Human instructions sit *below* the project's constitution (philosophy, architecture, design docs); a conflict triggers a documented amendment — revise the instruction, or amend the doc — never silent compliance and never unilateral override. Unobserved data stays "unknown" rather than guessed.
+- **Adaptive Iteration** — don't stop at "it compiles". When primary work is done, surplus cycles climb a lifecycle ladder: durable value → stability → efficiency.
+
+How that differs from the mainstream:
+
+| | Mainstream harness / loop tooling | iyu |
+|--|--|--|
+| **Stance** | Wrap the model in an OS | Thin layer on Claude Code native |
+| **Human instruction** | Ground truth to execute | Below the project constitution; corrected via amendment |
+| **Termination** | Stops at delivery (compiles / marker hit) | Climbs the lifecycle ladder past delivery |
+| **Feedback loop** | Ends at merge | Closed — production telemetry (App Insights) flows back to the backlog |
+
 ## Quick Start
 
 ```bash
@@ -18,7 +37,9 @@ A collection of Claude Code plugins for library maintainers and developers.
 
 ## Available Plugins
 
-### iyu (v1.12.0)
+> **Versioning** — two independent version numbers exist by design: `marketplace.json → metadata.version` tracks the **marketplace registry** (structure of this catalog), while each plugin's `plugin.json → version` tracks that **plugin** itself. They advance separately. Per-plugin `keywords` are sourced from `plugin.json` and mirrored into the marketplace entry. See [CHANGELOG.md](./CHANGELOG.md) for the iyu plugin history.
+
+### iyu (v1.13.0)
 
 **Productivity toolkit for open-source library maintainers — adaptive iterative development, issue triage, PR review**
 

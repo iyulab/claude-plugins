@@ -9,10 +9,13 @@ hooks:
     - hooks:
         - type: prompt
           prompt: |
-            Check if all planned development cycles are complete.
-            The skill was invoked with arguments: $ARGUMENTS
-            If cycles remain incomplete or carry-forward defects are unresolved, respond with block.
-            If all cycles are done or early termination conditions are met, allow.
+            Decide block/allow from durable on-disk state — the cycle logs ARE the state. Do not rely on conversation memory or re-derive the plan.
+            Invocation arguments: $ARGUMENTS (total cycle budget, optional start cycle).
+            1. List claudedocs/cycle-logs/cycle-*.md — the count is cycles completed.
+            2. Read the latest cycle log's Carry-Forward: note any unresolved actionable defects, and whether the lifecycle value ladder still has an actionable signal.
+            3. Respond BLOCK only if ALL hold: completed < total budget; no HARD STOP / HUMAN-NEEDED line was emitted; and at least one of (planned cycles remain, unresolved actionable defects remain, the value ladder still has an actionable signal).
+            4. Respond ALLOW if: completed >= total budget; OR a HARD STOP / HUMAN-NEEDED was emitted; OR the latest log records early termination with the ladder exhausted ("lifecycle verified").
+            Guard: never BLOCK once completed >= total budget — that is the hard ceiling.
 ---
 
 # Development Cycle Runner
@@ -32,6 +35,10 @@ The structure below keeps per-cycle overhead bounded while leaving room for mid-
 ## Unscoped Bash rationale
 
 `allowed-tools` includes `Bash` without scope. Development execution requires arbitrary build/test/lint/git commands across unknown projects — scoping would require per-project edits. Accepted deliberately; narrow-surface skills (`issue`, `pr`) use `Bash(gh *)` instead.
+
+## Durable state over conversation memory
+
+This skill runs on the **host agent's native loop and context management** — it does NOT wrap itself in an external reset loop. But native context can be compacted or summarized mid-run, so a cycle must never depend on remembering earlier cycles from conversation alone. **The cycle logs ARE the memory.** Every cycle reconstructs its state from on-disk artifacts (previous `cycle-*.md`, `ROADMAP.md`, git log), so the run survives any native compaction transparently. Write logs richly enough that a fresh context could resume from them with zero conversational history. This is the minimal-intervention stance: don't rebuild context machinery the harness already owns — just keep durable state complete enough to survive it.
 
 ## Parameters
 
@@ -60,7 +67,7 @@ Review the most recent log's **Carry-Forward** and **Roadmap Revisions** section
 
 ### 3. Plan Discovery (only if no scope from above)
 
-Stop at first found: CLAUDE.md → ROADMAP.md / TASKS.md / TODO.md → docs/ → README.md. If nothing found, ask the user. Do not invent scope.
+Stop at first found: CLAUDE.md → AGENTS.md → ROADMAP.md / TASKS.md / TODO.md → docs/ → README.md. If nothing found, ask the user. Do not invent scope.
 
 ### 4. Philosophy Alignment (high-level only)
 
@@ -113,7 +120,7 @@ The first thing any cycle does is check whether the plan it inherited is still c
 
 | Trigger | Signal | Action |
 |---------|--------|--------|
-| 🔴 HARD STOP | Philosophy fundamentally violated by inherited plan, OR architecture change invalidates 3+ future cycles, OR critical dependency deprecated | Log blocker in Carry-Forward, emit a single line `HUMAN-NEEDED: <one-line reason>` in the response, **terminate run-cycle**, escalate to human |
+| 🔴 HARD STOP | Inherited plan conflicts with the project constitution (CLAUDE.md / philosophy / architecture), OR architecture change invalidates 3+ future cycles, OR critical dependency deprecated | **Constitutional conflict → amendment, not override**: name the conflict (planned scope *X* vs. constitution clause *Y*), then escalate with the two resolutions — revise the scope to fit, OR amend the governing doc (propose a concrete CLAUDE.md/design-doc diff). Log blocker in Carry-Forward, emit a single line `HUMAN-NEEDED: <one-line reason>`, **terminate run-cycle**. Do not silently proceed against the constitution, and do not unilaterally override it. |
 | 🟠 RE-PLAN | Roadmap order/split needs change, but overall goals remain valid | Adjust roadmap autonomously, record in **Roadmap Revisions** log section |
 | 🟡 SCOPE ADJUST | This cycle's scope needs trimming or expansion only | Adjust inline, proceed to STEP 1 |
 | ⚪ NONE | Plan still valid | Proceed with inherited scope |
@@ -145,7 +152,9 @@ Implement the scope. Progress incrementally. **Inherited defects are fixed first
 
 ### STEP 3: Verify
 
+- **Define "done" before checking it** — restate this cycle's scope as concrete, checkable acceptance criteria (which test passes, which behavior holds, which output appears). Verify against *that*, not against a self-assessed "looks done".
 - Run the project's test suite, linter, and build
+- **Evidence, not assertion** — completion is proven by actual command output (test/build results), never by claiming it works. The top failure mode of long-running agents is marking work complete without verifying it. If you cannot show the passing evidence, it is not done.
 - On failure: **fix and re-run immediately** within this cycle — do not defer
 - If a failure exposes a trigger-class issue (HARD STOP / RE-PLAN), loop back to STEP 0 rather than forcing progress
 
@@ -215,6 +224,29 @@ Date: {YYYY-MM-DD}
 
 ---
 
+## Surplus-Cycle Value Ladder
+
+When primary roadmap work finishes and cycles remain, a passionate maintainer does not down tools — they harden, document, and accelerate. Most agentic loops terminate the moment the task compiles; this skill instead treats the **remaining cycle budget as an investment fund for the full software lifecycle**.
+
+This is the project-specific judgment a generic harness cannot supply, and it is our distinctive contribution — so it stays inside the minimal-intervention boundary: surplus cycles never exceed the requested budget `N`, never preempt defect resolution, and follow the same STEP 1→4 discipline (including "structural changes are proposals, not silent edits").
+
+**Climb in order. Within each track, act only where the project shows a concrete gap (a signal) — do not invent work.**
+
+| Track | Rungs (in order) | Signal that justifies a rung |
+|-------|------------------|------------------------------|
+| **① Main loop** *(always first)* | plan → execute → verify → cleanup | Open roadmap items or inherited Carry-Forward remain |
+| **② 내공 / Durable value** | research/learning capture → structural refactoring → documentation & asset-ization | Undocumented surface, drifted docs, repeated patterns begging extraction, lessons worth recording |
+| **③ 방어선 / Stability** | test/coverage & monitoring gaps → security & compliance → error-handling & resilience | Untested critical path, missing input validation, unhandled failure mode, no observability hook |
+| **④ 가속기 / Efficiency** | CI/DevOps/platform → DX improvements | Manual repetitive steps, slow/flaky pipeline, awkward local setup |
+
+**Execution guard (keeps minimal-intervention intact):**
+- **Additive & low-risk → do it** this cycle (doc-sync, filling a test gap, adding validation, a small CI fix). Run it through STEP 2→4 and log it as a `[ladder:②/③/④]` cycle.
+- **Invasive or opinionated → propose in Derive-Next**, do not perform (large refactors, dependency swaps, new infra, security architecture). Human decides.
+- **Regression back-flow** — if any surplus track surfaces a defect or regression, drop the surplus work and return to the main loop (track ①, STEP 2). Defects always outrank surplus value; resume climbing only once the regression is resolved.
+- Track ② rung "documentation" is the floor: even when nothing else applies, a stale-doc sweep (README, `docs/`, CLAUDE.md, CHANGELOG, examples) is always in-scope surplus work.
+
+**Terminate early only when** primary work is done AND no defects/Carry-Forward remain AND the roadmap is stable AND the ladder surfaces no signal the remaining budget can act on. Log which rungs were climbed and which were proposed.
+
 ## Execution Rules
 
 1. **No interruptions within a cycle**: Decide autonomously. Do not ask for confirmation mid-cycle.
@@ -225,8 +257,9 @@ Date: {YYYY-MM-DD}
 5. **Roadmap is directional**: Revise it when evidence requires. Log revisions explicitly in Carry-Forward.
 6. **Quality over scope**: Reduce new scope if needed — never reduce defect resolution or reflection depth.
 7. **Research actively**: WebSearch before guessing. Record sources.
+7.5. **No invention**: Data you did not directly observe (a command's output, a file's contents, a test result) stays "unknown" — never present a guess as fact. When something is unknown and matters, state it and take the step that would observe it rather than assuming.
 8. **Defect honesty**: Record issues openly. "It works" ≠ "It's good".
-9. **Early termination + doc-sync gate**: If STEP 4 finds zero actionable defects AND no inherited defects remain AND roadmap is stable, do NOT terminate immediately while cycles remain. First run a **documentation consistency check** against the work completed so far: scan README, `docs/`, CLAUDE.md, and other primary docs (CHANGELOG, API docs, usage examples) for drift from the current code/behavior. If any are stale, out of sync, or missing newly-added surface, spend the remaining cycle(s) bringing them current — treat this as in-scope work, run it through STEP 2→4, and log it as a doc-sync cycle. Terminate early only once docs are verified consistent (or no remaining cycles). If primary work AND docs are both confirmed current, terminate early and note "docs verified consistent" in the cycle log.
+9. **Surplus-cycle investment (no idle early stop)**: If STEP 4 finds zero actionable defects AND no inherited defects remain AND the roadmap is stable, do NOT terminate immediately while cycles remain. Climb the **Surplus-Cycle Value Ladder** (see section above): invest remaining budget in durable value → stability → efficiency, acting only where the project shows a concrete signal. Doc-sync (README, `docs/`, CLAUDE.md, CHANGELOG, examples) is the always-applicable floor of this ladder. Additive/low-risk work is done in-cycle (STEP 2→4); invasive/opinionated work is proposed in Derive-Next. Terminate early only once the ladder surfaces no actionable signal, and log which rungs were climbed or proposed.
 10. **Continuity chain**: Always read the previous cycle's Carry-Forward and Roadmap Revisions before STEP 0.
 11. **Latent work priority**: The best cycles surface structural improvements nobody thought to ask about — propose them in Derive-Next with rationale. Do not fold them silently into scope.
 12. **Cost discipline**: STEP 0 is bounded (~5 min). If drift check seems to require deep analysis, that is a RE-PLAN signal — handle it explicitly rather than letting STEP 0 bloat.

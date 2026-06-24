@@ -2,7 +2,7 @@
 
 [![Claude Code Plugin](https://img.shields.io/badge/Claude%20Code-Plugin-blueviolet?logo=anthropic&logoColor=white)](https://docs.anthropic.com/en/docs/claude-code/plugins)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-1.12.0-blue.svg)](./plugin.json)
+[![Version](https://img.shields.io/badge/version-1.13.0-blue.svg)](./plugin.json)
 
 Productivity toolkit for open-source library maintainers and developers.
 
@@ -78,7 +78,7 @@ Each cycle: Scope → Research → Implement → Test → Evaluate → Carry-For
 
 Cycles maintain continuity — unresolved issues and pending decisions automatically propagate through the cycle chain.
 
-When primary work finishes early and cycles remain, run-cycle does not stop immediately: it runs a **documentation consistency check** (README, `docs/`, CLAUDE.md, CHANGELOG, examples) and spends the remaining cycles syncing any stale or missing docs before terminating.
+When primary work finishes early and cycles remain, run-cycle does not stop idle. It climbs a **Surplus-Cycle Value Ladder** — investing the remaining budget across the full software lifecycle: **① main loop → ② durable value** (research → refactoring → docs/assets) **→ ③ stability** (tests/monitoring → security/compliance → resilience) **→ ④ efficiency** (DevOps → DX). It acts only where the project shows a concrete signal; additive/low-risk work is done in-cycle, invasive/opinionated work is proposed for human decision. Doc-sync is the always-applicable floor of this ladder.
 
 ### /iyu:telemetry-az
 
