@@ -39,7 +39,7 @@ How that differs from the mainstream:
 
 > **Versioning** — two independent version numbers exist by design: `marketplace.json → metadata.version` tracks the **marketplace registry** (structure of this catalog), while each plugin's `plugin.json → version` tracks that **plugin** itself. They advance separately. Per-plugin `keywords` are sourced from `plugin.json` and mirrored into the marketplace entry. See [CHANGELOG.md](./CHANGELOG.md) for the iyu plugin history.
 
-### iyu (v1.14.0)
+### iyu (v1.15.0)
 
 **Productivity toolkit for open-source library maintainers — adaptive iterative development, issue triage, PR review**
 
@@ -125,14 +125,14 @@ The plugin automatically activates when you discuss issue evaluation or PR revie
 # 5 adaptive cycles (default)
 /iyu:run-cycle
 
-# 10 cycles with adaptive re-planning
+# up to 10 cycles (N is a ceiling, not a target)
 /iyu:run-cycle 10
 
-# Preparation + directional roadmap only
+# Preparation + phase backlog only
 /iyu:run-cycle 5 --dry-run
 ```
 
-Each cycle runs Re-plan → Design → Execute → Verify → Reflect → Derive-Next. The roadmap is directional — later cycles may reshape it based on what earlier cycles reveal.
+Each cycle runs Re-plan → Design → Execute → Verify → Reflect → Derive-Next. **Just-in-time scoping**: only the current cycle is scoped concretely, and each cycle's outcome decides the next cycle's scope. The roadmap is a phase backlog — it never assigns scope to numbered cycles, so the run behaves like genuine multi-turn work rather than one upfront N-cycle plan.
 
 ##### /iyu:telemetry-az
 

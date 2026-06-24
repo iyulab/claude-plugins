@@ -8,6 +8,20 @@ bugs or docs. MAJOR is never bumped automatically.
 > History is reconstructed from git from v1.11.0 onward. Earlier versions live in
 > the git log only.
 
+## [1.15.0] — 2026-06-24
+
+### Changed
+- **Just-in-time scoping (`run-cycle`)** — the runner no longer plans all `N` cycles
+  upfront. Concrete scope now exists for **one cycle at a time** (the current one); the
+  roadmap is a phase-level backlog that **never knows cycle numbers**, and each cycle's
+  STEP 5 decides the *next* cycle's scope once it knows what that cycle revealed. `N` is
+  now explicitly a **ceiling, not a target** — never pre-partitioned into `N` scopes.
+  This fixes an observed failure where `/iyu:run-cycle N` produced a binding `Cycle 1 = …,
+  Cycle N = …` table under a "directional" label, collapsing the multi-turn structure back
+  into a single turn. Work too large for a cycle (or deserving its own) is now promoted to
+  the next cycle instead of being pre-assigned. Backward-compatible: arguments and cycle-log
+  format are unchanged.
+
 ## [1.14.0] — 2026-06-24
 
 ### Added
