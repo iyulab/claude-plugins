@@ -1,6 +1,6 @@
 ---
 name: run-cycle
-description: Executes adaptive iterative development cycles — each cycle is a self-contained plan/execute/verify/reflect loop that may reshape the roadmap
+description: Executes adaptive iterative development cycles — each cycle is a self-contained plan/execute/verify/reflect loop that reshapes the roadmap and derives emergent follow-on scope from its own output
 argument-hint: "[total_cycles] [start_cycle]" [--dry-run] [--no-commit]
 disable-model-invocation: true
 allowed-tools: Read, Glob, Grep, Write, Edit, TodoWrite, WebFetch, WebSearch, Bash
@@ -12,9 +12,9 @@ hooks:
             Decide block/allow from durable on-disk state — the cycle logs ARE the state. Do not rely on conversation memory or re-derive the plan.
             Invocation arguments: $ARGUMENTS (total cycle budget, optional start cycle).
             1. List claudedocs/cycle-logs/cycle-*.md — the count is cycles completed.
-            2. Read the latest cycle log's Carry-Forward / Next-Cycle Scope: note any unresolved actionable defects, whether a Next-Cycle Scope was named, and whether the lifecycle value ladder still has an actionable signal.
-            3. Respond BLOCK only if ALL hold: completed < total budget; no HARD STOP / HUMAN-NEEDED line was emitted; and at least one of (the latest log named a Next-Cycle Scope or the phase backlog has unstarted work, unresolved actionable defects remain, the value ladder still has an actionable signal).
-            4. Respond ALLOW if: completed >= total budget; OR a HARD STOP / HUMAN-NEEDED was emitted; OR the latest log records early termination with the ladder exhausted ("lifecycle verified").
+            2. Read the latest cycle log's Carry-Forward / Emergent Next Capability / Next-Cycle Scope: note unresolved actionable defects, whether a Next-Cycle Scope or an autonomous-eligible Emergent Next Capability was named, whether the feature frontier was explicitly judged exhausted, and whether the lifecycle value ladder still has an actionable signal.
+            3. Respond BLOCK only if ALL hold: completed < total budget; no HARD STOP / HUMAN-NEEDED line was emitted; and at least one of (the latest log named a Next-Cycle Scope or an autonomous-eligible Emergent Next Capability, the phase backlog has unstarted work, unresolved actionable defects remain, the value ladder still has an actionable signal, OR the latest log left the feature frontier neither named nor explicitly judged exhausted — i.e. emergent derivation was skipped, which is never a valid reason to stop).
+            4. Respond ALLOW if: completed >= total budget; OR a HARD STOP / HUMAN-NEEDED was emitted; OR the latest log records early termination with BOTH the feature frontier explicitly judged exhausted AND the value ladder exhausted ("lifecycle verified").
             Guard: never BLOCK once completed >= total budget — that is the hard ceiling.
 ---
 
@@ -29,6 +29,7 @@ A single upfront N-cycle plan followed by sequential execution is indistinguisha
 1. Re-check assumptions made at the start
 2. Absorb what previous cycles learned
 3. Be able to **change the plan** when reality diverges
+4. **Derive the follow-on its own output now implies** — work that could not have been specified before the cycle existed
 
 The structure below keeps per-cycle overhead bounded while leaving room for mid-flight re-planning.
 
@@ -37,6 +38,12 @@ The structure below keeps per-cycle overhead bounded while leaving room for mid-
 The seductive trap — observed in real runs — is to label a plan "directional" while filling it with a **cycle-numbered scope table** (Cycle 1 = X, Cycle 2 = Y, … Cycle N = Z). That is not a directional roadmap; it is a binding N-cycle plan wearing a directional label, and it collapses the multi-turn structure back into a single turn. **The roadmap must not know cycle numbers.** Concrete scope exists for exactly one cycle at a time — the one you are in. Everything beyond it is a phase-level direction, not an assigned cycle. The scope of cycle K+1 is *not yours to decide now*; it is decided by cycle K's STEP 5, by design — because only then do you know what cycle K revealed.
 
 This is **just-in-time scoping**: plan one cycle, run it, let it tell you the next.
+
+### Scope is discovered, not only inherited
+
+Just-in-time scoping has a second half that is easy to miss: the cycle's *own output is a source of the next cycle's scope*. A capability, once built, naturally implies follow-on work that could not have been named before it existed — you build single-file upload, and only then do "validate the upload", "accept multiple files", "handle the empty/oversized case" become concrete. **Failing to derive this emergent scope is the early-termination failure mode the user feels as "it only did the initial plan and quit":** a cycle finds no defects, sees a stable roadmap, writes "Next-Cycle Scope: none", and stops — even though the capability it just built is visibly incomplete to any user, developer, or operator of it.
+
+So every cycle's STEP 5 must **actively derive** what its output implies next, from multiple stakeholder lenses (user / developer / operator), and decide per candidate whether it is *autonomous-eligible* or a *human-discussion proposal*. This is not scope creep, because the autonomy bound is strict (see the derivation gate in STEP 5): only pattern-following completion that stays within the project's **declared role** is taken as autonomous scope. Anything that opens a new product direction, a new dependency/paradigm, or a genuine trade-off is routed to proposals for human decision — never self-decided. "Frontier exhausted" remains a legitimate, expected terminal state; it just has to be a *stated judgment*, not an empty blank.
 
 ## Unscoped Bash rationale
 
@@ -184,7 +191,7 @@ Assess six dimensions:
 2. **Latent defects**: Bugs, unhandled edges, architecture violations in or around the changes
 3. **Structural improvement opportunities**: Better patterns, refactoring candidates, orphan code/files/docs found during the cycle
 4. **Philosophy drift**: Scope creep, library/application boundary leakage, pattern deviation
-5. **Roadmap impact**: Does this cycle's outcome change what future cycles should do?
+5. **Roadmap impact & emergent scope**: Two questions, not one. (a) Does this cycle's outcome change what *existing* phases should do? (b) What does the capability just built *naturally imply next* — the follow-on a user would expect, the case a developer sees left brittle, the safeguard an operator would demand? Capture both; (b) is the raw material STEP 5 turns into derived scope, and skipping it is what makes cycles terminate prematurely.
 6. **User-facing quality** *(when changes touch UI, API contracts, CLI output, or app flow)*: Usability, interaction coherence, convention alignment, flow correctness relative to user mental models. Reference standards concisely when they anchor a finding objectively (e.g., "violates REST uniform interface", "missing affordance — Nielsen #1", "keyboard trap — WCAG 2.1.2").
 
 **Defect vs. improvement distinction**:
@@ -196,13 +203,22 @@ Only items requiring human judgment on defects are exempt from STEP 4 fixes (bre
 
 ### STEP 5: Derive Next
 
-Record **only** what cannot be resolved autonomously, or what reshapes future cycles:
+This step has two jobs: (a) record what cannot be resolved autonomously, and (b) **actively derive** the scope the cycle's own output now makes possible. (b) is the engine that prevents premature termination — never skip it because the roadmap "looks done".
 
 - **Carry-Forward (actionable)**: Things to address next cycle
+- **Emergent Next Capability (derive from multiple lenses, don't wait)**: The cycle's output is itself a source of scope. Derive candidates by asking, from each stakeholder lens, *"given what was just built, what does it naturally imply next?"*
+  - **User lens** — what would a user now expect, want, or hit? (the missing case, the obvious convenience, the input that breaks it — e.g. after single-file upload: "an empty/oversized file crashes it", "the real workflow obviously needs several files", "drag-and-drop")
+  - **Developer / maintainer lens** — does the new surface fit the project's **philosophy and boundaries**? what did it leave brittle, duplicated, or untested? (this lens also *vetoes* candidates that breach declared scope — see gate)
+  - **Operator lens** — what does running this in production now require? (input validation, resource limits, an observability hook, an unhandled failure mode)
+
+  Then classify **every** candidate through the **derivation gate** — this *is* the answer to "autonomous, or discussion?":
+  - **Autonomous-eligible** (→ becomes a Next-Cycle Scope / value-ladder candidate) when ALL hold: its *absence would be felt as incompleteness or a defect*; it stays within the project's **declared role and established patterns**; and it carries **no real trade-off** (pattern-following, additive, low-risk). *Worked examples:* the codebase already has a drag-drop pattern elsewhere → extending it to the new surface is autonomous; adding validation to a new upload path is autonomous.
+  - **Discussion / proposal-only** (→ Structural Improvement Proposals or Pending Human Decisions; **never** taken as autonomous scope) when it opens a **new product direction**, introduces a **new interaction paradigm, dependency, or surface** the project has not committed to, or involves a **trade-off only a human / product owner should weigh**. *Worked examples:* introducing drag-drop where no such pattern exists yet; "multi-file" when it would change the product's data model. Propose with rationale — do not self-decide.
+  - **Frontier exhausted** — a valid, expected outcome: the capability is genuinely complete and any further extension would be scope creep or needs human direction. **State this explicitly** (it is what lets the run terminate); an empty blank is treated as "derivation skipped", not "exhausted".
 - **Structural Improvement Proposals**: Refactoring candidates and better patterns found in STEP 4 — with rationale and recommended approach. Human decides when/whether to act.
-- **Pending Human Decisions**: Breaking API, major architecture, ambiguous scope
+- **Pending Human Decisions**: Breaking API, major architecture, ambiguous scope, and every *discussion-class* emergent candidate above
 - **Roadmap Revisions**: If STEP 4's roadmap-impact judgment said "yes" — record the change to `ROADMAP.md` (phase level) and log it
-- **Next-Cycle Scope**: This is where the next cycle is actually planned — concretely, for **one** cycle only. Now that you know what this cycle revealed, name the next cycle's scope. This is also where mid-cycle discoveries land: a problem too large for this cycle, or one deserving its own cycle, becomes the next cycle's candidate scope (or a split into a near-term phase). Do **not** scope cycle+2 and beyond — those stay phase-level in the backlog until their predecessor's STEP 5 reaches them.
+- **Next-Cycle Scope**: This is where the next cycle is actually planned — concretely, for **one** cycle only. Draw it from three sources in priority order: (1) inherited / this-cycle Carry-Forward defects, (2) mid-cycle discoveries (a problem too large for this cycle, or one deserving its own), (3) the highest-value **autonomous-eligible Emergent Next Capability**. Only when all three are empty — feature frontier explicitly judged exhausted — does Next-Cycle Scope become "none", handing off to the value ladder. Do **not** scope cycle+2 and beyond — those stay phase-level in the backlog until their predecessor's STEP 5 reaches them.
 
 **Do NOT carry forward defects that could have been fixed in STEP 4.** If you can fix it, fix it now.
 
@@ -231,9 +247,10 @@ Date: {YYYY-MM-DD}
 ## Carry-Forward
 - Actionable: {items for next cycle, or "None"}
 - Structural Improvement Proposals: {refactoring candidates with rationale, or "None"}
-- Pending Human Decisions: {decisions needing human input, or "None"}
+- Pending Human Decisions: {decisions needing human input + discussion-class emergent candidates, or "None"}
+- Emergent Next Capability: {follow-on(s) derived from this cycle's output across user/developer/operator lenses, each tagged autonomous / discussion — OR "Frontier exhausted: <why>". Never leave blank.}
 - Roadmap Revisions: {phase-level changes made to ROADMAP.md, or "None"}
-- Next-Cycle Scope: {concrete scope for the next single cycle — decided now that this cycle's outcome is known. Do not scope further ahead.}
+- Next-Cycle Scope: {concrete scope for the next single cycle — from Carry-Forward defects, mid-cycle discoveries, or the top autonomous-eligible Emergent Next Capability. "None" only when the frontier is explicitly exhausted. Do not scope further ahead.}
 ```
 
 ---
@@ -248,7 +265,7 @@ This is the project-specific judgment a generic harness cannot supply, and it is
 
 | Track | Rungs (in order) | Signal that justifies a rung |
 |-------|------------------|------------------------------|
-| **① Main loop** *(always first)* | plan → execute → verify → cleanup | Open roadmap items or inherited Carry-Forward remain |
+| **① Main loop** *(always first)* | plan → execute → verify → cleanup | Open roadmap items, inherited Carry-Forward, **or an autonomous-eligible Emergent Next Capability (STEP 5)** remain |
 | **② 내공 / Durable value** | research/learning capture → structural refactoring → documentation & asset-ization | Undocumented surface, drifted docs, repeated patterns begging extraction, lessons worth recording |
 | **③ 방어선 / Stability** | test/coverage & monitoring gaps → security & compliance → error-handling & resilience | Untested critical path, missing input validation, unhandled failure mode, no observability hook |
 | **④ 가속기 / Efficiency** | CI/DevOps/platform → DX improvements | Manual repetitive steps, slow/flaky pipeline, awkward local setup |
@@ -259,7 +276,7 @@ This is the project-specific judgment a generic harness cannot supply, and it is
 - **Regression back-flow** — if any surplus track surfaces a defect or regression, drop the surplus work and return to the main loop (track ①, STEP 2). Defects always outrank surplus value; resume climbing only once the regression is resolved.
 - Track ② rung "documentation" is the floor: even when nothing else applies, a stale-doc sweep (README, `docs/`, CLAUDE.md, CHANGELOG, examples) is always in-scope surplus work.
 
-**Terminate early only when** primary work is done AND no defects/Carry-Forward remain AND the roadmap is stable AND the ladder surfaces no signal the remaining budget can act on. Log which rungs were climbed and which were proposed.
+**Terminate early only when** primary work is done AND no defects/Carry-Forward remain AND the roadmap is stable AND **the feature frontier is explicitly judged exhausted** (STEP 5 emergent derivation, across all three lenses, produced no autonomous-eligible capability) AND the ladder surfaces no signal the remaining budget can act on. "Frontier exhausted" must be a *stated judgment* in the log, never an unfilled blank — an empty Emergent Next Capability line means derivation was skipped, which is not a valid reason to stop. Log which rungs were climbed and which were proposed.
 
 ## Execution Rules
 
@@ -273,7 +290,7 @@ This is the project-specific judgment a generic harness cannot supply, and it is
 7. **Research actively**: WebSearch before guessing. Record sources.
 7.5. **No invention**: Data you did not directly observe (a command's output, a file's contents, a test result) stays "unknown" — never present a guess as fact. When something is unknown and matters, state it and take the step that would observe it rather than assuming.
 8. **Defect honesty**: Record issues openly. "It works" ≠ "It's good".
-9. **Surplus-cycle investment (no idle early stop)**: If STEP 4 finds zero actionable defects AND no inherited defects remain AND the roadmap is stable, do NOT terminate immediately while cycles remain. Climb the **Surplus-Cycle Value Ladder** (see section above): invest remaining budget in durable value → stability → efficiency, acting only where the project shows a concrete signal. Doc-sync (README, `docs/`, CLAUDE.md, CHANGELOG, examples) is the always-applicable floor of this ladder. Additive/low-risk work is done in-cycle (STEP 2→4); invasive/opinionated work is proposed in Derive-Next. Terminate early only once the ladder surfaces no actionable signal, and log which rungs were climbed or proposed.
+9. **No idle early stop — derive before you climb, climb before you quit**: While cycles remain, termination is the last resort, reached in this order. (a) **Emergent derivation (STEP 5)** — derive the natural next capability from what you just built, across the user/developer/operator lenses; if a candidate passes the derivation gate, that *is* the next cycle (main loop, track ①). (b) Only when the feature frontier is explicitly judged exhausted do you climb the **Surplus-Cycle Value Ladder** (durable value → stability → efficiency), acting where the project shows a concrete signal; doc-sync (README, `docs/`, CLAUDE.md, CHANGELOG, examples) is its always-applicable floor. (c) Terminate early only once **both** the feature frontier and the ladder surface no actionable signal — and log that judgment explicitly. Throughout: additive/low-risk work is done in-cycle (STEP 2→4); invasive/opinionated or discussion-class work is proposed in Derive-Next, never self-decided.
 10. **Continuity chain**: Always read the previous cycle's Carry-Forward, Next-Cycle Scope, and Roadmap Revisions before STEP 0. The previous cycle's Next-Cycle Scope is this cycle's starting scope.
 11. **Latent work priority**: The best cycles surface structural improvements nobody thought to ask about — propose them in Derive-Next with rationale. Do not fold them silently into scope.
 12. **Cost discipline**: STEP 0 is bounded (~5 min). If drift check seems to require deep analysis, that is a RE-PLAN signal — handle it explicitly rather than letting STEP 0 bloat.

@@ -8,6 +8,29 @@ bugs or docs. MAJOR is never bumped automatically.
 > History is reconstructed from git from v1.11.0 onward. Earlier versions live in
 > the git log only.
 
+## [1.16.0] — 2026-06-26
+
+### Added
+- **Emergent scope derivation (`run-cycle`)** — STEP 5 (Derive Next) is now an *active
+  derivation* engine, not just a reactive record. After building a capability, the cycle
+  derives the natural follow-on its own output implies — from three stakeholder lenses
+  (**user / developer-maintainer / operator**) — and runs every candidate through a
+  **derivation gate**: pattern-following completion within the project's declared role
+  becomes autonomous next scope, while anything opening a new product direction, paradigm,
+  dependency, or real trade-off is routed to a human-decision proposal (never self-decided).
+  This addresses the observed failure where a cycle found no defects, saw a stable roadmap,
+  wrote "Next-Cycle Scope: none", and terminated even though the capability it just built
+  was visibly incomplete (e.g. file upload with no validation / multi-file / safety follow-up).
+
+### Changed
+- **Termination requires explicit frontier-exhaustion judgment** — early stop now demands a
+  *stated* "feature frontier exhausted" judgment in the cycle log (across all three lenses),
+  not an unfilled blank. The Stop hook treats an empty Emergent Next Capability line as
+  "derivation skipped" (continue), and only allows termination when both the frontier and the
+  value ladder are explicitly exhausted. Cycle-log template adds an **Emergent Next Capability**
+  line; value-ladder track ① now counts an autonomous-eligible emergent capability as main-loop
+  work. Backward-compatible: arguments unchanged.
+
 ## [1.15.0] — 2026-06-24
 
 ### Changed
