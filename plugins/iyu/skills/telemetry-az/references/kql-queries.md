@@ -10,7 +10,7 @@
 - [Optional — in-query anomaly detection](#optional--in-query-anomaly-detection)
 - [Notes](#notes)
 
-Baseline queries for the three signal classes. The time window is applied at the **CLI level**
+Default queries for the signal classes. The time window is applied at the **CLI level**
 via `--start-time`/`--end-time`, not inside the KQL — `az monitor app-insights query` defaults
 to `--offset 1h` and honors the full window only when **both** time flags are passed. So the
 queries below stay window-agnostic and the skill supplies bounds on the command line.
@@ -70,8 +70,10 @@ requests
 
 ## Class 2 — Performance regression
 
-Request duration percentiles (compare to `.last-run.json` baseline; flag when worse by
-`thresholds.perfRegressionPct`). p95/p99 resist outlier noise better than the mean:
+Request duration percentiles (compare to the **recent-run median** of `perf.p95` over the last
+up-to-5 `history[]` runs — not a single prior run; flag when worse by
+`thresholds.perfRegressionPct`). p95/p99 resist outlier noise better than the mean, and the
+median basis resists a single anomalous prior run:
 
 ```kql
 requests
@@ -94,8 +96,8 @@ dependencies
 
 ## Class 3 — Feature drop / usage decline
 
-Custom event volume (compare to baseline; flag drops ≥ `thresholds.usageDropPct`, and events
-present in baseline but absent now):
+Custom event volume (compare per-day rate to the prior run `history[-1]`; flag drops ≥
+`thresholds.usageDropPct`, and events present in the prior run but absent now):
 
 ```kql
 customEvents
@@ -217,3 +219,7 @@ window; use this query when you need anomaly signal on a custom metric or table.
   `customQueries` entry when a project genuinely needs deeper rows.
 - `series_decompose_anomalies` needs sufficient history; on sparse data it yields few or no
   anomalies — that is not a defect.
+- The Class 1 `failRate` and Class 2 `p95` per-operation results feed **both** the relative
+  trend (vs. the recent-run median) **and** the absolute-floor check
+  (`thresholds.absolute.maxFailRatePct` / `maxP95Ms`). No extra query is needed for the floor —
+  it is a comparison the skill applies to these same rows, and it runs even when history is empty.
