@@ -8,6 +8,30 @@ bugs or docs. MAJOR is never bumped automatically.
 > History is reconstructed from git from v1.11.0 onward. Earlier versions live in
 > the git log only.
 
+## [1.19.0] — 2026-07-01
+
+### Changed
+- **Human blockers no longer end the run prematurely (`run-cycle`)** — human blockers are
+  now split into two kinds that behave oppositely. A **run-fatal HARD STOP** (`HUMAN-NEEDED:`,
+  a constitution conflict or structural invalidation that poisons *all* remaining work) still
+  terminates the whole run. But an **item-level `BLOCKED-ITEM:`** (one scope needs a credential
+  or a user-only decision, while other work stays independent) is *parked* in a new persistent
+  **Blocked-on-Human ledger** and the cycle **falls through to the next unblocked candidate**
+  instead of stopping. This fixes the observed early-termination where the first human blocker
+  killed the entire run even though independent backlog / carry-forward / emergent work remained.
+
+### Added
+- **Blocked-on-Human ledger** — a persistent Carry-Forward bucket that accumulates parked
+  item-level blockers (scope + blocker + what would unblock it), carried forward and re-checked
+  at each cycle's STEP 0. Added to the trigger matrix (🔵 BLOCKED row), STEP 5 buckets, and the
+  cycle-log template.
+- **Termination redefined** — the run now terminates only when **every** remaining candidate
+  (backlog phase, Carry-Forward item, autonomous-eligible emergent capability, ladder signal)
+  is done or parked in the ledger — i.e. no unblocked autonomous work remains anywhere — AND
+  the frontier + ladder are explicitly judged exhausted. The Stop hook, value ladder, and rules
+  2 / 2.5 / 9 were updated so an item-level blocker never forces ALLOW while unblocked work
+  exists. Backward-compatible: arguments unchanged.
+
 ## [1.16.0] — 2026-06-26
 
 ### Added
