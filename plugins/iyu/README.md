@@ -2,7 +2,7 @@
 
 [![Claude Code Plugin](https://img.shields.io/badge/Claude%20Code-Plugin-blueviolet?logo=anthropic&logoColor=white)](https://docs.anthropic.com/en/docs/claude-code/plugins)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-1.16.0-blue.svg)](./plugin.json)
+[![Version](https://img.shields.io/badge/version-1.20.0-blue.svg)](./plugin.json)
 
 Productivity toolkit for open-source library maintainers and developers.
 
@@ -30,6 +30,7 @@ Productivity toolkit for open-source library maintainers and developers.
 | `/iyu:run` | Skill | Manual | Plan-driven development execution |
 | `/iyu:run-cycle` | Skill | Manual | Iterative development cycles with Stop hook |
 | `/iyu:telemetry-az` | Skill | Manual | Azure App Insights telemetry triage, issue discovery + run-over-run user analytics |
+| `/iyu:backlog-discover` | Skill | Manual | Playbook-driven backlog discovery — proposal only, never auto-merges |
 
 ## Commands
 
@@ -110,6 +111,31 @@ Per-repo settings live in `claudedocs/telemetry/config.json` (App Insights app i
 the watermark and reports live under `claudedocs/telemetry/`. Issues follow the standard
 `claudedocs/issues/` format. Requires `az login`.
 
+### /iyu:backlog-discover
+
+Adaptively discovers new backlog phases via the Backlog Generation Playbook — convergent
+activities (vision-gap analysis, trend research, benchmarking, telemetry-az reuse,
+issue/community tracking, dogfooding, code/security audits) on a persistent per-activity
+cadence, plus emergent activities (pre-mortems, subtraction sessions, chaos engineering,
+fresh-eyes onboarding, and more) selected by self-diagnosing backlog symptoms from
+project history.
+
+```bash
+/iyu:backlog-discover                          # Run all cadence-due activities + diagnosed emergent session(s)
+/iyu:backlog-discover --modes vision-gap,web-trend  # Force specific activities regardless of cadence
+/iyu:backlog-discover --symptom onboarding-friction # Force a specific emergent session
+/iyu:backlog-discover --dry-run                # Report to chat only, no files, state unchanged
+```
+
+Fully independent of `/iyu:run-cycle` — `run-cycle` only *consumes* `ROADMAP.md`, this
+command only *feeds* it. Every discovered item lands in a proposal document
+(`claudedocs/backlog-discovery/proposal-YYYY-MM-DD.md`); **nothing merges into
+`ROADMAP.md` automatically** — a human reviews the proposal and asks explicitly for
+selected items to be adopted, per the mindset principle that new product direction is
+never self-decided. Cadence state (`claudedocs/backlog-discovery/state.json`) tracks each
+of the playbook's 28 activities independently, so a quarterly activity doesn't re-run
+every invocation and a stale half-yearly one doesn't get silently skipped forever.
+
 ## Decision Matrices
 
 **Issue Triage:**
@@ -148,6 +174,9 @@ iyu/
 │   └── plugin.json
 ├── skills/
 │   ├── mindset/
+│   │   ├── SKILL.md
+│   │   └── references/
+│   ├── backlog-discover/
 │   │   ├── SKILL.md
 │   │   └── references/
 │   ├── issue-triage/
