@@ -2,7 +2,7 @@
 
 [![Claude Code Plugin](https://img.shields.io/badge/Claude%20Code-Plugin-blueviolet?logo=anthropic&logoColor=white)](https://docs.anthropic.com/en/docs/claude-code/plugins)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-1.20.0-blue.svg)](./plugin.json)
+[![Version](https://img.shields.io/badge/version-1.21.0-blue.svg)](./plugin.json)
 
 Productivity toolkit for open-source library maintainers and developers.
 
@@ -115,10 +115,19 @@ the watermark and reports live under `claudedocs/telemetry/`. Issues follow the 
 
 Adaptively discovers new backlog phases via the Backlog Generation Playbook — convergent
 activities (vision-gap analysis, trend research, benchmarking, telemetry-az reuse,
-issue/community tracking, dogfooding, code/security audits) on a persistent per-activity
+issue/community tracking, active dogfooding, code/security audits) on a persistent per-activity
 cadence, plus emergent activities (pre-mortems, subtraction sessions, chaos engineering,
 fresh-eyes onboarding, and more) selected by self-diagnosing backlog symptoms from
 project history.
+
+**Active dogfooding** is the always-on floor: instead of re-reading already-recorded
+friction, a team member drives the product live through a *fresh, vision-anchored
+scenario* on its real runnable surface (CLI / library consumer-script / service HTTP),
+observing feature/UI/UX/app-flow gaps first-hand. This makes an **empty or recently-run
+backlog a deepen-signal, not a done-signal** — "go use the product and re-check the
+vision." Findings must carry **run-evidence** (commands run + behavior observed + steps
+walked) or they're dropped as guesses; concrete defects route to `claudedocs/issues/`,
+only systemic/UX/vision gaps become proposal items.
 
 ```bash
 /iyu:backlog-discover                          # Run all cadence-due activities + diagnosed emergent session(s)

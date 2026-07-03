@@ -1,6 +1,6 @@
 ---
 name: backlog-discover
-description: Adaptively discovers new backlog phases for a project's ROADMAP.md by running a convergent/emergent research playbook — vision-gap analysis, trend/competitive research, telemetry-az output reuse, voice-of-customer mining, technical-debt audits, plus deliberately emergent techniques (pre-mortems, subtraction sessions, chaos engineering, fresh-eyes onboarding) — selected via a persistent per-activity cadence state, self-diagnosing which emergent session to rotate in when the backlog feels stale. Always produces a proposal document for human review; never merges into ROADMAP.md automatically. Use when the backlog is running dry, when run-cycle reports the feature frontier exhausted, or periodically to keep the roadmap fed with fresh, philosophy-aligned candidates. Fully independent of run-cycle — run-cycle only consumes ROADMAP.md, this skill only feeds it.
+description: Adaptively discovers new backlog phases for a project's ROADMAP.md by running a convergent/emergent research playbook — vision-gap analysis, trend/competitive research, telemetry-az output reuse, voice-of-customer mining, technical-debt audits, active dogfooding (a team member driving the product live in a fresh vision-anchored scenario to observe feature/UI/UX/app-flow gaps first-hand), plus deliberately emergent techniques (pre-mortems, subtraction sessions, chaos engineering, fresh-eyes onboarding) — selected via a persistent per-activity cadence state, self-diagnosing which emergent session to rotate in when the backlog feels stale. Always produces a proposal document for human review; never merges into ROADMAP.md automatically. Use when the backlog is running dry, when run-cycle reports the feature frontier exhausted, or periodically to keep the roadmap fed with fresh, philosophy-aligned candidates. An empty or already-recently-run backlog is a deepen-signal (go use the product and re-check the vision), never a done-signal. Fully independent of run-cycle — run-cycle only consumes ROADMAP.md, this skill only feeds it.
 argument-hint: "[--modes <comma-list>] [--symptom <name>] [--dry-run]"
 disable-model-invocation: true
 allowed-tools: Read, Glob, Grep, Write, Edit, WebSearch, WebFetch, TodoWrite, Bash
@@ -74,7 +74,7 @@ claudedocs/issues/
     "telemetry-observability": { "cadence": "always",       "lastRunUtc": null },
     "usage-analytics":         { "cadence": "sprint",       "lastRunUtc": null },
     "issue-community":         { "cadence": "always",       "lastRunUtc": null },
-    "dogfooding":              { "cadence": "always",       "lastRunUtc": null },
+    "dogfooding":              { "cadence": "always",       "lastRunUtc": null, "scenariosRun": [] },
     "code-audit":              { "cadence": "quarterly",   "lastRunUtc": null },
     "security-compliance":     { "cadence": "quarterly",   "lastRunUtc": null },
     "roadmap-decomposition":   { "cadence": "quarterly",   "lastRunUtc": null },
@@ -96,6 +96,11 @@ claudedocs/issues/
   "valueAxisHistory": []
 }
 ```
+
+`dogfooding.scenariosRun` is a rolling list (last ~8) of short slugs naming the
+end-to-end scenarios already exercised, so each active-dogfooding run picks a *fresh*
+vision-anchored path instead of re-walking the same one — this is what makes the
+`always`-cadence dogfooding productive even on back-to-back runs.
 
 Cadence intervals in days: `always` = 0, `sprint` = 14, `quarterly` = 91,
 `half-yearly` = 182. `always` = 0 means "due whenever checked" — it is **not**
@@ -128,6 +133,13 @@ due = elapsedDays >= cadenceIntervalDays(activity.cadence)
 
 Mark `due = true` unconditionally for any activity named in `--modes` (bypasses the
 elapsed check). Collect the due set — this is what P3 executes.
+
+**Thin/empty due-set is a deepen-signal, not a done-signal.** If cadence leaves few or no
+activities due (e.g. this ran recently), do **not** return an empty proposal. `dogfooding`
+is `always`-cadence and therefore always in the due set — treat that as the floor: run it
+*actively* (P3's active live-use path with a fresh vision-anchored scenario), and let
+P2's round-robin still surface an emergent session. An empty backlog means "go use the
+product and re-check the vision", never "nothing to do".
 
 ### P2: Symptom diagnosis (selects the emergent-pool activities to run alongside P1's due set)
 
@@ -177,7 +189,7 @@ never fabricate the missing signal (mindset "no invention").
 | `telemetry-observability` | **Read-only.** Read `claudedocs/telemetry/report-*.md` + `.last-run.json` if present (do not call `az` or reimplement KQL). Skip + note "telemetry-az not configured" if `claudedocs/telemetry/config.json` is absent |
 | `usage-analytics` | Same read-only reuse of `telemetry-az`'s purpose-2 (user analytics) report section |
 | `issue-community` | `Bash(gh issue list)` / `gh discussion list` (if `gh` is authenticated) + scan `claudedocs/issues/**` for recurring themes. Skip + note "gh not authenticated" if it fails |
-| `dogfooding` | Re-mine DX friction already recorded in cycle-log Carry-Forward / Structural Improvement Proposal sections — never invent fresh friction the team hasn't actually recorded |
+| `dogfooding` | **Active live use, not passive re-mining.** (1) Pick a **fresh, vision-anchored scenario** — a representative end-to-end task derived from a promise/claim in CLAUDE.md/README, and not one already in `state.json.activities.dogfooding.scenariosRun` (rotate to a new path each run). (2) **Actually drive it** through the project's own runnable surface via `Bash`: a CLI's real commands, a throwaway consumer script for a library, HTTP calls for a service. Where UI-automation tooling happens to be available in the environment, extend the walk-through to the UI; otherwise drive the library/API layer beneath the GUI and **skip-with-reason** the pure-GUI surface (never narrate UI friction you could not observe). (3) Record observed 기능/UI/UX/앱플로우 friction with **run-evidence** (commands run, behavior/output seen, steps walked) — this evidence is what makes the finding grounded observation, not invention. (4) *Also* fold in DX friction previously recorded in cycle-log Carry-Forward / Structural Improvement Proposal sections. If nothing in the project is Bash-drivable at all, skip-with-reason. |
 | `code-audit` | Grep/Glob static scan for TODO/FIXME/deprecated markers + the project's own lint/outdated tooling via `Bash` (e.g. `npm outdated`, `dotnet list package --outdated`) |
 | `security-compliance` | Dependency audit via `Bash` (e.g. `npm audit`, `dotnet list package --vulnerable`) + WebSearch for CVEs affecting declared dependencies |
 | `roadmap-decomposition` | Re-derive epics/stories from any stated milestones/KPIs in CLAUDE.md/README against current `ROADMAP.md` phases |
@@ -231,6 +243,9 @@ Skip file writes entirely under `--dry-run`; print the filled template to chat i
   invocation until the next cadence boundary.
 - Advance `emergentPool.rotationPointer` past the selected pool items (wrap at array
   length); set their `lastRunUtc`.
+- If active `dogfooding` ran, append the exercised scenario's slug to
+  `activities.dogfooding.scenariosRun` (trim to the last ~8) so the next run rotates to a
+  fresh path.
 - Append this run's diagnosis to `diagnosisHistory` (`{ runUtc, symptom, selected }`) and
   the value-axis counts to `valueAxisHistory` (`{ runUtc, business, techHealth,
   userRequest }`). Trim each to the last 12 entries (matches `telemetry-az`'s
@@ -251,12 +266,20 @@ not perform this step as part of a `/iyu:backlog-discover` invocation itself.
 
 1. **No auto-merge, ever.** No invocation of this skill writes to `ROADMAP.md`. This is
    a deliberate, permanent asymmetry with `run-cycle`'s autonomous-eligible fast path.
-2. **No invention.** A skipped activity's reason is always recorded in the proposal's
-   "스킵된 활동" section — never backfilled with a guess.
-3. **Incidental defects are not roadmap items.** A concrete bug/defect surfaced
-   incidentally during discovery (e.g. during `code-audit` or `benchmarking`) is filed
-   through the existing global `claudedocs/issues/ISSUE-*.md` convention, not folded into
-   the discovery proposal.
+2. **No invention — but active use is grounding, not invention.** A skipped activity's
+   reason is always recorded in the proposal's "스킵된 활동" section — never backfilled with
+   a guess. Actively *driving* the product and reporting what you observed is the opposite
+   of invention: it manufactures real signal. The discriminator is **run-evidence** — any
+   dogfooding finding must carry the commands run, the behavior/output observed, and the
+   steps walked. A finding with no reproducible trace is a guess and is dropped, not
+   filed. Narrating friction on a surface you could not actually drive (e.g. a GUI with no
+   automation available) is the forbidden invention — skip-with-reason instead.
+3. **Route findings by kind.** A concrete bug/defect surfaced incidentally during
+   discovery — including a broken flow, a bad error message, or a UI glitch caught while
+   dogfooding — is filed through the existing global `claudedocs/issues/ISSUE-*.md`
+   convention, not folded into the discovery proposal. Only **systemic gaps, UX-direction
+   shifts, and vision-shortfalls** (phase-level, not a single fixable defect) become
+   proposal items.
 4. **No major-version framing.** A discovered item that reads as breaking/major-scale is
    marked "Pending Human Decision" with a minor/patch-sized decomposition offered
    alongside it where feasible — never phrased as an implied major bump.

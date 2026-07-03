@@ -18,6 +18,7 @@ reviews this file and asks explicitly for selected items to be merged.
 ### [{value-axis}] {제목}
 - 출처 활동: {활동명 — playbook.md의 §번호 및 한글명}
 - 근거: {1~3문장, 관찰한 신호를 구체적으로}
+- 실행 증거 (도그푸딩 등 능동 구동 항목 필수): {구동한 시나리오 슬러그 + 실행한 명령/호출, 관찰한 동작·출력, 밟은 단계. 재현 트레이스가 없으면 발명이므로 제안에 싣지 않는다}
 - 철학 정렬: {high|medium|low} — {CLAUDE.md/README 대비 판단 1문장}
 - 예상 규모: {phase-level 방향성 설명만. 구체 사이클 수·일정은 산정하지 않음}
 - 분류: {Autonomous-eligible로 보이는 확장 | Discussion 필요 — 새 방향/의존성/트레이드오프}
@@ -39,3 +40,9 @@ reviews this file and asks explicitly for selected items to be merged.
 - "분류" is advisory triage for whoever reviews the proposal — it does **not** grant
   auto-merge eligibility. Every item in this document requires human approval before
   entering `ROADMAP.md`, regardless of this tag.
+- "실행 증거" is mandatory for any item sourced from an activity that actively drives the
+  product (dogfooding, and the emergent lenses that walk a real flow). The trace is what
+  distinguishes observed friction from invented friction — an item lacking one is dropped,
+  not softened. Concrete defects caught this way go to `claudedocs/issues/ISSUE-*.md`, not
+  here (see SKILL.md execution rule 3); only systemic/UX-direction/vision-shortfall gaps
+  become proposal items.
