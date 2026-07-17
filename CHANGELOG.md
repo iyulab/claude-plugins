@@ -8,6 +8,66 @@ bugs or docs. MAJOR is never bumped automatically.
 > History is reconstructed from git from v1.11.0 onward. Earlier versions live in
 > the git log only.
 
+## [1.22.0] — 2026-07-17
+
+### Added
+- **Autonomy leveling by stakes × reversibility (`run-cycle`)** — decision handling is now an
+  explicit four-level overlay so the run behaves like a capable delegate instead of asking about
+  every choice. **L0** (taste/convention) is decided silently; **L1** (a real trade-off but a
+  *reversible* two-way-door choice) is self-decided, acted on immediately, and recorded
+  `provisional`; **L2** (irreversible or human-only, other work independent) is batched; **L3**
+  (run-fatal) issues HARD STOP. The bias is **in-dubio-pro-autonomy** — ambiguity between L1 and
+  L2 resolves to L1 — with the sole exception that an irreducible cross-lens conflict escalates.
+- **Decisions Ledger** — a persistent Carry-Forward bucket accumulating `provisional` L1
+  self-decisions (decision · alternatives · trade-off · cross-lens rationale · cost-to-reverse ·
+  status), carried forward and re-checked at each STEP 0. It *never gates termination* — the run
+  proceeds on provisional decisions and lets the human confirm/reverse afterward.
+- **End-of-Run Report** (`RUN-SUMMARY-{date}.md` + final chat response, generated on every
+  termination path) — the delegate's report-to-manager in three parts: progress/achievements with
+  evidence, deferred L2 decisions awaiting the human, and self-made L1 decisions each with its
+  trade-off and a one-line "to correct". Anchored just before the final commit.
+
+### Changed
+- **Five decision lenses are co-equal, not a priority chain (`run-cycle` rule 2.5)** — the former
+  `근본 > 정석 > 표준 > 세련 > philosophy` lexicographic order is replaced by weighing all five
+  *together* and picking the option best across them as a whole. A one-line rationale log becomes,
+  for L1, a full Decisions-Ledger entry.
+- **Dual-channel correction intake** — a reverted L1 decision is absorbed from conversation
+  (Preparation §1) *and* written durably to the ledger so a compaction cannot lose it, then
+  re-opened at the next cycle's STEP 0 as new scope re-evaluated *together with whatever was built
+  on top of it* (not a blind swap to the opposite option).
+- L0–L3 are an explanatory overlay only: the `HUMAN-NEEDED:` / `BLOCKED-ITEM:` markers and the
+  Stop-hook termination logic are unchanged (L2 = BLOCKED-ITEM, L3 = HARD STOP). Backward-compatible:
+  arguments unchanged.
+
+## [1.21.0] — 2026-07-03
+
+### Changed
+- **Active dogfooding — live use, not passive re-mining (`backlog-discover`)** — the always-on
+  dogfooding activity is redefined from re-reading already-recorded friction to **driving the
+  product live in a fresh, vision-anchored scenario** on its real runnable surface (CLI /
+  library consumer-script / service HTTP; pure-GUI surfaces skip-with-reason), observing
+  feature/UI/UX/app-flow gaps first-hand. An empty or recently-run backlog becomes a
+  **deepen-signal** ("go use the product, re-check the vision"), not a done-signal. The
+  mindset "no invention" rule is reconciled by a **run-evidence discriminator**: every
+  active-use finding must carry commands run + behavior observed + steps walked, or it is
+  dropped as a guess. Concrete defects route to `claudedocs/issues/`; only systemic/UX/vision
+  gaps become proposal items. Adds `dogfooding.scenariosRun[]` scenario-rotation state.
+
+## [1.20.0] — 2026-07-03
+
+### Added
+- **Playbook-driven backlog discovery (`backlog-discover`)** — a new skill, fully independent
+  of `run-cycle` (which only *consumes* `ROADMAP.md`), that adaptively runs a convergent /
+  emergent research playbook — vision-gap analysis, web/trend research, benchmarking,
+  `telemetry-az` output reuse, voice-of-customer mining, technical-debt/security audits, plus
+  deliberately emergent techniques (pre-mortems, subtraction sessions, chaos engineering) —
+  selected via **persistent per-activity cadence** (`claudedocs/backlog-discovery/state.json`)
+  and **self-diagnosed backlog symptoms**, falling back to round-robin rotation. Every
+  discovery is tagged by source activity and value axis and lands in a **human-reviewed
+  proposal document only** — `ROADMAP.md` is never auto-merged, since these discoveries are
+  speculative/external rather than `run-cycle`'s narrow in-cycle derivation.
+
 ## [1.19.0] — 2026-07-01
 
 ### Changed

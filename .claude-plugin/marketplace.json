@@ -16,7 +16,7 @@
       "name": "iyu",
       "source": "./plugins/iyu",
       "description": "Productivity toolkit for library maintainers - adaptive iterative development, issue triage, PR review, telemetry-driven issue discovery, and playbook-driven backlog discovery with project philosophy alignment",
-      "version": "1.21.0",
+      "version": "1.22.0",
       "author": {
         "name": "iyulab"
       },
