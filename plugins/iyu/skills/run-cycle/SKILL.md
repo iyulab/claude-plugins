@@ -108,6 +108,7 @@ Create `claudedocs/cycle-logs/ROADMAP.md` if missing. It holds **phase-level dir
 
 - Group work as **phases / goals**, each revisable by per-cycle Derive-Next
 - Include known unknowns and investigation needs, not presumed answers
+- `ROADMAP.md` holds **remaining** work only — completed phases live in `HISTORY.md` (see Continuity-Doc Hygiene)
 
 **Hard rule — the roadmap must not know cycle numbers.** Do NOT produce a `Cycle 1 = …, Cycle 2 = …` table, and do NOT assign scope to any cycle beyond the first. You cannot know what Cycle 2+ should contain — that is decided by the preceding cycle's STEP 5, by design (see "Observed failure mode" above). A cycle-numbered scope table here is the single failure this skill exists to prevent.
 
@@ -241,9 +242,28 @@ This step has two jobs: (a) record what cannot be resolved autonomously, and (b)
 - **Structural Improvement Proposals**: Refactoring candidates and better patterns found in STEP 4 — with rationale and recommended approach. Human decides when/whether to act.
 - **Pending Human Decisions**: Breaking API, major architecture, ambiguous scope, and every *discussion-class* emergent candidate above
 - **Roadmap Revisions**: If STEP 4's roadmap-impact judgment said "yes" — record the change to `ROADMAP.md` (phase level) and log it
+- **Continuity-doc hygiene (every cycle, unconditional)**: Apply **Continuity-Doc Hygiene** (section below) — migrate every completed phase/item found in `ROADMAP.md` (and `HANDOFF.md`, if the project keeps one) to `HISTORY.md`, and keep the handoff current + next only. Runs even when nothing else in the roadmap changed.
 - **Next-Cycle Scope**: This is where the next cycle is actually planned — concretely, for **one** cycle only. Draw it from three sources in priority order: (1) inherited / this-cycle Carry-Forward defects, (2) mid-cycle discoveries (a problem too large for this cycle, or one deserving its own), (3) the highest-value **autonomous-eligible Emergent Next Capability**. Only when all three are empty — feature frontier explicitly judged exhausted — does Next-Cycle Scope become "none", handing off to the value ladder. Do **not** scope cycle+2 and beyond — those stay phase-level in the backlog until their predecessor's STEP 5 reaches them.
 
 **Do NOT carry forward defects that could have been fixed in STEP 4.** If you can fix it, fix it now.
+
+---
+
+## Continuity-Doc Hygiene
+
+`ROADMAP.md` — and `HANDOFF.md`, when the project maintains one — are **continuity docs**: the primary files a human (or a fresh session) reads to find *remaining* work fast. The invariant: **completed work does not live in a continuity doc.** Removal loses nothing — cycle logs and git history already hold the detail; the continuity doc's job is to stay small enough to read in one pass. Without this rule, both files grow monotonically until "what's left?" is buried under "what's done" — the exact failure this section exists to prevent.
+
+Applied at STEP 5, every cycle:
+
+1. **Migrate every completed phase/item out of `ROADMAP.md`** — not only ones completed this cycle: any already-completed leftovers found are migrated too. This is invariant *enforcement*, not an event handler, and it is what makes pre-existing bloat converge without a special cleanup pass.
+2. **`HISTORY.md` is a pure index** — same directory as `ROADMAP.md`, newest first, one compressed entry (1–3 lines) per completed phase:
+   `- **{YYYY-MM-DD}** {phase} — {one-line outcome} (cycle-NN)`
+   Never duplicate detail into it; cycle logs and git log are the record. Deep dives start at the index and follow the reference.
+3. **Rewrite `HANDOFF.md` to current + next only** (if present) — what is in flight and what comes next, anchored to backlog phases. Past-session narrative is dropped, not accumulated.
+4. **Link line** — keep `> History: [HISTORY.md](HISTORY.md)` at the top of each continuity doc (create on first migration) so history stays one hop away.
+5. **Size signal (soft)** — if a continuity doc stays long (~200+ lines) *after* migration, detail is living at the wrong layer: split phase detail into `claudedocs/plans/` docs and leave links. A judgment signal, not a hard rule.
+
+Hygiene never gates termination — it is doc upkeep inside STEP 5 and the doc-sync floor, not a completion criterion, and it adds nothing to the Stop-hook logic.
 
 ---
 
@@ -274,7 +294,7 @@ Date: {YYYY-MM-DD}
 - Structural Improvement Proposals: {refactoring candidates with rationale, or "None"}
 - Pending Human Decisions: {decisions needing human input + discussion-class emergent candidates, or "None"}
 - Emergent Next Capability: {follow-on(s) derived from this cycle's output across user/developer/operator lenses, each tagged autonomous / discussion — OR "Frontier exhausted: <why>". Never leave blank.}
-- Roadmap Revisions: {phase-level changes made to ROADMAP.md, or "None"}
+- Roadmap Revisions: {phase-level changes made to ROADMAP.md, plus completed items migrated to HISTORY.md, or "None"}
 - Next-Cycle Scope: {concrete scope for the next single cycle — from Carry-Forward defects, mid-cycle discoveries, or the top autonomous-eligible Emergent Next Capability. "None" only when the frontier is explicitly exhausted. Do not scope further ahead.}
 ```
 
@@ -299,7 +319,7 @@ This is the project-specific judgment a generic harness cannot supply, and it is
 - **Additive & low-risk → do it** this cycle (doc-sync, filling a test gap, adding validation, a small CI fix). Run it through STEP 2→4 and log it as a `[ladder:②/③/④]` cycle.
 - **Invasive or opinionated → propose in Derive-Next**, do not perform (large refactors, dependency swaps, new infra, security architecture). Human decides.
 - **Regression back-flow** — if any surplus track surfaces a defect or regression, drop the surplus work and return to the main loop (track ①, STEP 2). Defects always outrank surplus value; resume climbing only once the regression is resolved.
-- Track ② rung "documentation" is the floor: even when nothing else applies, a stale-doc sweep (README, `docs/`, CLAUDE.md, CHANGELOG, examples) is always in-scope surplus work.
+- Track ② rung "documentation" is the floor: even when nothing else applies, a stale-doc sweep (README, `docs/`, CLAUDE.md, CHANGELOG, examples) plus the continuity-doc lean check (Continuity-Doc Hygiene) is always in-scope surplus work.
 
 **Terminate early only when** primary work is done AND no *unblocked* defects/Carry-Forward remain AND the roadmap is stable AND **the feature frontier is explicitly judged exhausted** (STEP 5 emergent derivation, across all three lenses, produced no autonomous-eligible capability) AND the ladder surfaces no *unblocked* signal the remaining budget can act on AND **every remaining candidate is either complete or parked in the Blocked-on-Human ledger** (no unblocked autonomous work is left anywhere). "Frontier exhausted" must be a *stated judgment* in the log, never an unfilled blank — an empty Emergent Next Capability line means derivation was skipped, which is not a valid reason to stop. Item-level `BLOCKED-ITEM` scopes accumulate in the ledger and are reported at run end; a blocker on one scope never terminates the run while any other scope is still workable. Log which rungs were climbed and which were proposed.
 
@@ -340,7 +360,7 @@ Before the single end-of-run commit, run a **lightweight release-readiness check
 
 1. **Version consistency** — if any version-bearing file changed this run, confirm all agree (e.g. `plugin.json`, `marketplace.json`, README badges, package manifest, intended tag). A mismatch is a defect: fix it before committing.
 2. **Changelog** — if the project keeps a CHANGELOG / release notes, confirm this run's changes are recorded. A missing entry is additive/low-risk: add it now.
-3. **Docs** — confirm the doc-sync floor (ladder ②) ran and reported consistent; do not re-run it here.
+3. **Docs** — confirm the doc-sync floor (ladder ②) ran and reported consistent, and that continuity docs are lean (no completed items left in `ROADMAP.md`/`HANDOFF.md`; completed work indexed in `HISTORY.md`); do not re-run the sweep here.
 4. **Evidence** — package the actual STEP 3 verification output (test counts, build result, lint status). Assertions are not evidence (rule 7.5); if you cannot show the output, it is not verified.
 
 Record the outcome as a `## Release Readiness` block in the final cycle log:
@@ -349,7 +369,7 @@ Record the outcome as a `## Release Readiness` block in the final cycle log:
 ## Release Readiness
 - Version: {all version files agree at X.Y.Z, or "n/a"}
 - Changelog: {entry present for this run, or "n/a"}
-- Docs: {doc-sync verified consistent}
+- Docs: {doc-sync verified consistent; continuity docs lean}
 - Evidence: {e.g. `npm test` 142 passed; build ok; lint clean}
 - Tag/publish: deferred to human/CI (not performed)
 ```
