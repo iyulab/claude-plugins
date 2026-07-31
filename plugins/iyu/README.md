@@ -2,7 +2,7 @@
 
 [![Claude Code Plugin](https://img.shields.io/badge/Claude%20Code-Plugin-blueviolet?logo=anthropic&logoColor=white)](https://docs.anthropic.com/en/docs/claude-code/plugins)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-1.23.0-blue.svg)](./plugin.json)
+[![Version](https://img.shields.io/badge/version-1.24.0-blue.svg)](./plugin.json)
 
 Productivity toolkit for open-source library maintainers and developers.
 
@@ -30,7 +30,7 @@ Productivity toolkit for open-source library maintainers and developers.
 | `/iyu:run` | Skill | Manual | Plan-driven development execution |
 | `/iyu:run-cycle` | Skill | Manual | Iterative development cycles with Stop hook |
 | `/iyu:telemetry-az` | Skill | Manual | Azure App Insights telemetry triage, issue discovery + run-over-run user analytics |
-| `/iyu:backlog-discover` | Skill | Manual | Playbook-driven backlog discovery — proposal only, never auto-merges |
+| `/iyu:backlog-discover` | Skill | Manual | Playbook-driven backlog discovery + diagnose/rank/stage — proposal only, never auto-merges |
 
 ## Commands
 
@@ -87,6 +87,8 @@ Cycles maintain continuity — unresolved issues and pending decisions automatic
 
 **Autonomy leveling (act like a capable delegate)** — decisions are handled by **stakes × reversibility**, not by asking about everything. **L0** taste/convention is decided silently; **L1** decisions that carry a real trade-off but are *reversible* (two-way door) are self-made by weighing five **co-equal** lenses (근본/정석/표준/세련/philosophy — deliberately *not* a priority order), acted on immediately, and logged `provisional` in a persistent **Decisions Ledger**; **L2** irreversible-or-human-only decisions are batched (BLOCKED-ITEM / Pending Human Decision) while other work continues; **L3** run-fatal issues HARD STOP. The bias is **in-dubio-pro-autonomy** — when a decision is ambiguous between L1 and L2 it resolves to L1 (decide + flag), the sole exception being an irreducible cross-lens conflict, which escalates. Corrections are dual-channel: a reverted L1 decision is picked up from conversation *and* written durably to the ledger, then re-opened at the next cycle's STEP 0 as fresh scope re-evaluated together with whatever was built on it. Every run ends with an **End-of-Run Report** (`RUN-SUMMARY-{date}.md` + final response, on all termination paths) in three parts — progress with evidence, deferred L2 decisions awaiting you, and self-made L1 decisions each with its trade-off and a one-line "to correct" — so proceed-first-correct-later stays safe.
 
+**Self-unblock before parking** — a blocker only counts once you've tried to remove it. Before any `BLOCKED-ITEM` is parked, the cycle checks whether the credential/dependency is actually missing (look, don't assume), whether the "user-only decision" is already answered in CLAUDE.md / an accepted issue / a prior ledger entry, and whether a genuinely useful slice can proceed without the blocked part — parking only the residue, and recording what was tried. An assumed blocker is how a run stalls with budget left.
+
 When primary work finishes early and cycles remain, run-cycle does not stop idle. It climbs a **Surplus-Cycle Value Ladder** — investing the remaining budget across the full software lifecycle: **① main loop → ② durable value** (research → refactoring → docs/assets) **→ ③ stability** (tests/monitoring → security/compliance → resilience) **→ ④ efficiency** (DevOps → DX). It acts only where the project shows a concrete signal; additive/low-risk work is done in-cycle, invasive/opinionated work is proposed for human decision. Doc-sync is the always-applicable floor of this ladder.
 
 Before the single end-of-run commit, run-cycle runs a **lightweight release-readiness check** — version consistency across version-bearing files, CHANGELOG coverage, doc-sync, and an evidence block of the actual test/build/lint output. It verifies and packages only; tagging, publishing, and pushing stay with the human / CI. Skipped on `--no-commit` / `--dry-run`.
@@ -117,21 +119,39 @@ the watermark and reports live under `claudedocs/telemetry/`. Issues follow the 
 
 ### /iyu:backlog-discover
 
-Adaptively discovers new backlog phases via the Backlog Generation Playbook — convergent
-activities (vision-gap analysis, trend research, benchmarking, telemetry-az reuse,
-issue/community tracking, active dogfooding, code/security audits) on a persistent per-activity
-cadence, plus emergent activities (pre-mortems, subtraction sessions, chaos engineering,
-fresh-eyes onboarding, and more) selected by self-diagnosing backlog symptoms from
-project history.
+Discovers new backlog phases via the Backlog Generation Playbook — then **judges them**,
+the way a team lead would. Convergent activities (vision-gap analysis, trend research,
+benchmarking, academic/theory research scan, domain practice & norms watch,
+appropriate-technology adoption verdicts, positioning review, telemetry-az reuse,
+issue/community tracking, active dogfooding, code/security audits, developer-tooling gaps)
+run on a persistent per-activity cadence, alongside emergent activities (pre-mortems,
+subtraction sessions, chaos engineering, fresh-eyes onboarding, and more) selected by
+self-diagnosing backlog symptoms from project history.
+
+**Two co-equal inquiry axes.** Every item is tagged `SW기술` (how the product is built) or
+`도메인전문` (what the product is *for* — the concepts, methods, and norms of its subject
+area). Research naturally drifts toward the implementation axis while the domain gets
+treated as settled; a persistent skew is detected as its own symptom and reported rather
+than silently accepted.
+
+**Synthesis, not a flat list.** Discovery ends in a state-of-the-product **diagnosis**
+(vision distance · market position · domain fitness · internal health), an
+evidence-grounded **importance ranking** (vision contribution × philosophy alignment ×
+evidence strength, with cost/risk used for placement), and a dependency-ordered
+**now/next/later staging**. Horizons are an ordering, never a schedule — no cycle numbers,
+no dates. Every score cites the signal behind it, and an item resting on a thought
+experiment alone can't be placed in "now": the response is to schedule the work that would
+produce evidence.
 
 **Active dogfooding** is the always-on floor: instead of re-reading already-recorded
 friction, a team member drives the product live through a *fresh, vision-anchored
 scenario* on its real runnable surface (CLI / library consumer-script / service HTTP),
 observing feature/UI/UX/app-flow gaps first-hand. This makes an **empty or recently-run
-backlog a deepen-signal, not a done-signal** — "go use the product and re-check the
-vision." Findings must carry **run-evidence** (commands run + behavior observed + steps
-walked) or they're dropped as guesses; concrete defects route to `claudedocs/issues/`,
-only systemic/UX/vision gaps become proposal items.
+backlog a deepen-signal, not a done-signal** — and when the floor comes up thin, a
+**deepen ladder** digs successively into tech health & tooling → theory & domain practice →
+benchmarking & positioning. Findings must carry **run-evidence** (commands run + behavior
+observed + steps walked) or they're dropped as guesses; concrete defects route to
+`claudedocs/issues/`, only systemic/UX/vision gaps become proposal items.
 
 ```bash
 /iyu:backlog-discover                          # Run all cadence-due activities + diagnosed emergent session(s)
@@ -145,9 +165,10 @@ command only *feeds* it. Every discovered item lands in a proposal document
 (`claudedocs/backlog-discovery/proposal-YYYY-MM-DD.md`); **nothing merges into
 `ROADMAP.md` automatically** — a human reviews the proposal and asks explicitly for
 selected items to be adopted, per the mindset principle that new product direction is
-never self-decided. Cadence state (`claudedocs/backlog-discovery/state.json`) tracks each
-of the playbook's 28 activities independently, so a quarterly activity doesn't re-run
-every invocation and a stale half-yearly one doesn't get silently skipped forever.
+never self-decided — ranking an item is not merging it. Cadence state
+(`claudedocs/backlog-discovery/state.json`) tracks each of the playbook's 33 activities
+independently, so a quarterly activity doesn't re-run every invocation and a stale
+half-yearly one doesn't get silently skipped forever.
 
 ## Decision Matrices
 

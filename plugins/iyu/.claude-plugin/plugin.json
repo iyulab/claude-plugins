@@ -1,10 +1,10 @@
 {
   "name": "iyu",
-  "version": "1.23.0",
-  "description": "Productivity toolkit for library maintainers - adaptive iterative development, issue triage, PR review, telemetry-driven issue discovery, and playbook-driven backlog discovery with project philosophy alignment",
+  "version": "1.24.0",
+  "description": "Productivity toolkit for library maintainers - adaptive iterative development, issue triage, PR review, telemetry-driven issue discovery, and playbook-driven backlog discovery that diagnoses, ranks, and stages candidates across software-technical and domain-expertise axes with project philosophy alignment",
   "author": {
     "name": "iyulab",
     "url": "https://github.com/iyulab"
   },
-  "keywords": ["cycle", "iterative", "roadmap", "development", "lifecycle", "issue", "triage", "pr-review", "code-review", "security", "opensource", "maintainer", "library", "bug", "pattern-detection", "root-cause", "refactoring", "telemetry", "app-insights", "azure", "monitoring", "observability", "backlog", "discovery", "playbook", "benchmarking"]
+  "keywords": ["cycle", "iterative", "roadmap", "development", "lifecycle", "issue", "triage", "pr-review", "code-review", "security", "opensource", "maintainer", "library", "bug", "pattern-detection", "root-cause", "refactoring", "telemetry", "app-insights", "azure", "monitoring", "observability", "backlog", "discovery", "playbook", "benchmarking", "positioning", "research", "domain-expertise", "prioritization"]
 }

@@ -8,6 +8,69 @@ bugs or docs. MAJOR is never bumped automatically.
 > History is reconstructed from git from v1.11.0 onward. Earlier versions live in
 > the git log only.
 
+## [1.24.0] — 2026-08-01
+
+### Added
+- **Synthesis stage `P6` (`backlog-discover`)** — discovery no longer ends at a flat tagged list.
+  Every run now produces a four-axis **현재 상태 진단** (비전 대비 지점 · 시장 내 자리 · 도메인
+  적합성 · 내부 체력, each observed or explicitly "이번 주기 미관측") closing with a one-sentence
+  verdict; an **중요도 판정** scoring 비전 기여도 × 철학 정렬 × 증거 강도 into a value score, with
+  비용·리스크 scored separately and used only for placement; and a **단계 구성** onto 지금/다음/나중.
+  Horizons are an *ordering, never a schedule* — no cycle numbers, dates, or durations, mirroring
+  the roadmap-is-a-phase-backlog invariant. Scoring tables and overriding constraints live in the
+  new `references/synthesis-rubric.md`.
+- **Inquiry axis (`SW기술` / `도메인전문`) as a second, co-equal tag** — recorded per item alongside
+  the value axis, aggregated per run in `state.json.inquiryAxisHistory`, and reported in the
+  proposal. Research drifts naturally toward how the product is *built* while the subject area it
+  is *for* gets treated as settled; the skew is now detectable, is its own diagnosable symptom
+  ("도메인 이해가 정체돼 있다"), and is reported rather than silently rebalanced.
+- **Five playbook activities** — `research-scan` (papers/theory, **two mandatory axes**: the
+  implementation's algorithms *and* the subject area's own methods and evaluation criteria),
+  `domain-practice` (the domain's standards bodies, normative change, practitioner workflows, and
+  the tools domain experts reach for), `appropriate-tech` (adoption verdict `채택/시범/보류/기각`,
+  central test: "does the problem it solves actually exist in this product?"), `positioning-review`
+  (누구를 위한 것인가 / 무엇으로 선택받는가 / 무엇을 하지 않기로 했는가, tested against evidence),
+  and `tooling-development` (repeated manual work asset-ized into scripts/harnesses/generators —
+  team throughput, distinct from product refactoring). `benchmarking` additionally compares how each
+  competitor *models the domain*, not only what it ships.
+- **Dry-backlog deepen ladder (`P1`)** — when the always-on dogfooding floor yields little, dig
+  successively: ① 실사용 → ② 기술 건전성·도구 → ③ 지식 (기술 이론 + 도메인 이론·실무) → ④ 시장·포지션,
+  forcing the named activities due and stopping at the first productive lane. Only after ④ is
+  "nothing to propose" a grounded verdict; the diagnosis is written either way.
+- **Self-unblock check before parking (`run-cycle`)** — a `BLOCKED-ITEM` may only be parked after a
+  bounded attempt to remove the blocker: is the resource actually missing (look, don't assume), is
+  the "user-only decision" already answered in a governing doc / accepted issue / prior ledger
+  entry, can a useful slice proceed without the blocked part, and is it really L2 rather than a
+  reversible L1. Ledger entries now record what was tried, so an *assumed* blocker cannot stall a
+  run that still has budget.
+
+### Changed
+- **Stop hook gains two enforcement clauses (`run-cycle`)** — the hook is the run's only durable
+  enforcement surface, so it now also (a) performs a **ledger-continuity check** against the
+  previous cycle log, blocking when an entry was neither carried forward nor resolved, and
+  (b) requires the **End-of-Run Report to exist before any ALLOW**, including at the budget
+  ceiling (the one permitted block there, resolved by writing the report).
+- Process steps `P6`–`P8` renumbered to `P7`–`P9` to make room for synthesis; proposal template
+  gains 현재 상태 진단, 우선순위 및 단계 구성, and 기술 채택 판정 sections plus per-item 판정/배치 fields.
+
+### Fixed
+- `run-cycle` frontmatter `argument-hint` was not valid YAML (an unterminated quoted scalar
+  followed by bare bracket text); now a single quoted string.
+- CHANGELOG was missing the 1.23.0 entry (added below).
+
+## [1.23.0] — 2026-07-21
+
+### Added
+- **Continuity-doc hygiene (`run-cycle`)** — `ROADMAP.md`/`HANDOFF.md` hold remaining work only.
+  STEP 5 migrates every completed phase/item found (pre-existing leftovers included) into a
+  same-directory `HISTORY.md` pure index linking to cycle logs, rewrites the handoff to
+  current + next only, and keeps a `> History:` link atop each continuity doc. A still-long doc
+  (~200+ lines) after migration is treated as a "detail at the wrong layer" signal.
+
+### Changed
+- The lean check folds into the ladder-② doc-sync floor and the release-readiness Docs item.
+  Hygiene never gates termination; Stop-hook logic unchanged.
+
 ## [1.22.0] — 2026-07-17
 
 ### Added
