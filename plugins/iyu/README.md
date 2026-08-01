@@ -2,7 +2,7 @@
 
 [![Claude Code Plugin](https://img.shields.io/badge/Claude%20Code-Plugin-blueviolet?logo=anthropic&logoColor=white)](https://docs.anthropic.com/en/docs/claude-code/plugins)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-1.24.0-blue.svg)](./plugin.json)
+[![Version](https://img.shields.io/badge/version-1.25.0-blue.svg)](./plugin.json)
 
 Productivity toolkit for open-source library maintainers and developers.
 
@@ -79,7 +79,7 @@ Each cycle: Scope → Research → Implement → Test → Evaluate → Carry-For
 
 **Just-in-time scoping** — `N` is a ceiling, not a target. Only the current cycle is scoped concretely; everything beyond it stays a phase-level direction in the backlog. Each cycle's outcome decides the *next* cycle's scope, so the run behaves like genuine multi-turn work rather than one upfront N-cycle plan executed sequentially. Work too large for a cycle (or deserving its own) is promoted to the next cycle instead of being pre-assigned.
 
-**Emergent scope derivation** — not everything can be specified upfront; a capability, once built, implies follow-on work that only becomes concrete after it exists (single-file upload → "validate it", "accept multiple files", "handle the empty/oversized case"). Each cycle's STEP 5 actively derives this from three lenses — **user** (what would they now expect or hit?), **developer/maintainer** (does it fit the philosophy; what's left brittle?), **operator** (what does production now require?) — then runs every candidate through a **derivation gate**: pattern-following completion within the project's declared role is taken as autonomous next scope; anything opening a new product direction, paradigm, dependency, or real trade-off is routed to a human-decision proposal, never self-decided. The run stops only when the feature frontier is *explicitly* judged exhausted — preventing the "it only did the initial plan and quit" failure mode.
+**Emergent scope derivation** — not everything can be specified upfront; a capability, once built, implies follow-on work that only becomes concrete after it exists (single-file upload → "validate it", "accept multiple files", "handle the empty/oversized case"). Each cycle's STEP 5 actively derives this from three lenses — **user** (what would they now expect or hit?), **developer/maintainer** (does it fit the philosophy; what's left brittle?), **operator** (what does production now require?) — then runs every candidate through a **derivation gate**: pattern-following completion within the project's declared role is taken as autonomous next scope; anything opening a new product direction, paradigm, dependency, or real trade-off is routed to a human-decision proposal, never self-decided. The verdict is written as a **token** the Stop hook reads literally — `FRONTIER-OPEN:` or `FRONTIER-EXHAUSTED:` — and the run can stop early only on the latter; neither token present means derivation was skipped, which is never a valid reason to stop. This is what prevents the "it only did the initial plan and quit" failure mode.
 
 Cycles maintain continuity — unresolved issues and pending decisions automatically propagate through the cycle chain.
 
@@ -91,7 +91,9 @@ Cycles maintain continuity — unresolved issues and pending decisions automatic
 
 When primary work finishes early and cycles remain, run-cycle does not stop idle. It climbs a **Surplus-Cycle Value Ladder** — investing the remaining budget across the full software lifecycle: **① main loop → ② durable value** (research → refactoring → docs/assets) **→ ③ stability** (tests/monitoring → security/compliance → resilience) **→ ④ efficiency** (DevOps → DX). It acts only where the project shows a concrete signal; additive/low-risk work is done in-cycle, invasive/opinionated work is proposed for human decision. Doc-sync is the always-applicable floor of this ladder.
 
-Before the single end-of-run commit, run-cycle runs a **lightweight release-readiness check** — version consistency across version-bearing files, CHANGELOG coverage, doc-sync, and an evidence block of the actual test/build/lint output. It verifies and packages only; tagging, publishing, and pushing stay with the human / CI. Skipped on `--no-commit` / `--dry-run`.
+Before committing, run-cycle runs a **lightweight release-readiness check** — version consistency across version-bearing files, CHANGELOG coverage, doc-sync, and an evidence block of the actual test/build/lint output. It verifies and packages only; tagging, publishing, and pushing stay with the human / CI. Skipped on `--no-commit` / `--dry-run`. The commit itself defaults to **one per run** (bundling beats fragmenting), splitting on **verified-cycle boundaries** only when a long run's single diff would no longer be reviewable in one pass — each cycle's passing STEP 3 is already a clean rollback point.
+
+Cycle accounting respects `start_cycle`: when the run starts at cycle *K*, only logs from *K* onward count toward the budget, so a repo carrying logs from earlier runs can't read as already over budget and stop before doing any work.
 
 ### /iyu:telemetry-az
 
@@ -120,13 +122,24 @@ the watermark and reports live under `claudedocs/telemetry/`. Issues follow the 
 ### /iyu:backlog-discover
 
 Discovers new backlog phases via the Backlog Generation Playbook — then **judges them**,
-the way a team lead would. Convergent activities (vision-gap analysis, trend research,
+the way an owner-manager would. Where `run-cycle` is the capable *employee* that executes a
+scope, this is the capable *owner*: it decides what deserves attention next **and keeps what
+already exists in good order**. Convergent activities (vision-gap analysis, trend research,
 benchmarking, academic/theory research scan, domain practice & norms watch,
 appropriate-technology adoption verdicts, positioning review, telemetry-az reuse,
-issue/community tracking, active dogfooding, code/security audits, developer-tooling gaps)
-run on a persistent per-activity cadence, alongside emergent activities (pre-mortems,
-subtraction sessions, chaos engineering, fresh-eyes onboarding, and more) selected by
-self-diagnosing backlog symptoms from project history.
+issue/community tracking, active dogfooding, stewardship inspection, code/security audits,
+developer-tooling gaps) run on a persistent per-activity cadence, alongside emergent
+activities (pre-mortems, subtraction sessions, chaos engineering, fresh-eyes onboarding, and
+more) selected by self-diagnosing backlog symptoms from project history — with a **3-run
+recency window** so one perpetually-true symptom can't monopolize the rotation.
+
+**관리 점검 (stewardship-check)** is the upkeep half, run every sprint by actually executing
+the checks: dependency currency (outdated / deprecated / EOL, upgradeable-now vs.
+blocked-by-breaking-change, runtime & SDK floor), project configuration (build/CI/lint/test,
+release pipeline, package metadata, silently-disabled checks), doc & link hygiene (README
+links, badges, quickstart commands verified against the current tree), and repo hygiene
+(orphan files, dead scripts, stale artifacts). Concrete defects route to
+`claudedocs/issues/`; only the systemic pattern behind them becomes a proposal item.
 
 **Two co-equal inquiry axes.** Every item is tagged `SW기술` (how the product is built) or
 `도메인전문` (what the product is *for* — the concepts, methods, and norms of its subject
@@ -148,10 +161,16 @@ friction, a team member drives the product live through a *fresh, vision-anchore
 scenario* on its real runnable surface (CLI / library consumer-script / service HTTP),
 observing feature/UI/UX/app-flow gaps first-hand. This makes an **empty or recently-run
 backlog a deepen-signal, not a done-signal** — and when the floor comes up thin, a
-**deepen ladder** digs successively into tech health & tooling → theory & domain practice →
-benchmarking & positioning. Findings must carry **run-evidence** (commands run + behavior
-observed + steps walked) or they're dropped as guesses; concrete defects route to
-`claudedocs/issues/`, only systemic/UX/vision gaps become proposal items.
+**deepen ladder** digs successively into stewardship → tech health & tooling → theory &
+domain practice → benchmarking & positioning. (The floor is not a ladder rung: dogfooding
+runs every invocation regardless, so counting it as the first rung would make the deeper
+lanes unreachable.) Findings must carry **run-evidence** (commands run + behavior observed +
+steps walked) or they're dropped as guesses; concrete defects route to `claudedocs/issues/`,
+only systemic/UX/vision gaps become proposal items.
+
+Items carry stable ids (`BD-YYYYMMDD-nn`), and a gap already named by a recent proposal is
+re-opened as **재발견** with new evidence appended rather than filed again — repeated
+observation should raise evidence strength, not multiply near-duplicates.
 
 ```bash
 /iyu:backlog-discover                          # Run all cadence-due activities + diagnosed emergent session(s)
@@ -166,9 +185,11 @@ command only *feeds* it. Every discovered item lands in a proposal document
 `ROADMAP.md` automatically** — a human reviews the proposal and asks explicitly for
 selected items to be adopted, per the mindset principle that new product direction is
 never self-decided — ranking an item is not merging it. Cadence state
-(`claudedocs/backlog-discovery/state.json`) tracks each of the playbook's 33 activities
-independently, so a quarterly activity doesn't re-run every invocation and a stale
-half-yearly one doesn't get silently skipped forever.
+(`claudedocs/backlog-discovery/state.json`) tracks each of the playbook's 34 activities
+independently against a clock read once per run (`date -u`, never assumed), so a quarterly
+activity doesn't re-run every invocation and a stale half-yearly one doesn't get silently
+skipped forever. A single `history[]` (last 12 runs) is the sole trend state, matching
+`telemetry-az`'s convention.
 
 ## Decision Matrices
 

@@ -1,6 +1,6 @@
 ---
 name: backlog-discover
-description: Adaptively discovers new backlog phases for a project's ROADMAP.md and then judges them like a team lead — running a convergent/emergent research playbook (vision-gap analysis, trend/competitive research, academic-research scan, appropriate-technology adoption judgment, positioning review, telemetry-az output reuse, voice-of-customer mining, technical-debt audits, developer-tooling gaps, active dogfooding, plus emergent techniques like pre-mortems, subtraction sessions, chaos engineering, fresh-eyes onboarding) on a persistent per-activity cadence, self-diagnosing which emergent session to rotate in when the backlog feels stale, then synthesizing the findings into a state-of-the-product diagnosis, an evidence-grounded importance ranking, and a dependency-ordered now/next/later staging toward the vision. Always produces a proposal document for human review; never merges into ROADMAP.md automatically. Use when the backlog is running dry, when run-cycle reports the feature frontier exhausted, or periodically to keep the roadmap fed with fresh, philosophy-aligned candidates. An empty or already-recently-run backlog is a deepen-signal (use the product, then dig into tech-health, research, and positioning in that order), never a done-signal. Fully independent of run-cycle — run-cycle only consumes ROADMAP.md, this skill only feeds it.
+description: Discovers new backlog phases for a project's ROADMAP.md and judges them like an owner-manager — running a convergent/emergent research playbook (vision-gap analysis, trend/competitive research, academic-research scan, appropriate-technology adoption judgment, positioning review, telemetry-az output reuse, voice-of-customer mining, active stewardship inspection of dependencies/config/docs/repo hygiene, technical-debt audits, developer-tooling gaps, active dogfooding, plus emergent techniques like pre-mortems, subtraction sessions, chaos engineering, fresh-eyes onboarding) on a persistent per-activity cadence, self-diagnosing which emergent session to rotate in when the backlog feels stale, then synthesizing the findings into a state-of-the-product diagnosis, an evidence-grounded importance ranking, and a dependency-ordered now/next/later staging toward the vision. Always produces a proposal document for human review; never merges into ROADMAP.md automatically. Use when the backlog is running dry, when run-cycle reports the feature frontier exhausted, when dependencies or project configuration may have gone stale, or periodically to keep the roadmap fed with fresh, philosophy-aligned candidates. An empty or already-recently-run backlog is a deepen-signal (use the product, inspect what you own, then dig into tech-health, research, and positioning in that order), never a done-signal. Fully independent of run-cycle — run-cycle only consumes ROADMAP.md, this skill only feeds it.
 argument-hint: "[--modes <comma-list>] [--symptom <name>] [--dry-run]"
 disable-model-invocation: true
 allowed-tools: Read, Glob, Grep, Write, Edit, WebSearch, WebFetch, TodoWrite, Bash
@@ -17,8 +17,18 @@ to it, and never writes `ROADMAP.md` directly.
 
 ## Why this shape
 
-A generic "brainstorm new features" prompt either runs the same handful of ideas every
-time (stale) or invents ungrounded scope (mindset violation — "no invention", no
+The two development skills play different roles on purpose. `run-cycle` acts as a **capable
+employee**: given a scope, it executes, verifies, and reports back. This skill acts as the
+**capable owner-manager** — the one who cares about the project as something they are
+answerable for. A manager does two things an executor does not: they decide *what deserves
+attention next*, and they **keep what already exists in good order**. The second half is easy
+to lose: a discovery skill that only looks forward will happily propose new capabilities
+while the dependencies rot, the quickstart breaks, and the CI config drifts out of sync with
+reality. Hence `stewardship-check` (관리 점검) as a short-cadence lane and the first rung of
+the deepen ladder.
+
+Concretely, a generic "brainstorm new features" prompt either runs the same handful of ideas
+every time (stale) or invents ungrounded scope (mindset violation — "no invention", no
 autonomous new product direction). This skill instead:
 
 1. Draws from a **fixed, named menu** (the playbook) so activities are legible and
@@ -32,7 +42,11 @@ autonomous new product direction). This skill instead:
    than `run-cycle`'s in-cycle "autonomous-eligible" fast path, because this skill's
    discoveries are external and speculative (web trends, competitor features, deliberately
    engineered provocations) rather than a narrow "what does the diff I just wrote imply."
-5. **Judges, not just collects.** Handing over 40 tagged findings is not a finished job —
+5. **Inspects, not only imagines.** `stewardship-check` actively runs the project's own
+   dependency, config, doc, and repo-hygiene checks each sprint. Forward-looking research and
+   backward-looking upkeep are both the owner's job, and the upkeep half is the one that
+   silently decays if nobody schedules it.
+6. **Judges, not just collects.** Handing over 40 tagged findings is not a finished job —
    it moves the whole burden of "what matters, in what order, and why" onto the reader.
    P6 closes that gap: a state-of-the-product **diagnosis**, an evidence-grounded
    **importance ranking**, and a dependency-ordered **staging** toward the vision. Judgment
@@ -55,7 +69,11 @@ unscoped surface is smaller than `run-cycle`'s, but the same justification appli
 - `--symptom <name>` — override the P2 self-diagnosis and force a specific emergent
   session by name, bypassing symptom detection.
 - `--dry-run` — run through proposal generation (through P7) and print the proposal to
-  chat; write no files and do not advance `state.json`.
+  chat; write no files and do not advance `state.json`. **This also bounds P3's active
+  lanes**: `dogfooding` and `stewardship-check` drive the real project via `Bash`, so under
+  `--dry-run` they take read-only paths only (inspect, query, list) and skip-with-reason
+  anything that would install, upgrade, generate, or otherwise mutate the working tree. A
+  dry run must not be able to change the project it is examining.
 
 ## File layout (consumer repo)
 
@@ -73,17 +91,18 @@ claudedocs/issues/
 ```json
 {
   "activities": {
-    "vision-gap":             { "cadence": "half-yearly", "lastRunUtc": null },
+    "vision-gap":              { "cadence": "half-yearly", "lastRunUtc": null },
     "web-trend":               { "cadence": "quarterly",   "lastRunUtc": null },
     "benchmarking":            { "cadence": "quarterly",   "lastRunUtc": null },
     "research-scan":           { "cadence": "half-yearly", "lastRunUtc": null },
     "domain-practice":         { "cadence": "quarterly",   "lastRunUtc": null },
     "appropriate-tech":        { "cadence": "quarterly",   "lastRunUtc": null },
     "positioning-review":      { "cadence": "quarterly",   "lastRunUtc": null },
-    "telemetry-observability": { "cadence": "always",       "lastRunUtc": null },
-    "usage-analytics":         { "cadence": "sprint",       "lastRunUtc": null },
-    "issue-community":         { "cadence": "always",       "lastRunUtc": null },
-    "dogfooding":              { "cadence": "always",       "lastRunUtc": null, "scenariosRun": [] },
+    "telemetry-observability": { "cadence": "always",      "lastRunUtc": null },
+    "usage-analytics":         { "cadence": "sprint",      "lastRunUtc": null },
+    "issue-community":         { "cadence": "always",      "lastRunUtc": null },
+    "dogfooding":              { "cadence": "always",      "lastRunUtc": null, "scenariosRun": [] },
+    "stewardship-check":       { "cadence": "sprint",      "lastRunUtc": null },
     "code-audit":              { "cadence": "quarterly",   "lastRunUtc": null },
     "security-compliance":     { "cadence": "quarterly",   "lastRunUtc": null },
     "tooling-development":     { "cadence": "quarterly",   "lastRunUtc": null },
@@ -102,15 +121,25 @@ claudedocs/issues/
     "lastRunUtc": {},
     "rotationPointer": 0
   },
-  "diagnosisHistory": [],
-  "valueAxisHistory": [],
-  "inquiryAxisHistory": []
+  "history": []
 }
 ```
 
-`inquiryAxisHistory` entries are `{ runUtc, swTech, domain }` — the per-run count of items
-tagged on each **inquiry axis** (P4). It is what makes the "SW 기술 축으로만 조사하고 있다"
-skew detectable across runs rather than only within one.
+**`history[]` is the sole trend state** (last 12 runs, newest last) — one entry per run, not
+three parallel arrays joined on a timestamp. This matches `telemetry-az`'s single-`history[]`
+convention, and it is what lets P2's heuristics be a plain scan instead of a join:
+
+```json
+{ "runUtc": "...", "symptom": "기능만 쌓이고 제거가 없다", "selected": ["subtraction-session"],
+  "itemCount": 7, "business": 3, "techHealth": 3, "userRequest": 1,
+  "swTech": 6, "domain": 1, "lastItemSeq": 7 }
+```
+
+- `business` / `techHealth` / `userRequest` — per-run **value axis** counts (P4).
+- `swTech` / `domain` — per-run **inquiry axis** counts (P4). This is what makes the
+  "SW 기술 축으로만 조사하고 있다" skew detectable across runs rather than only within one.
+- `symptom` / `selected` — P2's diagnosis, read back by P2 itself for its suppression window.
+- `lastItemSeq` — the highest item sequence number issued this run (item IDs, P4).
 
 `dogfooding.scenariosRun` is a rolling list (last ~8) of short slugs naming the
 end-to-end scenarios already exercised, so each active-dogfooding run picks a *fresh*
@@ -122,22 +151,49 @@ Cadence intervals in days: `always` = 0, `sprint` = 14, `quarterly` = 91,
 special-cased as unconditional; it goes through the same due-check as every other
 activity (elapsed ≥ interval), it simply always satisfies that check.
 
-On first run (no `state.json` file), every explicitly-cadenced activity has
-`lastRunUtc: null`, which counts as infinite elapsed time — every activity listed in
-`activities` is due: all of playbook §1–5 (including the domain-axis, tooling, and
-positioning lanes) plus the four individually-tracked Part B activities (`sunset-review`,
-`premortem`, `sf-prototyping`, `archive-mining` — three half-yearly, `sunset-review`
-quarterly). This produces a deliberately larger first proposal (a genuine cold-start
-backlog seed) — **note this explicitly** in the proposal's summary rather than silently
-truncating it.
+On first run (no `state.json` file), every activity has `lastRunUtc: null`, which counts as
+infinite elapsed time — **all 20 are due at once**. Running twenty lanes in one invocation
+does not produce twenty findings; it produces twenty shallow passes, or a context wall.
+
+**First-run split (applies only when `state.json` did not exist).** Run this ordered core of
+convergent activities to completion and stop there (P2's one emergent session still runs on
+top — the split bounds the due set, not the process):
+
+1. `vision-gap` — establishes the thesis everything else is measured against
+2. `dogfooding` — the always-floor, and the only source of 증거 강도 5
+3. `stewardship-check` — the owner's walk-through: what is already broken or out of date
+4. `issue-community` — signals someone already took the trouble to report
+5. `code-audit` — where the debt sits
+
+**Every** remaining activity is deferred — including `always`- and `sprint`-cadence ones such
+as `telemetry-observability` and `usage-analytics`. The split bounds a cold start by *effort
+available*, not by cadence, so "always = due whenever checked" (above) does not exempt an
+activity from it; on a first run those data-driven lanes also have the least to read
+(`telemetry-az` has typically never run yet). Each is recorded in the proposal's
+스킵된 활동 section as `최초 실행 분할 — 다음 실행에서 수행` with its `lastRunUtc` left `null`,
+so it is due again next invocation — and from the second run onward the split never applies,
+so cadence governs alone. **This is a deliberate exception to P8's rule that a skipped activity still
+advances `lastRunUtc`** — a split-deferred activity was never attempted, so advancing its
+clock would silently swallow it for a whole cadence period. P8 restates this distinction.
+
+The first proposal is still larger than a steady-state one (a genuine cold-start backlog
+seed) — note that in the summary. What it must not be is twenty lanes touched and none
+finished.
 
 ## Process
 
-### P0: State
+### P0: Clock, then state
 
-Read `claudedocs/backlog-discovery/state.json`. If missing, create it in-memory with the
-schema above (all `lastRunUtc: null` / `{}` / `[]`) — do not write it to disk yet (P8
-writes it, and only if not `--dry-run`).
+**Establish `nowUtc` first — do not assume it.** Run `Bash: date -u +%Y-%m-%dT%H:%M:%SZ` and
+use that single value for the whole invocation (P1 due-checks, P2 elapsed-time heuristics,
+P8 writes). Never re-query mid-run: one clock keeps every cadence boundary consistent, and a
+guessed timestamp written into `state.json` silently corrupts every future due-check — the
+exact failure rule 6 ("cadence over guessing") exists to prevent. If `date` is unavailable,
+fall back to the session's known date at 00:00Z and **say so in the proposal**.
+
+Then read `claudedocs/backlog-discovery/state.json`. If missing, create it in-memory with the
+schema above (all `lastRunUtc: null` / `[]`) — do not write it to disk yet (P8 writes it, and
+only if not `--dry-run`).
 
 ### P1: Due-check
 
@@ -152,18 +208,23 @@ Mark `due = true` unconditionally for any activity named in `--modes` (bypasses 
 elapsed check). Collect the due set — this is what P3 executes.
 
 **Thin/empty due-set is a deepen-signal, not a done-signal.** If cadence leaves few or no
-activities due (e.g. this ran recently), do **not** return an empty proposal. `dogfooding`
-is `always`-cadence and therefore always in the due set — treat that as the floor: run it
-*actively* (P3's active live-use path with a fresh vision-anchored scenario), and let
-P2's round-robin still surface an emergent session.
+activities due (e.g. this ran recently), do **not** return an empty proposal.
 
-**Dry-backlog deepen ladder.** When the floor still yields little, dig into progressively
+**The floor is not a ladder rung.** `dogfooding` is `always`-cadence, so it runs on *every*
+invocation regardless of anything below — run it *actively* (P3's live-use path with a fresh
+vision-anchored scenario), and let P2's round-robin still surface an emergent session. The
+floor is what you always do; the ladder is what you do **when the floor came back thin**.
+Conflating the two would make the ladder unreachable: an always-running first rung that
+almost always yields something, combined with stop-at-first-material, means the deeper lanes
+are never descended at all.
+
+**Dry-backlog deepen ladder — engaged when the floor yields little.** Dig into progressively
 deeper (and more expensive) lanes in this order, forcing the named activities due for this
 run regardless of their cadence, and stopping at the first lane that produces material:
 
 | Lane | Force due | Question it answers |
 |---|---|---|
-| ① 실사용 | `dogfooding` (always-floor) | 새 시나리오로 직접 써보면 무엇이 걸리는가 |
+| ① 관리 점검 | `stewardship-check` | 지금 이 프로젝트에서 낡았거나 어긋났거나 깨진 것은 무엇인가 |
 | ② 기술 건전성 | `code-audit`, `tooling-development` | 부채는 어디에 쌓였고, 무엇이 우리를 느리게 하는가 |
 | ③ 지식 (기술 + 도메인 양축) | `research-scan`, `domain-practice` → `appropriate-tech` | 이미 풀린 문제를 자체 발명으로 때우고 있지 않은가, 이 주제 영역의 현재 방법론에 비추어 우리 접근이 타당한가, 그 기술이 우리에게 맞는가 |
 | ④ 시장 | `benchmarking` → `positioning-review` | 우리는 어디에 서 있고, 그 자리가 여전히 맞는가 |
@@ -171,14 +232,26 @@ run regardless of their cadence, and stopping at the first lane that produces ma
 Record in the proposal which lanes were descended and why. Only after lane ④ also comes up
 empty is "이번 주기에는 도출할 항목이 없음" a grounded verdict rather than an unexamined one —
 and even then, the P6 diagnosis is still written. An empty backlog means "use the product,
-then check the debt, the theory, and the position", never "nothing to do".
+inspect what you own, then check the debt, the theory, and the position", never
+"nothing to do".
 
 ### P2: Symptom diagnosis (selects the emergent-pool activities to run alongside P1's due set)
 
 If `--symptom <name>` was given, use it directly and skip detection. Otherwise, detect
 using the heuristics below, checking **in this order** and stopping at first match
 (a project can show multiple symptoms; treat the first-matched as this run's priority —
-others surface on a later run):
+others surface on a later run).
+
+**Recency suppression (required — this is what keeps the table from collapsing to row 1).**
+Skip any symptom that appears as `symptom` in the **last 3 `history[]` entries**, and move on
+to the next match. Only if *every* matching symptom is suppressed do you take the highest
+one anyway (and say so in the proposal).
+
+Without this, the table is decorative. Row 1's condition — zero removal/deprecation entries
+across 8 logs — is true of almost every growing project, it is checked first, and
+first-match-wins means it would win every run forever, leaving rows 2–7 and the 14-item
+rotation pool as dead code. A one-run window is not enough either: rows 1 and 2 would simply
+alternate while 3–7 still starve. `history[]` keeps 12 entries, so a 3-run window is free.
 
 | Symptom | Heuristic (what to check) | Prescription (from playbook §6–10) |
 |---|---|---|
@@ -186,9 +259,9 @@ others surface on a later run):
 | 리스크 대비가 부족하다 | `state.json.activities.security-compliance.lastRunUtc` is null or its elapsed time is ≥ 2× its cadence, AND no recent cycle-log Reflection section mentions security/resilience/observability work. | `premortem`, `chaos-engineering`, `red-team` |
 | 온보딩/DX 불만이 감지된다 | Glob `claudedocs/issues/**` (open + `closed/`) and grep for onboarding/setup/confusing-error language; ≥2 matches → symptom present. | `error-message-audit`, `fresh-eyes-onboarding`, `ai-agent-usability` |
 | 장기 방향이 흐릿하다 | `state.json.activities.vision-gap.lastRunUtc` elapsed ≥ 1.5× its cadence (severely overdue), OR — reading `ROADMAP.md`'s own revision history / `git log` over the date range spanned by the last 3 `INDEX.md` entries — the same phase names recur across that window without resolution. (`INDEX.md` itself only records run dates/counts/symptoms, not phase names; it just bounds which window of `ROADMAP.md` history to inspect.) | `working-backwards`, `sf-prototyping`, `constraint-removal` |
-| 도메인 이해가 정체돼 있다 (조사가 SW 기술 축에 편중) | Sum `swTech` and `domain` across the last 3 `inquiryAxisHistory` entries (or, if that history is empty, grep the last 3 `proposal-*.md` for `탐구 축:` lines). `domain` is 0, or fewer than a quarter of the total → symptom present. The product's subject matter is being treated as settled while only its implementation is re-examined. | `research-scan` (도메인 축 필수), `domain-practice`, `cross-domain-borrowing` |
+| 도메인 이해가 정체돼 있다 (조사가 SW 기술 축에 편중) | Sum `swTech` and `domain` across the last 3 `history[]` entries (or, if `history[]` is empty, grep the last 3 `proposal-*.md` for `탐구 축:` lines). `domain` is 0, or fewer than a quarter of the total → symptom present. The product's subject matter is being treated as settled while only its implementation is re-examined. | `research-scan` (도메인 축 필수), `domain-practice`, `cross-domain-borrowing` |
 | 제품의 자리가 낡았다 (차별화 흐려짐) | `state.json.activities.positioning-review.lastRunUtc` is null or elapsed ≥ 2× its cadence, AND competitor-driven items dominate recent output — grep the last 3 `proposal-*.md` for `출처 활동:` lines and find that `벤치마킹`-sourced items are ≥ half of all items across them. (Chasing feature parity without re-examining where the product stands is exactly the drift this symptom names.) | `positioning-review`, `benchmarking`, `cross-domain-borrowing` |
-| 아이디어 자체가 고갈됐다 | For the last 2 entries in `state.json.diagnosisHistory`, sum each matching `valueAxisHistory` entry (same `runUtc`) as `business + techHealth + userRequest` — if both sums are fewer than 2 total discovered items, symptom present. (`diagnosisHistory` itself does not store an item count; join on `runUtc` against `valueAxisHistory` to derive it.) | `hackathon-exploration`, `cross-domain-borrowing`, `random-walk-reading`, `archive-mining` |
+| 아이디어 자체가 고갈됐다 | Both of the last 2 `history[]` entries have `itemCount` < 2. | `hackathon-exploration`, `cross-domain-borrowing`, `random-walk-reading`, `archive-mining` |
 
 If no symptom matches, select the **1–2 oldest-untried** items from
 `emergentPool.rotationOrder` starting at `rotationPointer` (wrapping around the array),
@@ -207,7 +280,23 @@ still advancing `rotationPointer` past it in P8 so it isn't re-selected redundan
 next round-robin pass).
 
 Record the diagnosis (symptom name or `"none"`, and the selected activity id(s)) — this
-feeds P8's `diagnosisHistory` entry and next run's "아이디어 고갈" check.
+feeds P8's `history[]` entry, next run's recency suppression, and the "아이디어 고갈" check.
+
+### P2.5: Load prior proposals (dedupe basis)
+
+Read the **two most recent** `claudedocs/backlog-discovery/proposal-*.md` and extract every
+item's `id` + title + the gap it named. This list is the run's **known-items set**, and P4
+checks each new finding against it.
+
+Why this step exists: P9 merge is manual, so most proposed items are *never adopted* — they
+are neither in `ROADMAP.md` nor retired. Without a dedupe basis, every run rediscovers the
+same gaps from scratch and the proposal pile grows without any of the documents referring to
+each other. This skill already solved that problem once, for technology candidates
+(`appropriate-tech`'s recorded `기각`/`보류` verdicts, rule 9); P2.5 + P4 extend the same
+discipline to ordinary items.
+
+If fewer than two prior proposals exist, the known-items set is whatever exists (possibly
+empty) — not an error.
 
 ### P3: Execute
 
@@ -228,7 +317,8 @@ never fabricate the missing signal (mindset "no invention").
 | `usage-analytics` | Same read-only reuse of `telemetry-az`'s purpose-2 (user analytics) report section |
 | `issue-community` | `Bash(gh issue list)` / `gh discussion list` (if `gh` is authenticated) + scan `claudedocs/issues/**` for recurring themes. Skip + note "gh not authenticated" if it fails |
 | `dogfooding` | **Active live use, not passive re-mining.** (1) Pick a **fresh, vision-anchored scenario** — a representative end-to-end task derived from a promise/claim in CLAUDE.md/README, and not one already in `state.json.activities.dogfooding.scenariosRun` (rotate to a new path each run). (2) **Actually drive it** through the project's own runnable surface via `Bash`: a CLI's real commands, a throwaway consumer script for a library, HTTP calls for a service. Where UI-automation tooling happens to be available in the environment, extend the walk-through to the UI; otherwise drive the library/API layer beneath the GUI and **skip-with-reason** the pure-GUI surface (never narrate UI friction you could not observe). (3) Record observed 기능/UI/UX/앱플로우 friction with **run-evidence** (commands run, behavior/output seen, steps walked) — this evidence is what makes the finding grounded observation, not invention. (4) *Also* fold in DX friction previously recorded in cycle-log Carry-Forward / Structural Improvement Proposal sections. If nothing in the project is Bash-drivable at all, skip-with-reason. |
-| `code-audit` | Grep/Glob static scan for TODO/FIXME/deprecated markers + the project's own lint/outdated tooling via `Bash` (e.g. `npm outdated`, `dotnet list package --outdated`) |
+| `stewardship-check` | **관리 점검 — the owner's walk-through of what they are responsible for.** Not a scan for future ideas: an inspection of what *already exists* and has quietly gone stale, broken, or inconsistent. Actually run the checks (`Bash`), do not read about them. Four sweeps, each skip-with-reason if N/A: **(a) 의존성 최신화** — `npm outdated` / `dotnet list package --outdated` / `pip list --outdated` / `cargo outdated` etc.; for each behind-package judge *upgradeable now* vs. *blocked by a breaking change* vs. *deprecated-or-EOL, needs replacement*, and check the runtime/SDK floor (declared `engines`, target framework, language version) against what is currently supported. **(b) 구성 점검** — build/CI/lint/format/test config, release pipeline, package metadata (license, repo URL, entry points, exports, published-file list), `.gitignore`, editor/tooling config: look for settings that no longer match reality, silently-disabled checks, and steps that would fail on a clean clone. **(c) 문서·링크 위생** — README/docs links, badges, version numbers, and quickstart commands verified against the current tree, not assumed. **(d) 저장소 위생** — orphan files, dead scripts, stale generated artifacts, config that references paths that no longer exist. Route by kind (rule 3): each concrete fixable defect → `claudedocs/issues/ISSUE-*.md`; only the systemic pattern behind them (e.g. "의존성 정책 부재", "릴리즈 파이프라인이 수동 단계에 의존") becomes a proposal item. Every finding carries the command run and its output — the same run-evidence bar as dogfooding |
+| `code-audit` | Grep/Glob static scan for TODO/FIXME/deprecated markers + the project's own lint tooling via `Bash`. **Dependency currency belongs to `stewardship-check`; CVE/vulnerability to `security-compliance`** — this lane is about the shape of the code the team wrote |
 | `security-compliance` | Dependency audit via `Bash` (e.g. `npm audit`, `dotnet list package --vulnerable`) + WebSearch for CVEs affecting declared dependencies |
 | `tooling-development` | Mine the project's own history for **repeated manual work**: scan cycle logs / `git log` / CI config / scripts dir for procedures done by hand more than twice (release steps, fixture generation, log comparison, repro setup), slow or flaky verification loops, and one-off scripts rewritten each time. Each recurrence is a candidate to asset-ize as a script/harness/generator. Targets team throughput, not product durability — do not file refactoring items here |
 | `roadmap-decomposition` | Re-derive epics/stories from any stated milestones/KPIs in CLAUDE.md/README against current `ROADMAP.md` phases |
@@ -251,13 +341,24 @@ never fabricate the missing signal (mindset "no invention").
 | `ai-agent-usability` | Follow only the project's documented API/docs (no source-diving) to accomplish a representative task, noting where the docs alone were insufficient |
 | `dependency-horizon-scan` | Check declared dependencies' upstream release/commit cadence and maintainer count (via WebFetch to the package registry / repo) for decay signals |
 
-### P4: Tag
+### P4: Tag & de-duplicate
 
-For every discovered item, record: source activity id, **value axis** (exactly one of
-`비즈니스` / `기술건전성` / `사용자요청`), **inquiry axis** (exactly one of `SW기술` /
-`도메인전문`), a 1–3 sentence rationale grounded in what was actually observed, and a
-**phase-level** scope description (never cycle-numbered — consistent with `run-cycle`'s
+For every discovered item, record: a **stable id**, source activity id, **value axis**
+(exactly one of `비즈니스` / `기술건전성` / `사용자요청`), **inquiry axis** (exactly one of
+`SW기술` / `도메인전문`), a 1–3 sentence rationale grounded in what was actually observed, and
+a **phase-level** scope description (never cycle-numbered — consistent with `run-cycle`'s
 roadmap-is-a-phase-backlog rule).
+
+**Item id**: `BD-{YYYYMMDD}-{nn}`, `nn` restarting at 01 each run. The id is what makes an
+item referable across proposals; without one, "is this the same gap we found last time?" has
+no mechanical answer.
+
+**Re-discovery check (against P2.5's known-items set)**: if the finding names a gap already
+carried by a prior proposal, do **not** mint a new item. Keep the original id, mark it
+`재발견 {n}회차 (최초: BD-…)`, and append **only the newly observed evidence**. Repeated
+independent observation is not noise — it is exactly what should raise 증거 강도 and, through
+P6, move the item to an earlier horizon on its own. Re-litigating it from zero each run
+throws that signal away and buries the reviewer in near-duplicates.
 
 The **inquiry axis** answers "which kind of expertise did this finding come from" and the
 two are co-equal, not primary/secondary:
@@ -292,8 +393,10 @@ tables and constraints. Three outputs, in order:
    a one-sentence verdict — "이 제품은 지금 〈상태〉이며, 다음 한 걸음은 〈방향〉이다" — which
    becomes the thesis the ranking is measured against.
 2. **중요도 판정** — score each item 1–5 on 비전 기여도, 철학 정렬 (reuse P5's average — do
-   not recompute), and 증거 강도; 가치 점수 is their mean. 비용·리스크 is scored separately
-   and used only for placement. Every score cites the signal that justifies it.
+   not recompute, and **clamp it to 1–5**: the alignment guide's red-flag adjustments of
+   −1/−2 can push the raw average below 1, which would silently distort the mean), and
+   증거 강도; 가치 점수 is their mean. 비용·리스크 is scored separately and used only for
+   placement. Every score cites the signal that justifies it.
 3. **단계 구성** — place items on **지금 / 다음 / 나중** by 가치 × 비용, then apply the
    rubric's overriding constraints: dependency order beats score, 증거 강도 1–2 cannot sit
    in 지금, irreversible items are marked `Discussion 필요`, and skew on either axis
@@ -318,19 +421,26 @@ Skip file writes entirely under `--dry-run`; print the filled template to chat i
 
 ### P8: State update (skip if `--dry-run`)
 
-- Advance `lastRunUtc` to `nowUtc` for every activity that actually ran (P3), including
-  ones that were "run" but skipped internally for lacking a signal — a signal-less skip
-  still counts as this cadence period's attempt, so it doesn't get retried every
-  invocation until the next cadence boundary.
+All timestamps written here are the single `nowUtc` established in P0 — never a fresh or
+assumed value.
+
+- Advance `lastRunUtc` to `nowUtc` for every activity that **actually ran** (P3), including
+  ones that ran but were skipped internally for lacking a signal — a signal-less skip still
+  counts as this cadence period's attempt, so it doesn't get retried every invocation until
+  the next cadence boundary.
+- **Exception — never advance a first-run-split deferral.** An activity deferred by P1's
+  first-run split was never attempted at all, so its `lastRunUtc` stays `null` and it remains
+  due next invocation. The two skip kinds are distinct: *attempted, no signal* advances the
+  clock; *never attempted* does not.
 - Advance `emergentPool.rotationPointer` past the selected pool items (wrap at array
   length); set their `lastRunUtc`.
 - If active `dogfooding` ran, append the exercised scenario's slug to
   `activities.dogfooding.scenariosRun` (trim to the last ~8) so the next run rotates to a
   fresh path.
-- Append this run's diagnosis to `diagnosisHistory` (`{ runUtc, symptom, selected }`), the
-  value-axis counts to `valueAxisHistory` (`{ runUtc, business, techHealth, userRequest }`),
-  and the inquiry-axis counts to `inquiryAxisHistory` (`{ runUtc, swTech, domain }`). Trim
-  each to the last 12 entries (matches `telemetry-az`'s `history[]` convention).
+- Append **one** `history[]` entry for this run — `{ runUtc, symptom, selected, itemCount,
+  business, techHealth, userRequest, swTech, domain, lastItemSeq }` — and trim to the last 12
+  (matches `telemetry-az`'s `history[]` convention). One entry per run, never parallel arrays
+  needing a join.
 - Append one line to `claudedocs/backlog-discovery/INDEX.md`:
   `{date} — {N} items ({business}/{techHealth}/{userRequest} · SW{swTech}/도메인{domain}), 지금 {n}건, symptom: {name-or-none}`
   + a link to this run's proposal file. Create `INDEX.md` with a one-line header if it
@@ -381,8 +491,18 @@ not perform this step as part of a `/iyu:backlog-discover` invocation itself.
    including their skip reasons — every run they are due. A proposal that is entirely
    `SW기술` must be able to say what the domain axis was asked and why it came up empty;
    "we only looked at the implementation" is the failure this rule names.
-9. **Discovery ≠ adoption.** A technology or method surfaced by `web-trend`,
-   `research-scan`, or `domain-practice` is a *candidate*, never a decision. It reaches the
-   proposal only through `appropriate-tech`'s verdict, and a `기각`/`보류` verdict is
-   recorded, not dropped — the record is what stops the same candidate being re-litigated
-   from scratch next run.
+9. **Nothing gets re-litigated from scratch.** A technology or method surfaced by
+   `web-trend`, `research-scan`, or `domain-practice` is a *candidate*, never a decision: it
+   reaches the proposal only through `appropriate-tech`'s verdict, and a `기각`/`보류` verdict
+   is recorded, not dropped. The same discipline applies to **every** item, not just
+   technology candidates — a gap already carried by a recent proposal keeps its original id
+   and gains new evidence (P2.5 + P4), rather than reappearing as a fresh near-duplicate.
+   The record is the point: it is what lets repeated observation *accumulate* into a stronger
+   case instead of resetting each run.
+10. **Inspect what you already own.** Discovery is not only about what to build next; an
+   owner is also answerable for what is already there. `stewardship-check` runs on a short
+   cadence and is lane ① of the deepen ladder because outdated dependencies, drifted config,
+   broken quickstarts, and orphaned files are *findings about the product's present*, and
+   they degrade whether or not anyone is looking. Inspect by running the checks, not by
+   reasoning about what they would probably say — the run-evidence bar in rule 2 applies here
+   in full.
