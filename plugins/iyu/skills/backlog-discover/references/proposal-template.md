@@ -1,7 +1,8 @@
 # Proposal document template
 
-Fill this structure and write it to `claudedocs/backlog-discovery/proposal-YYYY-MM-DD.md`
-in the consumer repo. This document is the **terminal output** of a
+Fill this structure and write it to `<root>/backlog-discovery/proposal-YYYY-MM-DD.md` in the
+consumer repo — `<root>` being the docs root resolved in SKILL.md's "File layout" section
+(default `claudedocs/`). This document is the **terminal output** of a
 `/iyu:backlog-discover` run — `ROADMAP.md` is never touched by this skill; a human
 reviews this file and asks explicitly for selected items to be merged.
 
@@ -91,6 +92,6 @@ reviews this file and asks explicitly for selected items to be merged.
 - "실행 증거" is mandatory for any item sourced from an activity that actively drives the
   product (dogfooding, and the emergent lenses that walk a real flow). The trace is what
   distinguishes observed friction from invented friction — an item lacking one is dropped,
-  not softened. Concrete defects caught this way go to `claudedocs/issues/ISSUE-*.md`, not
+  not softened. Concrete defects caught this way go to `<root>/issues/ISSUE-*.md`, not
   here (see SKILL.md execution rule 3); only systemic/UX-direction/vision-shortfall gaps
   become proposal items.

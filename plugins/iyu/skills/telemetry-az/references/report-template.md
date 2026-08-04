@@ -1,6 +1,6 @@
 # Report template
 
-Write to `claudedocs/telemetry/report-YYYY-MM-DD.md`. The report is the **full ledger** of a
+Write to `<root>/telemetry/report-YYYY-MM-DD.md`. The report is the **full ledger** of a
 run: it **leads with a run-over-run Trend section** (both purposes), then carries every finding
 at every risk level, the triage summary, dedup/recurrence notes, and links to any issue files
 created. If multiple runs happen on one day, append a new `## Run` section rather than
@@ -71,7 +71,7 @@ For each material signal:
 - **Prevention**: {test, guard, dashboard, alert that would catch it earlier}
 - **Philosophy alignment**: {how the proposed action fits project scope/mission}
 - **Decision**: {filed issue | logged only | dedup of existing | regression re-file | needs human}
-- **Issue**: {link to claudedocs/issues/ISSUE-… or "—"}
+- **Issue**: {link to <root>/issues/ISSUE-… or "—"}
 
 ### User Analytics
 

@@ -41,13 +41,31 @@ unscoped `run`/`run-cycle` skills.
 
 ## File layout (consumer repo)
 
+Paths are relative to the repo's **docs root** (`<root>`) — the directory the project already
+keeps its dev-tracking docs in. Resolve it by looking, not by assuming (skipping
+`node_modules`, `.git`, build output), first rule that matches:
+
+1. A `cycle-logs/`, `backlog-discovery/`, or `telemetry/` directory exists (in that precedence)
+   → `<root>` is its **parent**. All three are written only by this plugin's skills.
+2. Otherwise a `ROADMAP.md` / `HANDOFF.md` exists → `<root>` is the directory holding it.
+3. Nothing exists → the default `claudedocs/`.
+
+`/iyu:run-cycle` and `/iyu:backlog-discover` check the same three anchors in the same order — a
+project that has so far run only one of the three must still resolve to the one shared root.
+
+An umbrella repo tracking submodules nests these one level deeper (`claudedocs/<Submodule>/`)
+and yields one candidate per submodule — pick the one covering the package this run reports on
+(`targetPackage`). `/iyu:run-cycle` and `/iyu:backlog-discover` resolve the same root by the same
+rules: `backlog-discover` reads the reports and issue drafts written here, so a root mismatch
+makes it report "telemetry-az not configured" against a directory that is simply elsewhere.
+
 ```
-claudedocs/telemetry/
+<root>/telemetry/
 ├── config.json          # resource identity + thresholds + custom KQL
 ├── .last-run.json       # watermark: lastRunUtc + history[] (trend state, both purposes)
 ├── TREND.md             # thin timeline index: one line per run, links to each report
 └── report-YYYY-MM-DD.md # full ledger of findings per run (leads with Trend section)
-claudedocs/issues/
+<root>/issues/
 └── ISSUE-<target>-<ts>-<slug>.md   # threshold-crossing findings only
 ```
 
@@ -152,7 +170,7 @@ query (Class 4) supplies the within-window shape every run.
 
 ### P0: Config & Auth
 
-1. Read `claudedocs/telemetry/config.json`.
+1. Read `<root>/telemetry/config.json`.
    - **Missing** → ask the user for `appId` (and `subscription`/`resourceGroup` if needed),
      infer `targetPackage` from the repo/directory name, write the file with default
      thresholds (including `absolute` with all fields `null` = disabled), then continue. Do not
@@ -325,12 +343,12 @@ A telemetry signal that conflicts with the project's intended scope is a finding
 Create an issue file **only** for findings at or above `config.thresholds.issueMinRisk`
 (default High). Follow the global issue rule:
 
-- Path: `claudedocs/issues/ISSUE-<targetPackage>-<YYYYMMDD-HHmm>-<slug>.md`
+- Path: `<root>/issues/ISSUE-<targetPackage>-<YYYYMMDD-HHmm>-<slug>.md`
 - Include: discovery context (which query/window surfaced it), root-cause chain,
   similar-pattern risk, Bug Risk level, and the proposed action with its philosophy rationale.
-- Before creating, glob existing `claudedocs/issues/**` and skip duplicates of an
+- Before creating, glob existing `<root>/issues/**` and skip duplicates of an
   already-open finding (same root cause) — note the dedup in the report instead.
-- **Recurrence (regression) detection.** Also glob `claudedocs/issues/closed/**`. If this
+- **Recurrence (regression) detection.** Also glob `<root>/issues/closed/**`. If this
   finding's root cause matches an **already-closed** issue, it is a **regression**, not a fresh
   defect: file a new issue, label it `regression-of: <closed-issue-file>`, raise its Bug Risk by
   one level (a defect that escaped a prior fix is more serious), and link the closed issue from
@@ -339,7 +357,7 @@ Create an issue file **only** for findings at or above `config.thresholds.issueM
 
 ### P6: Report
 
-Write `claudedocs/telemetry/report-YYYY-MM-DD.md` using
+Write `<root>/telemetry/report-YYYY-MM-DD.md` using
 [report-template.md](references/report-template.md). The report **leads with a Trend section**
 (both purposes, run-over-run) and then carries the full ledger:
 
@@ -353,7 +371,7 @@ Write `claudedocs/telemetry/report-YYYY-MM-DD.md` using
 - **User Analytics** — the P2b detail: growth/decline vs prior run + N-run trend, feature/page
   preference shifts, engagement, each as 지표 → 해석 → 실행권고.
 
-Append/update `claudedocs/telemetry/TREND.md` — a thin index: one line per run
+Append/update `<root>/telemetry/TREND.md` — a thin index: one line per run
 (`{date} — users/day {n} ({Δ}), errorRate/day {n} ({Δ}), issues {n}` + link to that run's
 report). It is the entry point to the timeline so a reader never has to diff 12 report files by
 hand. Under `--dry-run`, print the report to chat and do **not** touch `TREND.md`.

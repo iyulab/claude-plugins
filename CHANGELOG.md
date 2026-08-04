@@ -8,6 +8,73 @@ bugs or docs. MAJOR is never bumped automatically.
 > History is reconstructed from git from v1.11.0 onward. Earlier versions live in
 > the git log only.
 
+## [1.26.0] — 2026-08-04
+
+### Changed
+- **Continuity root replaces hardcoded doc paths (`run-cycle`, `backlog-discover`, `telemetry-az`,
+  `run`)** — a run's five
+  durable artifacts (`ROADMAP.md`, `HANDOFF.md`, `HISTORY.md`, `cycle-logs/`, `RUN-SUMMARY-*.md`)
+  now live in one *resolved* directory instead of a literal path baked into the skill. Resolution
+  is first-match: an existing `cycle-logs/` anchors the root at its parent; otherwise an existing
+  `ROADMAP.md`/`HANDOFF.md` anchors it at its own directory; otherwise `claudedocs/` is created as
+  the default. This lets a repo keep the set wherever it already does — including an umbrella repo
+  that nests it per submodule (`claudedocs/<Submodule>/`) — instead of getting a second roadmap
+  created beside the one it already maintains. All four skills resolve the same root by the same
+  rules — so the roadmap `backlog-discover` proposes into is the one `run-cycle` consumes and
+  `run` executes, and the `telemetry/` + `issues/` directories `telemetry-az` writes are the ones
+  `backlog-discover`'s telemetry and archive-mining lanes read.
+- **Stop hook resolves the log directory from disk** — it has no session context, so it globs
+  `**/cycle-logs/cycle-*.md` and, when several exist (an umbrella repo), takes the directory
+  holding the most recently modified log. All of its reads — latest log, previous log,
+  `RUN-SUMMARY-*.md` — come from that one directory, so a sibling submodule's logs cannot leak
+  into the cycles-completed count. When *nothing* matches, cycles completed is 0 and evaluation
+  continues (a run that stopped before writing its first log still blocks); an unresolvable
+  directory is explicitly not a reason to allow.
+
+### Fixed
+- **`run-cycle` created a roadmap it would never read back.** Plan Discovery searched for a bare
+  `ROADMAP.md` (repo root) while the phase-backlog step created `claudedocs/cycle-logs/ROADMAP.md`
+  — so a project that already kept a roadmap got a second, empty one written elsewhere. Both paths
+  now resolve through the same rule.
+- Continuity docs found *inside* `cycle-logs/` (the pre-1.26 placement) are migrated up to the
+  resolved root by Preparation step 0, which also prevents `<root>/cycle-logs/` from resolving
+  recursively.
+- `/iyu:run` discovered a bare `ROADMAP.md` (repo root) and so could miss the roadmap
+  `/iyu:run-cycle` maintains; it now looks where the repo actually keeps it.
+- `run/SKILL.md` frontmatter `argument-hint` was not valid YAML (unquoted bracket text) — the
+  same defect fixed for `run-cycle` in 1.24.0, missed on that pass. All eight skills' frontmatter
+  now parses.
+- CHANGELOG was missing the 1.25.0 entry (added below).
+
+## [1.25.0] — 2026-08-01
+
+### Added
+- **`stewardship-check` activity (`backlog-discover`, sprint cadence, deepen-ladder lane ①)** —
+  dependency currency, project configuration, doc/link hygiene, and repo hygiene, verified by
+  *running* the checks rather than reasoning about them. Forward-looking discovery alone lets what
+  already exists decay unobserved; this is the upkeep half of the same job.
+
+### Changed
+- **Stop-hook inputs become tokens rather than prose (`run-cycle`)** — the frontier verdict is
+  written as `FRONTIER-OPEN:` / `FRONTIER-EXHAUSTED:`, read literally by the hook; neither token
+  present means derivation was skipped, which is never a valid stop. Cycles are counted relative
+  to `start_cycle` rather than by raw log-file count, so a repo carrying logs from an earlier run
+  can no longer read as already over budget and allow a stop before any work is done.
+- Rule 9 designated the normative home for the termination test; the trigger matrix, rule 2, and
+  the value ladder defer to it instead of restating it. Philosophy alignment points at the shared
+  four-dimension guide, with Dependency Direction separated out as a run-specific extra.
+- Commit boundary stays one per run by default, splitting on verified-cycle boundaries only when a
+  long run's single diff stops being reviewable. The End-of-Run Report closes with a backlog-refill
+  pointer when the run ended on an exhausted frontier with budget left.
+- **Cadence mechanisms repaired (`backlog-discover`)** — `nowUtc` established once via `date -u`
+  (nothing previously obtained it, so a guessed timestamp could corrupt future due-checks);
+  symptoms diagnosed in the last 3 runs suppressed (first-match-wins on an almost-always-true
+  row-1 condition left six rows and a 14-item rotation pool unreachable); the always-cadence floor
+  separated from the deepen ladder; stable item ids with re-discovery against the last two
+  proposals; three `runUtc`-joined histories collapsed into one `history[]`; a first-run split that
+  runs an ordered core to completion instead of touching twenty lanes shallowly; and `--dry-run`
+  bounded to read-only lanes.
+
 ## [1.24.0] — 2026-08-01
 
 ### Added

@@ -2,7 +2,7 @@
 
 [![Claude Code Plugin](https://img.shields.io/badge/Claude%20Code-Plugin-blueviolet?logo=anthropic&logoColor=white)](https://docs.anthropic.com/en/docs/claude-code/plugins)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-1.25.0-blue.svg)](./plugin.json)
+[![Version](https://img.shields.io/badge/version-1.26.0-blue.svg)](./plugin.json)
 
 Productivity toolkit for open-source library maintainers and developers.
 
@@ -83,6 +83,8 @@ Each cycle: Scope → Research → Implement → Test → Evaluate → Carry-For
 
 Cycles maintain continuity — unresolved issues and pending decisions automatically propagate through the cycle chain.
 
+**Continuity root (follows your repo's convention)** — a run's five artifacts (`ROADMAP.md`, `HANDOFF.md`, `HISTORY.md`, `cycle-logs/`, `RUN-SUMMARY-*.md`) all live in **one** directory, resolved by looking at the repo rather than hardcoded: any existing `cycle-logs/`, `backlog-discovery/`, or `telemetry/` anchors the root at its parent, else an existing `ROADMAP.md`/`HANDOFF.md` anchors it at its own directory. The project's convention is adopted as-is — including an umbrella repo that nests the set per submodule (`claudedocs/<Submodule>/`). Only when none of those exists is the default `claudedocs/` created. `/iyu:backlog-discover` and `/iyu:telemetry-az` resolve by the identical rule, so a project that has run only one of the three still lands every artifact in the same place. The five move together, since `HISTORY.md` indexes cycle logs and the handoff anchors to backlog phases.
+
 **Continuity-doc hygiene** — `ROADMAP.md` (and `HANDOFF.md`, if the project keeps one) hold *remaining* work only, so "what's left?" is never buried under "what's done". Every cycle's STEP 5 migrates every completed phase/item found — including pre-existing leftovers — into a `HISTORY.md` index (one compressed line per phase, linking to the cycle log; detail stays in cycle logs and git history). The handoff is rewritten to current + next only, each continuity doc links to `HISTORY.md` at the top, and the end-of-run release-readiness check verifies the docs stayed lean.
 
 **Autonomy leveling (act like a capable delegate)** — decisions are handled by **stakes × reversibility**, not by asking about everything. **L0** taste/convention is decided silently; **L1** decisions that carry a real trade-off but are *reversible* (two-way door) are self-made by weighing five **co-equal** lenses (근본/정석/표준/세련/philosophy — deliberately *not* a priority order), acted on immediately, and logged `provisional` in a persistent **Decisions Ledger**; **L2** irreversible-or-human-only decisions are batched (BLOCKED-ITEM / Pending Human Decision) while other work continues; **L3** run-fatal issues HARD STOP. The bias is **in-dubio-pro-autonomy** — when a decision is ambiguous between L1 and L2 it resolves to L1 (decide + flag), the sole exception being an irreducible cross-lens conflict, which escalates. Corrections are dual-channel: a reverted L1 decision is picked up from conversation *and* written durably to the ledger, then re-opened at the next cycle's STEP 0 as fresh scope re-evaluated together with whatever was built on it. Every run ends with an **End-of-Run Report** (`RUN-SUMMARY-{date}.md` + final response, on all termination paths) in three parts — progress with evidence, deferred L2 decisions awaiting you, and self-made L1 decisions each with its trade-off and a one-line "to correct" — so proceed-first-correct-later stays safe.
@@ -115,9 +117,10 @@ report-only insight; it files an issue only when a usability drop is itself a de
 /iyu:telemetry-az --no-issues                  # Write report but file no issues
 ```
 
-Per-repo settings live in `claudedocs/telemetry/config.json` (App Insights app id + thresholds);
-the watermark and reports live under `claudedocs/telemetry/`. Issues follow the standard
-`claudedocs/issues/` format. Requires `az login`.
+Per-repo settings live in `telemetry/config.json` (App Insights app id + thresholds); the
+watermark and reports live beside it under `telemetry/`, and issues follow the standard
+`issues/` format — all under the same docs root the other skills resolve (default
+`claudedocs/`). Requires `az login`.
 
 ### /iyu:backlog-discover
 
@@ -139,7 +142,7 @@ blocked-by-breaking-change, runtime & SDK floor), project configuration (build/C
 release pipeline, package metadata, silently-disabled checks), doc & link hygiene (README
 links, badges, quickstart commands verified against the current tree), and repo hygiene
 (orphan files, dead scripts, stale artifacts). Concrete defects route to
-`claudedocs/issues/`; only the systemic pattern behind them becomes a proposal item.
+`<root>/issues/`; only the systemic pattern behind them becomes a proposal item.
 
 **Two co-equal inquiry axes.** Every item is tagged `SW기술` (how the product is built) or
 `도메인전문` (what the product is *for* — the concepts, methods, and norms of its subject
@@ -165,7 +168,7 @@ backlog a deepen-signal, not a done-signal** — and when the floor comes up thi
 domain practice → benchmarking & positioning. (The floor is not a ladder rung: dogfooding
 runs every invocation regardless, so counting it as the first rung would make the deeper
 lanes unreachable.) Findings must carry **run-evidence** (commands run + behavior observed +
-steps walked) or they're dropped as guesses; concrete defects route to `claudedocs/issues/`,
+steps walked) or they're dropped as guesses; concrete defects route to `<root>/issues/`,
 only systemic/UX/vision gaps become proposal items.
 
 Items carry stable ids (`BD-YYYYMMDD-nn`), and a gap already named by a recent proposal is
@@ -181,11 +184,12 @@ observation should raise evidence strength, not multiply near-duplicates.
 
 Fully independent of `/iyu:run-cycle` — `run-cycle` only *consumes* `ROADMAP.md`, this
 command only *feeds* it. Every discovered item lands in a proposal document
-(`claudedocs/backlog-discovery/proposal-YYYY-MM-DD.md`); **nothing merges into
+(`backlog-discovery/proposal-YYYY-MM-DD.md`, under the same docs root `run-cycle`
+resolves — default `claudedocs/`); **nothing merges into
 `ROADMAP.md` automatically** — a human reviews the proposal and asks explicitly for
 selected items to be adopted, per the mindset principle that new product direction is
 never self-decided — ranking an item is not merging it. Cadence state
-(`claudedocs/backlog-discovery/state.json`) tracks each of the playbook's 34 activities
+(`backlog-discovery/state.json`) tracks each of the playbook's 34 activities
 independently against a clock read once per run (`date -u`, never assumed), so a quarterly
 activity doesn't re-run every invocation and a stale half-yearly one doesn't get silently
 skipped forever. A single `history[]` (last 12 runs) is the sole trend state, matching

@@ -1,7 +1,7 @@
 ---
 name: run
 description: Executes development tasks — auto-discovers from project plans or uses provided input
-argument-hint: [task-description] [--dry-run] [--no-commit]
+argument-hint: "[task-description] [--dry-run] [--no-commit]"
 disable-model-invocation: true
 allowed-tools: Read, Glob, Grep, Write, Edit, TodoWrite, WebFetch, WebSearch, Bash
 ---
@@ -21,6 +21,8 @@ Execute a single development phase. For iterative multi-cycle work, use `/iyu:ru
 **Priority Order**:
 1. **Session Context** — pending/follow-up work from conversation
 2. **Plan Discovery** — CLAUDE.md → ROADMAP.md / TASKS.md / TODO.md → docs/ → README.md
+
+   Look for `ROADMAP.md` where the repo actually keeps it, not only at the repo root: glob for it, and if a `cycle-logs/`, `backlog-discovery/`, or `telemetry/` directory exists (in that precedence), take the roadmap beside it — that is the one `/iyu:run-cycle` maintains, by the same anchor rule (default `claudedocs/ROADMAP.md`; an umbrella repo nests it per submodule). Reading a different roadmap than the one that skill keeps is the same file in name only.
 
 **Outcomes**: READY → proceed | NONE_PENDING → exit | BLOCKED → exit with info | NO_PLAN_FOUND → exit with guidance
 

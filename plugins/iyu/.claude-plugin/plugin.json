@@ -1,6 +1,6 @@
 {
   "name": "iyu",
-  "version": "1.25.0",
+  "version": "1.26.0",
   "description": "Productivity toolkit for library maintainers - adaptive iterative development, issue triage, PR review, telemetry-driven issue discovery, and owner-manager backlog discovery that inspects what already exists (dependency currency, project configuration, docs and repo hygiene) while diagnosing, ranking, and staging new candidates across software-technical and domain-expertise axes with project philosophy alignment",
   "author": {
     "name": "iyulab",

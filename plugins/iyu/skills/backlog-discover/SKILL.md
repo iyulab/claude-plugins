@@ -77,13 +77,32 @@ unscoped surface is smaller than `run-cycle`'s, but the same justification appli
 
 ## File layout (consumer repo)
 
+Paths below are relative to the repo's **docs root** (`<root>`) — the directory the project
+already keeps its dev-tracking docs in. Resolve it by looking, not by assuming (skipping
+`node_modules`, `.git`, build output), first rule that matches:
+
+1. A `cycle-logs/`, `backlog-discovery/`, or `telemetry/` directory exists (in that precedence)
+   → `<root>` is its **parent**. All three are written only by this plugin's skills.
+2. Otherwise a `ROADMAP.md` / `HANDOFF.md` exists → `<root>` is the directory holding it.
+3. Nothing exists → the default `claudedocs/`.
+
+`/iyu:run-cycle` and `/iyu:telemetry-az` check the same three anchors in the same order — a
+project that has so far run only one of the three must still resolve to the one shared root.
+
+An umbrella repo tracking submodules nests these one level deeper
+(`claudedocs/<Submodule>/`) and yields one candidate per submodule — pick the one covering
+the code this run examines. This is the same root `/iyu:run-cycle` resolves, by the same
+rules: the two skills must land in the same place, or the roadmap this one proposes into is
+not the one that skill consumes.
+
 ```
-claudedocs/backlog-discovery/
+<root>/backlog-discovery/
 ├── state.json                    # per-activity cadence tracking + emergent rotation pointer
 ├── proposal-YYYY-MM-DD.md        # this run's discovery proposal (review target — see references/proposal-template.md)
 └── INDEX.md                      # thin timeline index, one line per run (mirrors telemetry-az's TREND.md)
-claudedocs/issues/
+<root>/issues/
 └── ISSUE-<target>-<timestamp>-<slug>.md   # incidental defects found during discovery — global issue-draft convention, unchanged
+<root>/ROADMAP.md                 # read-only here — proposals never write it
 ```
 
 ### `state.json` schema
@@ -191,7 +210,7 @@ guessed timestamp written into `state.json` silently corrupts every future due-c
 exact failure rule 6 ("cadence over guessing") exists to prevent. If `date` is unavailable,
 fall back to the session's known date at 00:00Z and **say so in the proposal**.
 
-Then read `claudedocs/backlog-discovery/state.json`. If missing, create it in-memory with the
+Then read `<root>/backlog-discovery/state.json`. If missing, create it in-memory with the
 schema above (all `lastRunUtc: null` / `[]`) — do not write it to disk yet (P8 writes it, and
 only if not `--dry-run`).
 
@@ -255,9 +274,9 @@ alternate while 3–7 still starve. `history[]` keeps 12 entries, so a 3-run win
 
 | Symptom | Heuristic (what to check) | Prescription (from playbook §6–10) |
 |---|---|---|
-| 기능만 쌓이고 제거가 없다 | Scan the last 8 `claudedocs/cycle-logs/cycle-*.md` (if present) plus `ROADMAP.md`'s revision history for any phase/entry describing removal, deprecation, or simplification. Zero found across ≥8 logs (or ≥8 `git log` entries touching `ROADMAP.md` if no cycle-logs exist) → symptom present. | `subtraction-session`, `sunset-review`, `inversion` |
+| 기능만 쌓이고 제거가 없다 | Scan the last 8 `<root>/cycle-logs/cycle-*.md` (if present) plus `ROADMAP.md`'s revision history for any phase/entry describing removal, deprecation, or simplification. Zero found across ≥8 logs (or ≥8 `git log` entries touching `ROADMAP.md` if no cycle-logs exist) → symptom present. | `subtraction-session`, `sunset-review`, `inversion` |
 | 리스크 대비가 부족하다 | `state.json.activities.security-compliance.lastRunUtc` is null or its elapsed time is ≥ 2× its cadence, AND no recent cycle-log Reflection section mentions security/resilience/observability work. | `premortem`, `chaos-engineering`, `red-team` |
-| 온보딩/DX 불만이 감지된다 | Glob `claudedocs/issues/**` (open + `closed/`) and grep for onboarding/setup/confusing-error language; ≥2 matches → symptom present. | `error-message-audit`, `fresh-eyes-onboarding`, `ai-agent-usability` |
+| 온보딩/DX 불만이 감지된다 | Glob `<root>/issues/**` (open + `closed/`) and grep for onboarding/setup/confusing-error language; ≥2 matches → symptom present. | `error-message-audit`, `fresh-eyes-onboarding`, `ai-agent-usability` |
 | 장기 방향이 흐릿하다 | `state.json.activities.vision-gap.lastRunUtc` elapsed ≥ 1.5× its cadence (severely overdue), OR — reading `ROADMAP.md`'s own revision history / `git log` over the date range spanned by the last 3 `INDEX.md` entries — the same phase names recur across that window without resolution. (`INDEX.md` itself only records run dates/counts/symptoms, not phase names; it just bounds which window of `ROADMAP.md` history to inspect.) | `working-backwards`, `sf-prototyping`, `constraint-removal` |
 | 도메인 이해가 정체돼 있다 (조사가 SW 기술 축에 편중) | Sum `swTech` and `domain` across the last 3 `history[]` entries (or, if `history[]` is empty, grep the last 3 `proposal-*.md` for `탐구 축:` lines). `domain` is 0, or fewer than a quarter of the total → symptom present. The product's subject matter is being treated as settled while only its implementation is re-examined. | `research-scan` (도메인 축 필수), `domain-practice`, `cross-domain-borrowing` |
 | 제품의 자리가 낡았다 (차별화 흐려짐) | `state.json.activities.positioning-review.lastRunUtc` is null or elapsed ≥ 2× its cadence, AND competitor-driven items dominate recent output — grep the last 3 `proposal-*.md` for `출처 활동:` lines and find that `벤치마킹`-sourced items are ≥ half of all items across them. (Chasing feature parity without re-examining where the product stands is exactly the drift this symptom names.) | `positioning-review`, `benchmarking`, `cross-domain-borrowing` |
@@ -284,7 +303,7 @@ feeds P8's `history[]` entry, next run's recency suppression, and the "아이디
 
 ### P2.5: Load prior proposals (dedupe basis)
 
-Read the **two most recent** `claudedocs/backlog-discovery/proposal-*.md` and extract every
+Read the **two most recent** `<root>/backlog-discovery/proposal-*.md` and extract every
 item's `id` + title + the gap it named. This list is the run's **known-items set**, and P4
 checks each new finding against it.
 
@@ -313,11 +332,11 @@ never fabricate the missing signal (mindset "no invention").
 | `domain-practice` | **도메인 실무·규범 추적** (the non-academic half of the domain axis). Track how practitioners of the product's subject area actually work now: the domain's own standards/spec bodies, normative or regulatory change, professional practice shifts, expert discourse, and the adjacent tools domain experts (not developers) reach for. Distinct from `web-trend` (software ecosystem) and `research-scan` (theory). Yields items about domain fitness — vocabulary, defaults, workflows, and outputs that no longer match how the field works |
 | `appropriate-tech` | **Adoption judgment, not discovery.** Take the candidate technologies/approaches surfaced by `web-trend`, `research-scan`, `domain-practice`, and `benchmarking` this run (plus any still-unjudged candidates carried in earlier proposals) and rule on each: 성숙도, 팀·프로젝트 운용 역량, 운영·유지 비용, 되돌리기 비용, and above all **"does the problem it solves actually exist in this product?"** → `채택` / `시범` / `보류` / `기각`, each with a one-line reason. A `기각`/`보류` verdict is a recorded outcome, not a skip. If no candidate exists this run, skip-with-reason |
 | `positioning-review` | (1) Write the current position from the project's own artifacts — 누구를 위한 것인가 / 무엇으로 선택받는가 / 무엇을 하지 않기로 했는가 (source: CLAUDE.md, README, declared non-goals). (2) Test that statement against evidence — the actual API surface, `benchmarking` output, `usage-analytics` if present. (3) Turn each mismatch into either a **position-recovery item** or a **position-adjustment proposal** (the latter is always `Discussion 필요`). Also flag feature additions that move the product toward parity at the cost of its stated differentiation |
-| `telemetry-observability` | **Read-only.** Read `claudedocs/telemetry/report-*.md` + `.last-run.json` if present (do not call `az` or reimplement KQL). Skip + note "telemetry-az not configured" if `claudedocs/telemetry/config.json` is absent |
+| `telemetry-observability` | **Read-only.** Read `<root>/telemetry/report-*.md` + `.last-run.json` if present (do not call `az` or reimplement KQL). Skip + note "telemetry-az not configured" if `<root>/telemetry/config.json` is absent |
 | `usage-analytics` | Same read-only reuse of `telemetry-az`'s purpose-2 (user analytics) report section |
-| `issue-community` | `Bash(gh issue list)` / `gh discussion list` (if `gh` is authenticated) + scan `claudedocs/issues/**` for recurring themes. Skip + note "gh not authenticated" if it fails |
+| `issue-community` | `Bash(gh issue list)` / `gh discussion list` (if `gh` is authenticated) + scan `<root>/issues/**` for recurring themes. Skip + note "gh not authenticated" if it fails |
 | `dogfooding` | **Active live use, not passive re-mining.** (1) Pick a **fresh, vision-anchored scenario** — a representative end-to-end task derived from a promise/claim in CLAUDE.md/README, and not one already in `state.json.activities.dogfooding.scenariosRun` (rotate to a new path each run). (2) **Actually drive it** through the project's own runnable surface via `Bash`: a CLI's real commands, a throwaway consumer script for a library, HTTP calls for a service. Where UI-automation tooling happens to be available in the environment, extend the walk-through to the UI; otherwise drive the library/API layer beneath the GUI and **skip-with-reason** the pure-GUI surface (never narrate UI friction you could not observe). (3) Record observed 기능/UI/UX/앱플로우 friction with **run-evidence** (commands run, behavior/output seen, steps walked) — this evidence is what makes the finding grounded observation, not invention. (4) *Also* fold in DX friction previously recorded in cycle-log Carry-Forward / Structural Improvement Proposal sections. If nothing in the project is Bash-drivable at all, skip-with-reason. |
-| `stewardship-check` | **관리 점검 — the owner's walk-through of what they are responsible for.** Not a scan for future ideas: an inspection of what *already exists* and has quietly gone stale, broken, or inconsistent. Actually run the checks (`Bash`), do not read about them. Four sweeps, each skip-with-reason if N/A: **(a) 의존성 최신화** — `npm outdated` / `dotnet list package --outdated` / `pip list --outdated` / `cargo outdated` etc.; for each behind-package judge *upgradeable now* vs. *blocked by a breaking change* vs. *deprecated-or-EOL, needs replacement*, and check the runtime/SDK floor (declared `engines`, target framework, language version) against what is currently supported. **(b) 구성 점검** — build/CI/lint/format/test config, release pipeline, package metadata (license, repo URL, entry points, exports, published-file list), `.gitignore`, editor/tooling config: look for settings that no longer match reality, silently-disabled checks, and steps that would fail on a clean clone. **(c) 문서·링크 위생** — README/docs links, badges, version numbers, and quickstart commands verified against the current tree, not assumed. **(d) 저장소 위생** — orphan files, dead scripts, stale generated artifacts, config that references paths that no longer exist. Route by kind (rule 3): each concrete fixable defect → `claudedocs/issues/ISSUE-*.md`; only the systemic pattern behind them (e.g. "의존성 정책 부재", "릴리즈 파이프라인이 수동 단계에 의존") becomes a proposal item. Every finding carries the command run and its output — the same run-evidence bar as dogfooding |
+| `stewardship-check` | **관리 점검 — the owner's walk-through of what they are responsible for.** Not a scan for future ideas: an inspection of what *already exists* and has quietly gone stale, broken, or inconsistent. Actually run the checks (`Bash`), do not read about them. Four sweeps, each skip-with-reason if N/A: **(a) 의존성 최신화** — `npm outdated` / `dotnet list package --outdated` / `pip list --outdated` / `cargo outdated` etc.; for each behind-package judge *upgradeable now* vs. *blocked by a breaking change* vs. *deprecated-or-EOL, needs replacement*, and check the runtime/SDK floor (declared `engines`, target framework, language version) against what is currently supported. **(b) 구성 점검** — build/CI/lint/format/test config, release pipeline, package metadata (license, repo URL, entry points, exports, published-file list), `.gitignore`, editor/tooling config: look for settings that no longer match reality, silently-disabled checks, and steps that would fail on a clean clone. **(c) 문서·링크 위생** — README/docs links, badges, version numbers, and quickstart commands verified against the current tree, not assumed. **(d) 저장소 위생** — orphan files, dead scripts, stale generated artifacts, config that references paths that no longer exist. Route by kind (rule 3): each concrete fixable defect → `<root>/issues/ISSUE-*.md`; only the systemic pattern behind them (e.g. "의존성 정책 부재", "릴리즈 파이프라인이 수동 단계에 의존") becomes a proposal item. Every finding carries the command run and its output — the same run-evidence bar as dogfooding |
 | `code-audit` | Grep/Glob static scan for TODO/FIXME/deprecated markers + the project's own lint tooling via `Bash`. **Dependency currency belongs to `stewardship-check`; CVE/vulnerability to `security-compliance`** — this lane is about the shape of the code the team wrote |
 | `security-compliance` | Dependency audit via `Bash` (e.g. `npm audit`, `dotnet list package --vulnerable`) + WebSearch for CVEs affecting declared dependencies |
 | `tooling-development` | Mine the project's own history for **repeated manual work**: scan cycle logs / `git log` / CI config / scripts dir for procedures done by hand more than twice (release steps, fixture generation, log comparison, repro setup), slow or flaky verification loops, and one-off scripts rewritten each time. Each recurrence is a candidate to asset-ize as a script/harness/generator. Targets team throughput, not product durability — do not file refactoring items here |
@@ -325,7 +344,7 @@ never fabricate the missing signal (mindset "no invention").
 | `sunset-review` | Grep for deprecated/legacy markers; compare the current feature list against the declared vision for "would not build today" candidates |
 | `premortem` | Author a failure-mode narrative ("this project failed in 2 years because...") from the current architecture, worked backward into preventive tasks |
 | `sf-prototyping` | Author a 5–10 year forward-looking domain scenario, backcast to near-term extension points worth seeding now |
-| `archive-mining` | Glob `claudedocs/issues/closed/**` and old cycle-log Carry-Forwards for previously-declined ideas whose blocking condition may have since changed |
+| `archive-mining` | Glob `<root>/issues/closed/**` and old cycle-log Carry-Forwards for previously-declined ideas whose blocking condition may have since changed |
 | `inversion` | Thought experiment: list what would most annoy users, then check which the project already does |
 | `constraint-removal` | Thought experiment: design as if a named constraint (perf, back-compat) didn't exist, then extract the closeable gap |
 | `subtraction-session` | Review the current public API/surface for what could be removed/simplified/deprecated |
@@ -412,7 +431,7 @@ If discovery produced no items at all (all four deepen-ladder lanes came up empt
 
 ### P7: Proposal document
 
-Write `claudedocs/backlog-discovery/proposal-YYYY-MM-DD.md` using
+Write `<root>/backlog-discovery/proposal-YYYY-MM-DD.md` using
 [proposal-template.md](references/proposal-template.md). This is the **terminal output**
 of this skill — `ROADMAP.md` is never written here. List skipped activities explicitly
 with their skip reason (never silent).
@@ -441,7 +460,7 @@ assumed value.
   business, techHealth, userRequest, swTech, domain, lastItemSeq }` — and trim to the last 12
   (matches `telemetry-az`'s `history[]` convention). One entry per run, never parallel arrays
   needing a join.
-- Append one line to `claudedocs/backlog-discovery/INDEX.md`:
+- Append one line to `<root>/backlog-discovery/INDEX.md`:
   `{date} — {N} items ({business}/{techHealth}/{userRequest} · SW{swTech}/도메인{domain}), 지금 {n}건, symptom: {name-or-none}`
   + a link to this run's proposal file. Create `INDEX.md` with a one-line header if it
   doesn't exist yet.
@@ -467,7 +486,7 @@ not perform this step as part of a `/iyu:backlog-discover` invocation itself.
    automation available) is the forbidden invention — skip-with-reason instead.
 3. **Route findings by kind.** A concrete bug/defect surfaced incidentally during
    discovery — including a broken flow, a bad error message, or a UI glitch caught while
-   dogfooding — is filed through the existing global `claudedocs/issues/ISSUE-*.md`
+   dogfooding — is filed through the existing global `<root>/issues/ISSUE-*.md`
    convention, not folded into the discovery proposal. Only **systemic gaps, UX-direction
    shifts, and vision-shortfalls** (phase-level, not a single fixable defect) become
    proposal items.

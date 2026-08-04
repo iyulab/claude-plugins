@@ -11,7 +11,8 @@ hooks:
           prompt: |
             Decide block/allow from durable on-disk state — the cycle logs ARE the state. Do not rely on conversation memory or re-derive the plan.
             Invocation arguments: $ARGUMENTS (total cycle budget, optional start cycle — default 1).
-            1. List claudedocs/cycle-logs/cycle-*.md. **Cycles completed = how many were completed BY THIS RUN**, i.e. the count of logs whose index is >= the start cycle — NOT the raw file count. A repo carrying logs from earlier runs with a later start cycle would otherwise read as already over budget and allow-stop before doing any work at all.
+            0. Resolve the log directory from disk — do NOT assume a literal path. Glob `**/cycle-logs/cycle-*.md` (skip `node_modules`, `.git`, build output). Exactly one `cycle-logs/` (commonly `claudedocs/cycle-logs/`) — use it. Several (an umbrella repo tracking several submodules) — take the one holding the most recently modified `cycle-*.md`; that is the run writing now. Every path below is relative to that ONE directory; mixing in a sibling submodule's logs corrupts the count in step 1. **No match at all** — the run has not written cycle 1 yet: treat cycles completed as 0, treat the latest/previous log as absent in steps 2–2b, and continue to step 3 (with no log there is no frontier token, so step 3 blocks — a run that stopped before its first log is never a valid stop). Do NOT allow merely because no directory resolved.
+            1. List `cycle-*.md` in the resolved directory. **Cycles completed = how many were completed BY THIS RUN**, i.e. the count of logs whose index is >= the start cycle — NOT the raw file count. A repo carrying logs from earlier runs with a later start cycle would otherwise read as already over budget and allow-stop before doing any work at all.
             2. Read the latest cycle log. Distinguish TWO kinds of human blocker, they behave oppositely:
                - Run-fatal `HUMAN-NEEDED:` — a constitution conflict / structural invalidation that poisons ALL remaining work. This ends the run.
                - Item-level `BLOCKED-ITEM:` in the Blocked-on-Human ledger — one scope needs a credential or user-only decision, but other work is independent. This PARKS one scope; it does NOT end the run.
@@ -22,7 +23,7 @@ hooks:
                NEITHER token present = derivation was skipped, which is never a valid reason to stop.
             2b. Ledger continuity check — also read the PREVIOUS cycle log. Both ledgers (Blocked-on-Human, Decisions) are carry-forward state: if the previous log carried an entry and the latest log neither carries it forward nor records its resolution, that entry was silently dropped. A dropped ledger entry makes the latest log an unreliable basis for terminating, so treat it as a log defect.
             3. Respond BLOCK if ALL hold: completed < total budget; no run-fatal `HUMAN-NEEDED:` was emitted; AND ( at least one UNBLOCKED autonomous candidate remains — any of the items in step 2 — OR neither frontier token from step 2a is present, i.e. emergent derivation was skipped — OR step 2b found a dropped ledger entry, in which case the block is to reconstruct it from the previous log ). An item-level `BLOCKED-ITEM:` / Blocked-on-Human entry is NEVER by itself a reason to allow stopping while other unblocked work exists — park it and keep going.
-            4. Respond ALLOW if: completed >= total budget; OR a run-fatal `HUMAN-NEEDED:` was emitted; OR every remaining candidate is either done or parked in the Blocked-on-Human ledger (NO unblocked autonomous work remains anywhere) AND the latest log carries `FRONTIER-EXHAUSTED:` AND the value ladder exhausted ("lifecycle verified"). Before responding ALLOW on ANY of these paths, confirm a `claudedocs/cycle-logs/RUN-SUMMARY-*.md` exists covering this run — the End-of-Run Report is required on every termination path. If it is missing, respond BLOCK with "generate the End-of-Run Report first"; that block is satisfied by writing the report.
+            4. Respond ALLOW if: completed >= total budget; OR a run-fatal `HUMAN-NEEDED:` was emitted; OR every remaining candidate is either done or parked in the Blocked-on-Human ledger (NO unblocked autonomous work remains anywhere) AND the latest log carries `FRONTIER-EXHAUSTED:` AND the value ladder exhausted ("lifecycle verified"). Before responding ALLOW on ANY of these paths, confirm a `RUN-SUMMARY-*.md` exists in the resolved directory covering this run — the End-of-Run Report is required on every termination path. If it is missing, respond BLOCK with "generate the End-of-Run Report first"; that block is satisfied by writing the report.
             Guard: never BLOCK for MORE WORK once completed >= total budget — that is the hard ceiling. The single permitted block at or past the ceiling is the missing End-of-Run Report (step 4), which one turn of writing resolves. The healthy terminal state is "all remaining work is human-blocked or exhausted", NOT "the first human blocker was hit".
 ---
 
@@ -61,6 +62,33 @@ So every cycle's STEP 5 must **actively derive** what its output implies next, f
 
 This skill runs on the **host agent's native loop and context management** — it does NOT wrap itself in an external reset loop. But native context can be compacted or summarized mid-run, so a cycle must never depend on remembering earlier cycles from conversation alone. **The cycle logs ARE the memory.** Every cycle reconstructs its state from on-disk artifacts (previous `cycle-*.md`, `ROADMAP.md`, git log), so the run survives any native compaction transparently. Write logs richly enough that a fresh context could resume from them with zero conversational history. This is the minimal-intervention stance: don't rebuild context machinery the harness already owns — just keep durable state complete enough to survive it.
 
+## Continuity root — where that durable state lives
+
+All five artifacts of a run live **together in one directory**, the *continuity root* (`<root>` below):
+
+| Artifact | Path |
+|---|---|
+| Phase backlog | `<root>/ROADMAP.md` |
+| Handoff (only if the project keeps one) | `<root>/HANDOFF.md` |
+| Completed-work index | `<root>/HISTORY.md` |
+| Cycle logs | `<root>/cycle-logs/cycle-{NN}.md` |
+| End-of-Run Report | `<root>/cycle-logs/RUN-SUMMARY-{YYYY-MM-DD}.md` |
+
+**Resolve `<root>` once, in Preparation, by looking at the repo — never by assuming a literal path.** Projects differ, and an umbrella repo tracking submodules nests these one level deeper (`claudedocs/<Submodule>/`); a hardcoded path silently creates a *second* roadmap beside the one the project already keeps.
+
+Glob once for `cycle-logs/`, `backlog-discovery/`, `telemetry/`, `ROADMAP.md`, and `HANDOFF.md` (skip `node_modules`, `.git`, build output), then take the **first rule that matches** — the order matters:
+
+1. **A `cycle-logs/`, `backlog-discovery/`, or `telemetry/` directory exists** (in that precedence) → `<root>` is its **parent**. These are written only by this plugin's skills, so they are the most reliable anchor; `cycle-logs/` leads because only a previous run of *this* skill can have written it. **`/iyu:backlog-discover` and `/iyu:telemetry-az` check the same three anchors in the same order** — a project that has run only one of the three must still resolve to the one root all of them share.
+2. **Otherwise a `ROADMAP.md` / `HANDOFF.md` exists** → `<root>` is the directory holding it. The repo has already chosen its convention; **use it in place** and never create a parallel one alongside it.
+3. **Nothing exists** → create the default: **`claudedocs/`** (i.e. `claudedocs/ROADMAP.md`, `claudedocs/cycle-logs/`).
+
+Two cases the plain rules do not settle:
+
+- **Umbrella / multiple hits** — a repo tracking several submodules has one candidate per submodule. Pick the one covering the code *this run* is working on.
+- **Legacy layout** — if a `ROADMAP.md` / `HANDOFF.md` / `HISTORY.md` is found **inside** `cycle-logs/` (an earlier version of this skill placed the roadmap there), rule 1 still governs: `<root>` is the parent, and Preparation step 0 moves the file up to `<root>/` on the spot. Continuity docs sit *beside* `cycle-logs/`, never inside it — nesting them there is what makes `<root>/cycle-logs/` resolve recursively.
+
+**The five move together or not at all.** `HISTORY.md` indexes cycle logs by `(cycle-NN)` and `HANDOFF.md` anchors to backlog phases — splitting them across directories breaks those references. Record the resolved root in each cycle log header so a fresh context can pick it up without re-deriving it.
+
 ## Parameters
 
 - Total cycles: `$0` (default: 5)
@@ -76,6 +104,12 @@ This skill runs on the **host agent's native loop and context management** — i
 
 The preparation phase is **thin by design**. Deep analysis belongs to each cycle's STEP 1, where it can be informed by what's actually happening.
 
+### 0. Resolve the continuity root
+
+Apply the resolution rule in **Continuity root** above. Every `<root>/…` path in the rest of this skill is relative to what you resolve here — resolve it before reading or writing anything.
+
+**One-time migration, here and nowhere else**: if resolution found a continuity doc (`ROADMAP.md` / `HANDOFF.md` / `HISTORY.md`) sitting *inside* `cycle-logs/`, move it up to `<root>/` now and note the move in this cycle's Roadmap Revisions. Resolution is what discovers the misplacement, so it is also what corrects it — re-checking every cycle would buy nothing.
+
 ### 1. Conversation Context (highest priority)
 
 Check the preceding conversation for scope — explicit tasks, agreed-upon next steps, "continue with..." statements.
@@ -85,14 +119,14 @@ Also absorb **corrections to prior self-decisions**: if the human has said an ea
 ### 2. Previous Cycle Logs
 
 ```bash
-Glob: claudedocs/cycle-logs/cycle-*.md
+Glob: <root>/cycle-logs/cycle-*.md
 ```
 
 Review the most recent log's **Carry-Forward** and **Roadmap Revisions** sections. These are inherited obligations and prior re-planning decisions.
 
 ### 3. Plan Discovery (only if no scope from above)
 
-Stop at first found: CLAUDE.md → AGENTS.md → ROADMAP.md / TASKS.md / TODO.md → docs/ → README.md. If nothing found, ask the user. Do not invent scope.
+Stop at first found: CLAUDE.md → AGENTS.md → `<root>/ROADMAP.md` (the resolved root from step 0 — the *same* file STEP 5 would create, never a differently-located one) / TASKS.md / TODO.md → docs/ → README.md. If nothing found, ask the user. Do not invent scope.
 
 ### 4. Philosophy Alignment (high-level only)
 
@@ -104,7 +138,7 @@ Reject scope items that score low **at the overall level**. Per-cycle drift chec
 
 ### 5. Phase Backlog (not a cycle plan)
 
-Create `claudedocs/cycle-logs/ROADMAP.md` if missing. It holds **phase-level directions only** — a backlog of goals, not an itinerary of cycles:
+Create `<root>/ROADMAP.md` if step 3 found none (`<root>` from step 0 — if the repo already keeps a roadmap, that one *is* the backlog; do not create a second). It holds **phase-level directions only** — a backlog of goals, not an itinerary of cycles:
 
 - Group work as **phases / goals**, each revisable by per-cycle Derive-Next
 - Include known unknowns and investigation needs, not presumed answers
@@ -273,12 +307,12 @@ This step has two jobs: (a) record what cannot be resolved autonomously, and (b)
 Applied at STEP 5, every cycle:
 
 1. **Migrate every completed phase/item out of `ROADMAP.md`** — not only ones completed this cycle: any already-completed leftovers found are migrated too. This is invariant *enforcement*, not an event handler, and it is what makes pre-existing bloat converge without a special cleanup pass.
-2. **`HISTORY.md` is a pure index** — same directory as `ROADMAP.md`, newest first, one compressed entry (1–3 lines) per completed phase:
+2. **`HISTORY.md` is a pure index** — `<root>/HISTORY.md`, beside `ROADMAP.md`, newest first, one compressed entry (1–3 lines) per completed phase:
    `- **{YYYY-MM-DD}** {phase} — {one-line outcome} (cycle-NN)`
    Never duplicate detail into it; cycle logs and git log are the record. Deep dives start at the index and follow the reference.
 3. **Rewrite `HANDOFF.md` to current + next only** (if present) — what is in flight and what comes next, anchored to backlog phases. Past-session narrative is dropped, not accumulated.
 4. **Link line** — keep `> History: [HISTORY.md](HISTORY.md)` at the top of each continuity doc (create on first migration) so history stays one hop away.
-5. **Size signal (soft)** — if a continuity doc stays long (~200+ lines) *after* migration, detail is living at the wrong layer: split phase detail into `claudedocs/plans/` docs and leave links. A judgment signal, not a hard rule.
+5. **Size signal (soft)** — if a continuity doc stays long (~200+ lines) *after* migration, detail is living at the wrong layer: split phase detail into `<root>/plans/` docs and leave links. A judgment signal, not a hard rule.
 
 Hygiene never gates termination — it is doc upkeep inside STEP 5 and the doc-sync floor, not a completion criterion, and it adds nothing to the Stop-hook logic.
 
@@ -286,11 +320,12 @@ Hygiene never gates termination — it is doc upkeep inside STEP 5 and the doc-s
 
 ## Cycle Log
 
-Write `claudedocs/cycle-logs/cycle-{NN}.md` after each cycle:
+Write `<root>/cycle-logs/cycle-{NN}.md` after each cycle:
 
 ```markdown
 # Cycle {NN}: {Title}
 Date: {YYYY-MM-DD}
+Root: {resolved continuity root, e.g. `claudedocs/`}
 
 ## Re-plan
 {Trigger detected (if any) and scope decision — or "Plan valid, inherited scope"}
@@ -359,7 +394,7 @@ This is the project-specific judgment a generic harness cannot supply, and it is
 
 ## End-of-Run Report
 
-At run end — on **every** termination path (budget reached, HARD STOP, or early exhaustion) — synthesize one **report to the human** before the final commit. This is the "delegate reports back to their manager" moment: what got done, what was decided autonomously and can still be corrected, and what was escalated because it was not the delegate's to decide. Write it to `claudedocs/cycle-logs/RUN-SUMMARY-{YYYY-MM-DD}.md` (a run-level artifact, distinct from per-cycle logs) **and** surface the same three parts in the final chat response. Generate it even under `--no-commit` (it is a report, not a commit); skip only under `--dry-run`.
+At run end — on **every** termination path (budget reached, HARD STOP, or early exhaustion) — synthesize one **report to the human** before the final commit. This is the "delegate reports back to their manager" moment: what got done, what was decided autonomously and can still be corrected, and what was escalated because it was not the delegate's to decide. Write it to `<root>/cycle-logs/RUN-SUMMARY-{YYYY-MM-DD}.md` (a run-level artifact, distinct from per-cycle logs — beside them so the Stop hook finds it in the directory it already resolved) **and** surface the same three parts in the final chat response. Generate it even under `--no-commit` (it is a report, not a commit); skip only under `--dry-run`.
 
 Three parts — draw them straight from the ledgers the cycles already maintained; this is a report, not a re-derivation:
 
