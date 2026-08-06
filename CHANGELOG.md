@@ -14,11 +14,14 @@ Conformance pass against the current Claude Code skill/plugin specification. Thr
 features that could not run at all.
 
 ### Fixed
-- **The `run-cycle` Stop hook could not do its job.** It was a `type: prompt` hook — a single
-  tool-less LLM call over the hook input JSON — while its instructions told it to glob the cycle
-  logs, read the latest and previous log, and confirm the End-of-Run Report exists. None of that is
-  possible without tools, so the run's only *enforcement* surface was deciding on guesswork. It is
-  now a `type: agent` hook (tool access, up to 50 turns) with `timeout: 180`.
+- **The `run-cycle` Stop hook judged from conversation instead of from disk.** It was a
+  `type: prompt` hook — a single tool-less LLM call — while its instructions told it to glob the
+  cycle logs, read the latest *and previous* log, and confirm the End-of-Run Report exists. It did
+  produce correct verdicts much of the time, by reading the log content still present in the
+  conversation, but that is exactly what its own opening line forbids ("do not rely on conversation
+  memory"): after a compaction, or whenever the answer depends on a log this turn did not write, the
+  evidence simply is not there. It is now a `type: agent` hook (tool access, up to 50 turns) with
+  `timeout: 180`, so it reads what it is told to read.
 - **The hook was reading a budget it never received.** `$ARGUMENTS` in a hook prompt is the hook
   input JSON (`session_id`, `transcript_path`, `cwd`, …), not the skill's invocation arguments, so
   the cycle budget was simply absent from every `completed < budget` comparison. Each cycle log
