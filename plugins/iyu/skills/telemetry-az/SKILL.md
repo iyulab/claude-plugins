@@ -42,23 +42,14 @@ unscoped `run`/`run-cycle` skills.
 
 ## File layout (consumer repo)
 
-Paths are relative to the repo's **docs root** (`<root>`) — the directory the project already
-keeps its dev-tracking docs in. Resolve it by looking, not by assuming (skipping
-`node_modules`, `.git`, build output), first rule that matches:
+Paths are relative to the repo's **docs root** (`<root>`). Resolve it per
+**[continuity-docs.md](${CLAUDE_SKILL_DIR}/../_shared/continuity-docs.md) §1** — the shared
+definition every skill in this plugin uses. In an umbrella repo, pick the candidate covering the
+package this run reports on (`targetPackage`).
 
-1. A `cycle-logs/`, `backlog-discovery/`, or `telemetry/` directory exists (in that precedence)
-   → `<root>` is its **parent**. All three are written only by this plugin's skills.
-2. Otherwise a `ROADMAP.md` / `HANDOFF.md` exists → `<root>` is the directory holding it.
-3. Nothing exists → the default `claudedocs/`.
-
-`/iyu:run-cycle` and `/iyu:backlog-discover` check the same three anchors in the same order — a
-project that has so far run only one of the three must still resolve to the one shared root.
-
-An umbrella repo tracking submodules nests these one level deeper (`claudedocs/<Submodule>/`)
-and yields one candidate per submodule — pick the one covering the package this run reports on
-(`targetPackage`). `/iyu:run-cycle` and `/iyu:backlog-discover` resolve the same root by the same
-rules: `backlog-discover` reads the reports and issue drafts written here, so a root mismatch
-makes it report "telemetry-az not configured" against a directory that is simply elsewhere.
+Landing in the same root matters here specifically: `/iyu:backlog-discover` reads the reports and
+issue drafts written below, so a root mismatch makes it report "telemetry-az not configured"
+against a directory that is merely elsewhere.
 
 ```
 <root>/telemetry/

@@ -8,6 +8,56 @@ bugs or docs. MAJOR is never bumped automatically.
 > History is reconstructed from git from v1.11.0 onward. Earlier versions live in
 > the git log only.
 
+## [1.28.0] — 2026-08-07
+
+Driven by measurement rather than guesswork: 27,121 recorded invocations over ~7 months were
+analyzed to see which skills were actually used and what users kept typing by hand.
+
+### Removed
+
+**`/iyu:run`, `/iyu:issue`, and `/iyu:pr` are gone.** There is no rename mechanism for skills, so
+invoking them now yields an unknown command — read this section before upgrading.
+
+- **Triage moved, it did not disappear.** The `issue-triage` skill (automatic, conversational) is
+  the replacement and is where the work was actually happening: ask "should I accept this?" or
+  "review this PR" in conversation and it activates. It absorbed the removed skills' references —
+  `response-templates.md`, `research-methodology.md`, `tone-rules.md` — and now links them from its
+  body at the step where each applies.
+- **`/iyu:run` is `/iyu:run-cycle` with a budget of 1.** It was the earlier, single-phase form and
+  had no capability the cycle runner lacks.
+- Usage across the analyzed period: `/iyu:run-cycle` 1,052 invocations; `/iyu:run` 187, none after
+  2026-04; `/iyu:issue` 171, none after 2026-03; `/iyu:pr` 4. `/iyu:telemetry-az` is **kept** despite
+  0 invocations in the analyzed account — it is in active use by others, which is also the caveat
+  that applies to any single-account measurement.
+
+### Added
+
+- **`/iyu:handoff` — session closeout.** The largest unmet need the analysis found: 1,510 distinct
+  requests across 75 projects to update `HANDOFF.md`/`ROADMAP.md`, record where things stand, or
+  propose the next scope — *more than `run-cycle` was invoked*. `run-cycle` already did this, but
+  only for its own runs, and most sessions are not cycle runs. The skill reconstructs the session
+  from `git log` and the continuity docs rather than the conversation (which may already be
+  compacted), applies the hygiene pass, derives next scope across the user/developer/operator
+  lenses, and separates human-blocked decisions from reversible ones it made itself. It does not
+  commit and does not implement — either would change the state it is describing.
+- **`skills/_shared/continuity-docs.md` — one definition, four readers.** Root resolution, what
+  belongs in each document, the hygiene pass, and next-scope derivation were duplicated across
+  `run-cycle`, `backlog-discover`, and `telemetry-az`, and adding a fourth copy for `handoff` would
+  have guaranteed drift. All four now link to this file instead.
+
+### Changed
+
+- **Default cycle budget 5 → 10.** Observed usage is 10 (54%), 20 (30%), 5 (12%); the old default
+  matched almost nobody, and invocations that omitted the argument got an unintentionally short run.
+- **`run-cycle` Plan Discovery reads `<root>/HANDOFF.md` before `ROADMAP.md`.** 40% of invocations
+  pasted a handoff path by hand — the handoff's "Next" is the previous session's considered judgment
+  about what to do now, while the roadmap is direction not yet narrowed to a session. This is where
+  `/iyu:handoff` and `run-cycle` meet.
+- **STEP 3 verification now drives the real surface for user-facing changes.** 17% of invocations
+  appended "use playwright" or similar. A green test suite is not evidence that a UI or CLI change
+  works; exercise it on a browser-automation MCP, the CLI, or the running service and report what
+  was observed. No runnable surface: skip with a reason — never add a dependency for this.
+
 ## [1.27.0] — 2026-08-07
 
 Conformance pass against the current Claude Code skill/plugin specification. Three of these were

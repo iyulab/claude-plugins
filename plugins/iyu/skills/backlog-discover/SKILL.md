@@ -49,23 +49,13 @@ read-mostly, so the blast radius is smaller than `run-cycle`'s — the justifica
 
 ## File layout (consumer repo)
 
-Paths below are relative to the repo's **docs root** (`<root>`) — the directory the project
-already keeps its dev-tracking docs in. Resolve it by looking, not by assuming (skipping
-`node_modules`, `.git`, build output), first rule that matches:
+Paths below are relative to the repo's **docs root** (`<root>`). Resolve it per
+**[continuity-docs.md](${CLAUDE_SKILL_DIR}/../_shared/continuity-docs.md) §1** — the shared
+definition every skill in this plugin uses. Resolve before reading or writing anything.
 
-1. A `cycle-logs/`, `backlog-discovery/`, or `telemetry/` directory exists (in that precedence)
-   → `<root>` is its **parent**. All three are written only by this plugin's skills.
-2. Otherwise a `ROADMAP.md` / `HANDOFF.md` exists → `<root>` is the directory holding it.
-3. Nothing exists → the default `claudedocs/`.
-
-`/iyu:run-cycle` and `/iyu:telemetry-az` check the same three anchors in the same order — a
-project that has so far run only one of the three must still resolve to the one shared root.
-
-An umbrella repo tracking submodules nests these one level deeper
-(`claudedocs/<Submodule>/`) and yields one candidate per submodule — pick the one covering
-the code this run examines. This is the same root `/iyu:run-cycle` resolves, by the same
-rules: the two skills must land in the same place, or the roadmap this one proposes into is
-not the one that skill consumes.
+Landing in the same root as the others is not cosmetic: the roadmap this skill proposes into must
+be the one `/iyu:run-cycle` consumes, and the telemetry lane below reads what `/iyu:telemetry-az`
+wrote. A divergent root turns both into silent no-ops.
 
 ```
 <root>/backlog-discovery/

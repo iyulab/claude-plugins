@@ -58,11 +58,19 @@ Philosophy LOW   | REDIRECT             | DECLINE              |
 
 | 🔴 Critical | 🟠 High | 🟡 Medium | 🟢 Low |
 
-## Commands
+## Working the verdict
 
-```bash
-/iyu:issue <url | file | "text">      # Full triage
-/iyu:issue <input> --quick             # Decision only
-/iyu:pr <pr-url | #number>            # Full review
-/iyu:pr <input> --quick               # Blockers only
-```
+The matrices above give the decision. These carry it out — load one when you reach that step,
+not before.
+
+| Step | Reference |
+|---|---|
+| Drafting the reply to a contributor | [response-templates.md](${CLAUDE_SKILL_DIR}/references/response-templates.md) — one template per verdict |
+| Wording review feedback | [tone-rules.md](${CLAUDE_SKILL_DIR}/references/tone-rules.md) — direct, few emojis, no AI-assistant register |
+| A bug that needs investigation before a verdict | [research-methodology.md](${CLAUDE_SKILL_DIR}/references/research-methodology.md) |
+| Finding the same bug pattern elsewhere | [pattern-detection-guide.md](${CLAUDE_SKILL_DIR}/../mindset/references/pattern-detection-guide.md) |
+| Scoring the four philosophy dimensions | [philosophy-alignment-guide.md](${CLAUDE_SKILL_DIR}/../mindset/references/philosophy-alignment-guide.md) |
+
+**"Think 10 from 1" before closing.** Whatever the verdict, ask what the request reveals: a
+documentation gap, an API that makes the use case harder than it should be, a missing example, a
+structural weakness. The verdict answers the request; this answers why the request happened.

@@ -2,7 +2,7 @@
 
 [![Claude Code Plugin](https://img.shields.io/badge/Claude%20Code-Plugin-blueviolet?logo=anthropic&logoColor=white)](https://code.claude.com/docs/en/plugins)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-1.27.0-blue.svg)](./.claude-plugin/plugin.json)
+[![Version](https://img.shields.io/badge/version-1.28.0-blue.svg)](./.claude-plugin/plugin.json)
 
 Productivity toolkit for open-source library maintainers and developers.
 
@@ -24,54 +24,21 @@ Productivity toolkit for open-source library maintainers and developers.
 | Component | Type | Activation | Description |
 |-----------|------|------------|-------------|
 | **Mindset** | Skill | Auto | Shared "Critical but Constructive" philosophy + reference materials |
-| **Issue & PR Triage** | Skill | Auto | Conversational triage advice with decision matrices |
-| `/iyu:issue` | Skill | Manual | Full issue triage report (isolated context) |
-| `/iyu:pr` | Skill | Manual | PR review with security focus (isolated context) |
-| `/iyu:run` | Skill | Manual | Plan-driven development execution |
+| **Issue & PR Triage** | Skill | Auto | Conversational triage advice with decision matrices, response templates, and tone rules |
 | `/iyu:run-cycle` | Skill | Manual | Iterative development cycles with Stop hook |
+| `/iyu:handoff` | Skill | Manual | Session closeout — continuity-doc upkeep, next scope, pending decisions |
 | `/iyu:telemetry-az` | Skill | Manual | Azure App Insights telemetry triage, issue discovery + run-over-run user analytics |
 | `/iyu:backlog-discover` | Skill | Manual | Playbook-driven backlog discovery + diagnose/rank/stage — proposal only, never auto-merges |
 
 ## Commands
-
-### /iyu:issue
-
-Systematic issue evaluation against project philosophy.
-
-```bash
-/iyu:issue https://github.com/user/repo/issues/123
-/iyu:issue https://github.com/user/repo/issues/123 --quick
-/iyu:issue ./docs/feature-request.md --save
-/iyu:issue "Add support for Redis caching" --no-research
-```
-
-### /iyu:pr
-
-PR review with security awareness and community-nurturing feedback.
-
-```bash
-/iyu:pr https://github.com/user/repo/pull/123
-/iyu:pr #42 --quick
-/iyu:pr #42 --security-focus --save
-```
-
-### /iyu:run
-
-Plan-driven or input-driven development execution.
-
-```bash
-/iyu:run                                    # Auto-discover from plans
-/iyu:run "Implement caching layer for API"  # Input-driven
-/iyu:run --dry-run                          # Plan only
-```
 
 ### /iyu:run-cycle
 
 Iterative development cycles with evaluation and continuity tracking.
 
 ```bash
-/iyu:run-cycle        # 5 cycles (default)
-/iyu:run-cycle 10     # up to 10 cycles
+/iyu:run-cycle        # 10 cycles (default)
+/iyu:run-cycle 20     # up to 20 cycles
 ```
 
 One parameter, the cycle budget — anything you write alongside the invocation is read as scope
@@ -98,6 +65,28 @@ When primary work finishes early and cycles remain, run-cycle does not stop idle
 Before committing, run-cycle runs a **lightweight release-readiness check** — version consistency across version-bearing files, CHANGELOG coverage, doc-sync, and an evidence block of the actual test/build/lint output. It verifies and packages only; tagging, publishing, and pushing stay with the human / CI. The commit itself defaults to **one per run** (bundling beats fragmenting), splitting on **verified-cycle boundaries** only when a long run's single diff would no longer be reviewable in one pass — each cycle's passing STEP 3 is already a clean rollback point.
 
 Cycle accounting is relative to where the run started: Preparation derives the starting index from the existing logs and records it (with the budget) in every cycle log header, and only logs from that index onward count toward the budget — so a repo carrying logs from earlier runs can't read as already over budget and stop before doing any work. The Stop hook reads those headers, since it gets no invocation arguments of its own.
+
+### /iyu:handoff
+
+Close out a session so the next one can resume from files alone.
+
+```bash
+/iyu:handoff              # cover the whole session
+/iyu:handoff "decisions"  # narrow the focus
+```
+
+Rewrites `HANDOFF.md` to **in flight / next / waiting on you / decided this session / state of
+play**, migrates completed work out of `ROADMAP.md` into the `HISTORY.md` index, and derives the
+next scope across the user / developer / operator lenses. It reconstructs what happened from `git
+log`, the existing continuity docs, and the latest cycle log — not from the conversation, which may
+already be compacted.
+
+It deliberately does **not** commit and does **not** implement: the handoff describes a state, and
+changing that state while writing it makes the description wrong.
+
+Shares [`_shared/continuity-docs.md`](./skills/_shared/continuity-docs.md) with `/iyu:run-cycle` —
+where the docs live, what belongs in each, the hygiene pass, and how next scope is derived are
+defined once, in one file, for both.
 
 ### /iyu:telemetry-az
 

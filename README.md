@@ -39,18 +39,16 @@ How that differs from the mainstream:
 
 > **Versioning** — two independent version numbers exist by design: `marketplace.json → version` tracks the **marketplace registry** (structure of this catalog), while each plugin's `plugin.json → version` tracks that **plugin** itself. They advance separately. Per-plugin `keywords`, `homepage`, and `license` are sourced from `plugin.json` and mirrored into the marketplace entry — the marketplace's own `metadata` object only recognizes `pluginRoot`, so per-plugin fields belong on the entry, not there. See [CHANGELOG.md](./CHANGELOG.md) for the iyu plugin history.
 
-### iyu (v1.27.0)
+### iyu (v1.28.0)
 
-**Productivity toolkit for open-source library maintainers — adaptive iterative development, issue triage, PR review**
+**Productivity toolkit for open-source library maintainers — adaptive iterative development, session continuity, issue triage, telemetry and backlog discovery**
 
 | Component | Type | Activation | Description |
 |-----------|------|------------|-------------|
 | `mindset` | Skill | Auto (background) | "Critical but Constructive" mindset for conversational triage/dev discussions |
 | `issue-triage` | Skill | Auto (conversational) | Decision matrices and triage advice |
-| `/iyu:issue` | Skill | Manual | Full issue triage report |
-| `/iyu:pr` | Skill | Manual | PR review with security focus |
-| `/iyu:run` | Skill | Manual | Plan-driven development execution |
 | `/iyu:run-cycle` | Skill | Manual | Adaptive iterative cycles (re-plan → execute → verify → reflect) |
+| `/iyu:handoff` | Skill | Manual | Session closeout — continuity docs, next scope, pending decisions |
 | `/iyu:telemetry-az` | Skill | Manual | Azure App Insights telemetry triage — defects, regressions, feature drop |
 | `/iyu:backlog-discover` | Skill | Manual | Playbook-driven backlog discovery + diagnose/rank/stage — proposal only |
 
@@ -75,63 +73,34 @@ The plugin automatically activates when you discuss issue evaluation or PR revie
 
 | Command | Description |
 |---------|-------------|
-| `/iyu:issue` | Systematic issue evaluation with root cause analysis |
-| `/iyu:pr` | Professional PR review with security awareness |
-| `/iyu:run` | Plan-driven development execution |
 | `/iyu:run-cycle` | Adaptive iterative development cycles |
+| `/iyu:handoff` | Session closeout and continuity-doc upkeep |
 | `/iyu:telemetry-az` | Azure App Insights telemetry triage and issue discovery |
 | `/iyu:backlog-discover` | Backlog discovery playbook — diagnose, rank, and stage candidates |
-
-##### /iyu:issue
-
-```bash
-# Triage a GitHub issue
-/iyu:issue https://github.com/user/repo/issues/123
-
-# Quick decision only
-/iyu:issue https://github.com/user/repo/issues/123 --quick
-
-# Triage and save report
-/iyu:issue ./docs/feature-request.md --save
-```
-
-##### /iyu:pr
-
-```bash
-# Full PR review
-/iyu:pr https://github.com/user/repo/pull/123
-
-# Quick review (critical issues only)
-/iyu:pr https://github.com/user/repo/pull/123 --quick
-
-# Security-focused review
-/iyu:pr https://github.com/user/repo/pull/123 --security-focus
-```
-
-##### /iyu:run
-
-```bash
-# Auto-detect next phase from roadmap
-/iyu:run
-
-# Input-driven task execution
-/iyu:run "Implement caching layer for API"
-
-# Plan only, no execution
-/iyu:run --dry-run
-```
 
 ##### /iyu:run-cycle
 
 ```bash
-# 5 adaptive cycles (default)
+# 10 adaptive cycles (default)
 /iyu:run-cycle
 
-# up to 10 cycles (N is a ceiling, not a target)
-/iyu:run-cycle 10
+# up to 20 cycles (N is a ceiling, not a target)
+/iyu:run-cycle 20
 ```
 
 Each cycle runs Re-plan → Design → Execute → Verify → Reflect → Derive-Next. **Just-in-time scoping**: only the current cycle is scoped concretely, and each cycle's outcome decides the next cycle's scope. The roadmap is a phase backlog — it never assigns scope to numbered cycles, so the run behaves like genuine multi-turn work rather than one upfront N-cycle plan.
+
+##### /iyu:handoff
+
+```bash
+# Close out the session: continuity docs, next scope, pending decisions
+/iyu:handoff
+```
+
+Rewrites `HANDOFF.md` to in-flight / next / waiting-on-you / decided / state-of-play, migrates
+completed work into the `HISTORY.md` index, and derives the next scope. Reconstructs the session
+from git and the continuity docs rather than from the conversation, so it still works after a
+compaction. Does not commit and does not implement.
 
 ##### /iyu:telemetry-az
 
@@ -199,7 +168,7 @@ project philosophy, and files issues only for threshold-crossing findings. Requi
 
 1. Fork this repository
 2. Create your plugin in `plugins/your-plugin-name/`
-3. Add plugin.json, commands/, skills/, or agents/ as needed
+3. Add `.claude-plugin/plugin.json` and your `skills/` as needed
 4. Update `.claude-plugin/marketplace.json`
 5. Submit a PR
 

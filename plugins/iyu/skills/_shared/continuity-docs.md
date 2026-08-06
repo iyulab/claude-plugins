@@ -1,0 +1,119 @@
+# Continuity docs — the shared contract
+
+**This file is the single definition** of where a project's dev-tracking documents live and what
+belongs in each. `run-cycle`, `handoff`, `backlog-discover`, and `telemetry-az` all read it. Copies
+of these rules inside individual skills drift apart; keep the definition here and link to it.
+
+(`_shared/` holds no `SKILL.md`, so it is reference material, not a skill.)
+
+---
+
+## 1. Resolving the continuity root
+
+Every artifact below lives **together in one directory**, the *continuity root* (`<root>`):
+
+| Artifact | Path | Written by |
+|---|---|---|
+| Phase backlog (remaining work) | `<root>/ROADMAP.md` | run-cycle, handoff |
+| Handoff (current + next) | `<root>/HANDOFF.md` | run-cycle, handoff |
+| Completed-work index | `<root>/HISTORY.md` | run-cycle, handoff |
+| Cycle logs | `<root>/cycle-logs/cycle-{NN}.md` | run-cycle |
+| End-of-Run Report | `<root>/cycle-logs/RUN-SUMMARY-{YYYY-MM-DD}.md` | run-cycle |
+| Backlog proposals | `<root>/backlog-discovery/` | backlog-discover |
+| Telemetry reports | `<root>/telemetry/` | telemetry-az |
+| Issue drafts | `<root>/issues/` | any |
+
+**Resolve `<root>` once, at the start, by looking at the repo — never by assuming a literal path.**
+A hardcoded path silently creates a *second* roadmap beside the one the project already keeps.
+
+Glob once for `cycle-logs/`, `backlog-discovery/`, `telemetry/`, `ROADMAP.md`, and `HANDOFF.md`
+(skip `node_modules`, `.git`, build output), then take the **first rule that matches** — the order
+matters:
+
+1. **A `cycle-logs/`, `backlog-discovery/`, or `telemetry/` directory exists** (in that precedence)
+   → `<root>` is its **parent**. These are written only by this plugin's skills, so they are the
+   most reliable anchor; `cycle-logs/` leads because only a previous run of `run-cycle` writes it.
+2. **Otherwise a `ROADMAP.md` / `HANDOFF.md` exists** → `<root>` is the directory holding it. The
+   repo has already chosen its convention; **use it in place**, never create a parallel one beside it.
+3. **Nothing exists** → create the default **`claudedocs/`**.
+
+**Every skill checks the identical list in the identical order.** An unequal list is how a project
+that has so far run only one skill resolves one root there and a different one elsewhere — which is
+the split these rules exist to prevent.
+
+Two cases the plain rules do not settle:
+
+- **Umbrella / multiple hits** — a repo tracking several submodules yields one candidate per
+  submodule (`claudedocs/<Submodule>/`). Pick the one covering the code this run touches.
+- **Legacy layout** — a `ROADMAP.md` / `HANDOFF.md` / `HISTORY.md` found **inside** `cycle-logs/`
+  (an earlier layout) does not change rule 1: `<root>` is still the parent, and the skill that
+  discovers the misplacement moves the file up to `<root>/` on the spot. Continuity docs sit
+  *beside* `cycle-logs/`, never inside it — nesting them there makes `<root>/cycle-logs/` resolve
+  recursively.
+
+**They move together or not at all.** `HISTORY.md` indexes cycle logs by `(cycle-NN)` and
+`HANDOFF.md` anchors to backlog phases; splitting them across directories breaks those references.
+
+---
+
+## 2. What belongs in each document
+
+**The invariant: completed work does not live in a continuity doc.** `ROADMAP.md` and `HANDOFF.md`
+are what a human — or a fresh session — reads to find *remaining* work fast. Without this rule both
+grow monotonically until "what's left?" is buried under "what's done".
+
+| Document | Holds | Never holds |
+|---|---|---|
+| `ROADMAP.md` | Phase-level directions, remaining only. Known unknowns and investigation needs | Completed phases. **Cycle numbers** — it is a backlog, not an itinerary |
+| `HANDOFF.md` | What is in flight and what comes next, anchored to backlog phases | Past-session narrative. Anything already done |
+| `HISTORY.md` | A pure index, newest first, one compressed entry per completed phase | Detail — cycle logs and git history are the record |
+
+`HISTORY.md` entry format:
+
+```
+- **{YYYY-MM-DD}** {phase} — {one-line outcome} (cycle-NN)
+```
+
+---
+
+## 3. Hygiene pass
+
+Apply whenever continuity docs are written — every `run-cycle` STEP 5, every `handoff` run:
+
+1. **Migrate every completed phase/item out of `ROADMAP.md`** — not only ones completed just now.
+   Any already-completed leftover found is migrated too. This is invariant *enforcement*, not an
+   event handler, and it is what makes pre-existing bloat converge without a special cleanup pass.
+2. **Append to `HISTORY.md`** in the format above, beside `ROADMAP.md`. Never duplicate detail into
+   it; deep dives start at the index and follow the reference.
+3. **Rewrite `HANDOFF.md` to current + next only** (if the project keeps one). Past-session
+   narrative is dropped, not accumulated.
+4. **Link line** — keep `> History: [HISTORY.md](HISTORY.md)` at the top of each continuity doc
+   (create on first migration) so history stays one hop away.
+5. **Size signal (soft)** — a continuity doc still long (~200+ lines) *after* migration means detail
+   is living at the wrong layer: split phase detail into `<root>/plans/` and leave links. A judgment
+   signal, not a hard rule.
+
+Hygiene is doc upkeep. It never gates termination and never blocks a run.
+
+---
+
+## 4. Deriving next scope
+
+Both `run-cycle`'s STEP 5 and `handoff` answer "what comes next?". The sources, in priority order:
+
+1. **Carry-forward defects** — anything actionable left unresolved.
+2. **Mid-session discoveries** — a problem too large to have been handled where it surfaced.
+3. **Emergent scope** — what the work just done *naturally implies next*, derived across three
+   lenses: **user** (what would they now expect or hit?), **developer/maintainer** (what did it
+   leave brittle, duplicated, or untested?), **operator** (what does running this now require?).
+4. **The phase backlog** — the next-most-valuable unblocked phase.
+
+Classify every emergent candidate before proposing it:
+
+- **Autonomous-eligible** — its absence reads as incompleteness or a defect; it stays within the
+  project's declared role and established patterns; it carries no real trade-off.
+- **Discussion / proposal-only** — it opens a new product direction, a new dependency or paradigm,
+  or a trade-off only a human should weigh. Propose with rationale; never self-decide.
+
+"Nothing left" is a legitimate outcome, but it must be a **stated judgment** across all three
+lenses, never an empty section.

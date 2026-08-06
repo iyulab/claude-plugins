@@ -1,8 +1,8 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "iyu",
-  "version": "1.27.0",
-  "description": "Productivity toolkit for library maintainers - adaptive iterative development, issue triage, PR review, telemetry-driven issue discovery, and owner-manager backlog discovery that inspects what already exists (dependency currency, project configuration, docs and repo hygiene) while diagnosing, ranking, and staging new candidates across software-technical and domain-expertise axes with project philosophy alignment",
+  "version": "1.28.0",
+  "description": "Productivity toolkit for library maintainers - adaptive iterative development cycles, session handoff and continuity-doc upkeep, conversational issue/PR triage, telemetry-driven issue discovery, and owner-manager backlog discovery that inspects what already exists (dependency currency, project configuration, docs and repo hygiene) while diagnosing, ranking, and staging new candidates with project philosophy alignment",
   "author": {
     "name": "iyulab",
     "url": "https://github.com/iyulab"
@@ -10,5 +10,41 @@
   "homepage": "https://github.com/iyulab/claude-plugins/blob/main/plugins/iyu/README.md",
   "repository": "https://github.com/iyulab/claude-plugins",
   "license": "MIT",
-  "keywords": ["cycle", "iterative", "roadmap", "development", "lifecycle", "issue", "triage", "pr-review", "code-review", "security", "opensource", "maintainer", "library", "bug", "pattern-detection", "root-cause", "refactoring", "telemetry", "app-insights", "azure", "monitoring", "observability", "backlog", "discovery", "playbook", "benchmarking", "positioning", "research", "domain-expertise", "prioritization", "stewardship", "dependency-updates", "maintenance", "housekeeping"]
+  "keywords": [
+    "cycle",
+    "iterative",
+    "roadmap",
+    "development",
+    "lifecycle",
+    "issue",
+    "triage",
+    "security",
+    "opensource",
+    "maintainer",
+    "library",
+    "bug",
+    "pattern-detection",
+    "root-cause",
+    "refactoring",
+    "telemetry",
+    "app-insights",
+    "azure",
+    "monitoring",
+    "observability",
+    "backlog",
+    "discovery",
+    "playbook",
+    "benchmarking",
+    "positioning",
+    "research",
+    "domain-expertise",
+    "prioritization",
+    "stewardship",
+    "dependency-updates",
+    "maintenance",
+    "housekeeping",
+    "handoff",
+    "session-continuity",
+    "roadmap-hygiene"
+  ]
 }

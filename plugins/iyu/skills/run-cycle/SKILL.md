@@ -66,34 +66,22 @@ This skill runs on the **host agent's native loop and context management** — i
 
 ## Continuity root — where that durable state lives
 
-All five artifacts of a run live **together in one directory**, the *continuity root* (`<root>` below):
+**[continuity-docs.md](${CLAUDE_SKILL_DIR}/../_shared/continuity-docs.md) is the definition** — §1
+for resolving the root and what lives in it, §2 for what belongs in each document. `handoff`,
+`backlog-discover`, and `telemetry-az` read the same file, which is what keeps all four landing in
+one directory. Do not restate those rules here; a second copy drifts.
 
-| Artifact | Path |
-|---|---|
-| Phase backlog | `<root>/ROADMAP.md` |
-| Handoff (only if the project keeps one) | `<root>/HANDOFF.md` |
-| Completed-work index | `<root>/HISTORY.md` |
-| Cycle logs | `<root>/cycle-logs/cycle-{NN}.md` |
-| End-of-Run Report | `<root>/cycle-logs/RUN-SUMMARY-{YYYY-MM-DD}.md` |
+Run-specific on top of it:
 
-**Resolve `<root>` once, in Preparation, by looking at the repo — never by assuming a literal path.** Projects differ, and an umbrella repo tracking submodules nests these one level deeper (`claudedocs/<Submodule>/`); a hardcoded path silently creates a *second* roadmap beside the one the project already keeps.
-
-Glob once for `cycle-logs/`, `backlog-discovery/`, `telemetry/`, `ROADMAP.md`, and `HANDOFF.md` (skip `node_modules`, `.git`, build output), then take the **first rule that matches** — the order matters:
-
-1. **A `cycle-logs/`, `backlog-discovery/`, or `telemetry/` directory exists** (in that precedence) → `<root>` is its **parent**. These are written only by this plugin's skills, so they are the most reliable anchor; `cycle-logs/` leads because only a previous run of *this* skill can have written it. **`/iyu:backlog-discover` and `/iyu:telemetry-az` check the same three anchors in the same order** — a project that has run only one of the three must still resolve to the one root all of them share.
-2. **Otherwise a `ROADMAP.md` / `HANDOFF.md` exists** → `<root>` is the directory holding it. The repo has already chosen its convention; **use it in place** and never create a parallel one alongside it.
-3. **Nothing exists** → create the default: **`claudedocs/`** (i.e. `claudedocs/ROADMAP.md`, `claudedocs/cycle-logs/`).
-
-Two cases the plain rules do not settle:
-
-- **Umbrella / multiple hits** — a repo tracking several submodules has one candidate per submodule. Pick the one covering the code *this run* is working on.
-- **Legacy layout** — if a `ROADMAP.md` / `HANDOFF.md` / `HISTORY.md` is found **inside** `cycle-logs/` (an earlier version of this skill placed the roadmap there), rule 1 still governs: `<root>` is the parent, and Preparation step 0 moves the file up to `<root>/` on the spot. Continuity docs sit *beside* `cycle-logs/`, never inside it — nesting them there is what makes `<root>/cycle-logs/` resolve recursively.
-
-**The five move together or not at all.** `HISTORY.md` indexes cycle logs by `(cycle-NN)` and `HANDOFF.md` anchors to backlog phases — splitting them across directories breaks those references. Record the resolved root in each cycle log header so a fresh context can pick it up without re-deriving it.
+- Resolve `<root>` **once, in Preparation**, before reading or writing anything.
+- This skill owns two artifacts in it: `<root>/cycle-logs/cycle-{NN}.md` and
+  `<root>/cycle-logs/RUN-SUMMARY-{YYYY-MM-DD}.md`.
+- **Record the resolved root in each cycle log header**, so a fresh context picks it up without
+  re-deriving it — and so the Stop hook, which has no session context, reads the same one.
 
 ## Parameters
 
-**One parameter: the cycle budget.** `$0` = total cycles (default: 5). Anything else in
+**One parameter: the cycle budget.** `$0` = total cycles (default: **10**). Anything else in
 `$ARGUMENTS`, and anything the user wrote alongside the invocation, is **scope context** — it feeds
 Preparation step 1, not a flag parser. There are no flags: a run always executes, and always commits.
 
@@ -148,7 +136,13 @@ only completed logs.
 
 ### 3. Plan Discovery (only if no scope from above)
 
-Stop at first found: CLAUDE.md → AGENTS.md → `<root>/ROADMAP.md` (the resolved root from step 0 — the *same* file STEP 5 would create, never a differently-located one) / TASKS.md / TODO.md → docs/ → README.md. If nothing found, ask the user. Do not invent scope.
+Stop at first found: CLAUDE.md → AGENTS.md → **`<root>/HANDOFF.md`** → `<root>/ROADMAP.md` (the resolved root from step 0 — the *same* file STEP 5 would create, never a differently-located one) / TASKS.md / TODO.md → docs/ → README.md. If nothing found, ask the user. Do not invent scope.
+
+**`HANDOFF.md` outranks `ROADMAP.md` here, deliberately.** The handoff's "Next" section is the last
+session's considered judgment about what to do now, made with knowledge of what it just finished;
+the roadmap is phase-level direction that has not been narrowed to a session. When both exist, the
+handoff *is* this run's opening scope and the roadmap tells you where it sits. `/iyu:handoff` writes
+that section — the two skills meet here.
 
 ### 4. Philosophy Alignment (high-level only)
 
@@ -264,6 +258,12 @@ Implement the scope. Progress incrementally. **Inherited defects are fixed first
 
 - **Define "done" before checking it** — restate this cycle's scope as concrete, checkable acceptance criteria (which test passes, which behavior holds, which output appears). Verify against *that*, not against a self-assessed "looks done".
 - Run the project's test suite, linter, and build
+- **Drive the real thing when the change is user-facing.** If the cycle touched UI, app flow, or CLI
+  output, a green test suite is not the same as the feature working. Exercise it on its actual
+  surface — a browser-automation MCP if the session has one, the CLI, the running service — and say
+  what you observed. No such surface available: record "skipped — no runnable surface" and move on.
+  Never add a dependency to satisfy this. STEP 4 asks you to judge user-facing quality; this is
+  where you get the evidence to judge it with.
 - **Evidence, not assertion** — completion is proven by actual command output (test/build results), never by claiming it works. The top failure mode of long-running agents is marking work complete without verifying it. If you cannot show the passing evidence, it is not done.
 - On failure: **fix and re-run immediately** within this cycle — do not defer
 - If a failure exposes a trigger-class issue (HARD STOP / RE-PLAN), loop back to STEP 0 rather than forcing progress
@@ -328,19 +328,14 @@ running now, which is exactly right while it is, and wrong the moment the cycle 
 
 ## Continuity-Doc Hygiene
 
-`ROADMAP.md` — and `HANDOFF.md`, when the project maintains one — are **continuity docs**: the primary files a human (or a fresh session) reads to find *remaining* work fast. The invariant: **completed work does not live in a continuity doc.** Removal loses nothing — cycle logs and git history already hold the detail; the continuity doc's job is to stay small enough to read in one pass. Without this rule, both files grow monotonically until "what's left?" is buried under "what's done" — the exact failure this section exists to prevent.
+Apply **[continuity-docs.md](${CLAUDE_SKILL_DIR}/../_shared/continuity-docs.md) §3** in full at
+every STEP 5 — migrate completed work out of `ROADMAP.md` into `HISTORY.md`, rewrite `HANDOFF.md` to
+current + next, keep the `> History:` link, treat a still-long doc as a wrong-layer signal. `handoff`
+runs the same pass; that is why it lives in one file.
 
-Applied at STEP 5, every cycle:
-
-1. **Migrate every completed phase/item out of `ROADMAP.md`** — not only ones completed this cycle: any already-completed leftovers found are migrated too. This is invariant *enforcement*, not an event handler, and it is what makes pre-existing bloat converge without a special cleanup pass.
-2. **`HISTORY.md` is a pure index** — `<root>/HISTORY.md`, beside `ROADMAP.md`, newest first, one compressed entry (1–3 lines) per completed phase:
-   `- **{YYYY-MM-DD}** {phase} — {one-line outcome} (cycle-NN)`
-   Never duplicate detail into it; cycle logs and git log are the record. Deep dives start at the index and follow the reference.
-3. **Rewrite `HANDOFF.md` to current + next only** (if present) — what is in flight and what comes next, anchored to backlog phases. Past-session narrative is dropped, not accumulated.
-4. **Link line** — keep `> History: [HISTORY.md](HISTORY.md)` at the top of each continuity doc (create on first migration) so history stays one hop away.
-5. **Size signal (soft)** — if a continuity doc stays long (~200+ lines) *after* migration, detail is living at the wrong layer: split phase detail into `<root>/plans/` docs and leave links. A judgment signal, not a hard rule.
-
-Hygiene never gates termination — it is doc upkeep inside STEP 5 and the doc-sync floor, not a completion criterion, and it adds nothing to the Stop-hook logic.
+Two things specific to running it inside a cycle: `HISTORY.md` entries carry this run's `(cycle-NN)`
+as their reference, and hygiene **never gates termination** — it is doc upkeep inside STEP 5 and the
+doc-sync floor, not a completion criterion, and it adds nothing to the Stop-hook logic.
 
 ---
 
