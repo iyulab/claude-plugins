@@ -43,15 +43,49 @@ How that differs from the mainstream:
 
 **Productivity toolkit for open-source library maintainers — adaptive iterative development, session continuity, issue triage, telemetry and backlog discovery**
 
-| Component | Type | Activation | Description |
-|-----------|------|------------|-------------|
-| `mindset` | Skill | Auto (background) | "Critical but Constructive" mindset for conversational triage/dev discussions |
-| `issue-triage` | Skill | Auto (conversational) | Decision matrices and triage advice |
-| `/iyu:run-cycle` | Skill | Manual | Adaptive iterative cycles (re-plan → execute → verify → reflect) |
-| `/iyu:handoff` | Skill | Manual | Session closeout — continuity docs, next scope, re-ordering, pending decisions |
-| `/iyu:ship` | Skill | Manual | Bump → commit → push → CI watch, gated on whether now is the moment |
-| `/iyu:telemetry-az` | Skill | Manual | Azure App Insights telemetry triage — defects, regressions, feature drop |
-| `/iyu:backlog-discover` | Skill | Manual | Playbook-driven backlog discovery + diagnose/rank/stage — proposal only |
+#### How the skills fit together
+
+They form one loop. Each hands its output to the next through **files in your repo**, not through
+the conversation — so any of them can be picked up in a fresh session, after a compaction, or by
+someone else.
+
+```
+   /iyu:backlog-discover ──proposes──▶  ROADMAP.md  ──▶ /iyu:run-cycle ──▶ /iyu:handoff ──▶ /iyu:ship
+     what's worth doing?                what's left      build & verify     close out &      take it out
+             ▲                                                             re-order          & watch CI
+             │                                                                                    │
+             └────────────────── /iyu:telemetry-az ◀── what production says ◀─────────────────────┘
+                                  defects → issues → back into the backlog
+```
+
+You do not need all of it. **Start with two:**
+
+```bash
+/iyu:run-cycle 10     # work through the backlog, verifying as it goes
+/iyu:handoff          # when you stop — write down where things stand and what's next
+```
+
+That pair alone gives you the core benefit: work that resumes cleanly tomorrow. Add the others when
+you feel the specific need.
+
+| Reach for | What it does | When |
+|---|---|---|
+| `/iyu:run-cycle [N]` | Re-plan → execute → verify → reflect → derive next, N times | You have work to do. `N` is a ceiling, not a target — it stops early when the backlog is genuinely done |
+| `/iyu:handoff` | Rewrites the continuity docs, derives next scope, re-orders what's left | You're stopping, or the docs no longer match reality |
+| `/iyu:ship` | Bump → commit → push → watch CI to completion | A phase is finished and ready to leave the machine. Asks first whether now is the moment |
+| `/iyu:backlog-discover` | Research playbook → diagnosis, ranking, staged proposal | The backlog is running dry, or `run-cycle` reported the frontier exhausted |
+| `/iyu:telemetry-az` | Reads Azure App Insights, files issues for threshold-crossing findings | Periodically, to let production tell you what's actually broken |
+| *(nothing — just talk)* | `mindset` and `issue-triage` supply triage matrices and maintenance judgment | They activate on their own, in conversation |
+
+**Shared state lives in one directory**, resolved from your repo rather than hardcoded — an existing
+`cycle-logs/` or `ROADMAP.md` anchors it, otherwise `claudedocs/` is created:
+
+- `ROADMAP.md` — remaining work, phase-level. Never completed work, never cycle numbers
+- `HANDOFF.md` — what's in flight and what's next
+- `HISTORY.md` — an index of what's done, so the two above stay short enough to read in one pass
+
+Every skill resolves that directory the same way, so they all land in the same place — including an
+umbrella repo that keeps one set per submodule.
 
 #### Installation
 
@@ -59,26 +93,16 @@ How that differs from the mainstream:
 /plugin install iyu@iyulab-plugins
 ```
 
-#### Skills (Auto-Activated)
+#### The two automatic skills
 
-The plugin automatically activates when you discuss issue evaluation or PR review. Just ask naturally:
+`mindset` and `issue-triage` need no invocation — they activate when the conversation calls for
+them. Just ask naturally:
 
-- "Should I accept this feature request?"
-- "How should I respond to this issue?"
-- "Is this in scope for my project?"
-- "Help me triage this pull request"
-- "Review this PR for me"
+- "Should I accept this feature request?" · "Is this in scope for my project?"
+- "How should I respond to this issue?" · "Review this PR for me"
 - "Find similar bugs in the codebase"
 
-#### Commands
-
-| Command | Description |
-|---------|-------------|
-| `/iyu:run-cycle` | Adaptive iterative development cycles |
-| `/iyu:handoff` | Session closeout, continuity-doc upkeep, backlog re-ordering |
-| `/iyu:ship` | Version bump, commit, push, and CI tracking |
-| `/iyu:telemetry-az` | Azure App Insights telemetry triage and issue discovery |
-| `/iyu:backlog-discover` | Backlog discovery playbook — diagnose, rank, and stage candidates |
+#### Command reference
 
 ##### /iyu:run-cycle
 
