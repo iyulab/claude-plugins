@@ -33,6 +33,10 @@ Execute a single development phase. For iterative multi-cycle work, use `/iyu:ru
 
 **Flags**: `--dry-run` (plan only) | `--no-commit` (skip commit)
 
+Parse `$ARGUMENTS` flags-first: tokens starting with `--` are flags, and what remains is the task
+description. A bare `/iyu:run --dry-run` has no task description — it falls back to Mode A discovery,
+not to a task literally named `--dry-run`.
+
 ## Process
 
 ### Phase 1: Scope Discovery

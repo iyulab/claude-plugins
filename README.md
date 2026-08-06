@@ -1,6 +1,6 @@
 # Claude Code Plugins for Library Maintainers
 
-[![Claude Code Plugin](https://img.shields.io/badge/Claude%20Code-Plugin-blueviolet?logo=anthropic&logoColor=white)](https://docs.anthropic.com/en/docs/claude-code/plugins)
+[![Claude Code Plugin](https://img.shields.io/badge/Claude%20Code-Plugin-blueviolet?logo=anthropic&logoColor=white)](https://code.claude.com/docs/en/plugins)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![GitHub](https://img.shields.io/badge/GitHub-iyulab%2Fclaude--plugins-blue?logo=github)](https://github.com/iyulab/claude-plugins)
 
@@ -37,9 +37,9 @@ How that differs from the mainstream:
 
 ## Available Plugins
 
-> **Versioning** — two independent version numbers exist by design: `marketplace.json → metadata.version` tracks the **marketplace registry** (structure of this catalog), while each plugin's `plugin.json → version` tracks that **plugin** itself. They advance separately. Per-plugin `keywords` are sourced from `plugin.json` and mirrored into the marketplace entry. See [CHANGELOG.md](./CHANGELOG.md) for the iyu plugin history.
+> **Versioning** — two independent version numbers exist by design: `marketplace.json → version` tracks the **marketplace registry** (structure of this catalog), while each plugin's `plugin.json → version` tracks that **plugin** itself. They advance separately. Per-plugin `keywords`, `homepage`, and `license` are sourced from `plugin.json` and mirrored into the marketplace entry — the marketplace's own `metadata` object only recognizes `pluginRoot`, so per-plugin fields belong on the entry, not there. See [CHANGELOG.md](./CHANGELOG.md) for the iyu plugin history.
 
-### iyu (v1.16.0)
+### iyu (v1.27.0)
 
 **Productivity toolkit for open-source library maintainers — adaptive iterative development, issue triage, PR review**
 
@@ -52,6 +52,7 @@ How that differs from the mainstream:
 | `/iyu:run` | Skill | Manual | Plan-driven development execution |
 | `/iyu:run-cycle` | Skill | Manual | Adaptive iterative cycles (re-plan → execute → verify → reflect) |
 | `/iyu:telemetry-az` | Skill | Manual | Azure App Insights telemetry triage — defects, regressions, feature drop |
+| `/iyu:backlog-discover` | Skill | Manual | Playbook-driven backlog discovery + diagnose/rank/stage — proposal only |
 
 #### Installation
 
@@ -79,6 +80,7 @@ The plugin automatically activates when you discuss issue evaluation or PR revie
 | `/iyu:run` | Plan-driven development execution |
 | `/iyu:run-cycle` | Adaptive iterative development cycles |
 | `/iyu:telemetry-az` | Azure App Insights telemetry triage and issue discovery |
+| `/iyu:backlog-discover` | Backlog discovery playbook — diagnose, rank, and stage candidates |
 
 ##### /iyu:issue
 
@@ -127,9 +129,6 @@ The plugin automatically activates when you discuss issue evaluation or PR revie
 
 # up to 10 cycles (N is a ceiling, not a target)
 /iyu:run-cycle 10
-
-# Preparation + phase backlog only
-/iyu:run-cycle 5 --dry-run
 ```
 
 Each cycle runs Re-plan → Design → Execute → Verify → Reflect → Derive-Next. **Just-in-time scoping**: only the current cycle is scoped concretely, and each cycle's outcome decides the next cycle's scope. The roadmap is a phase backlog — it never assigns scope to numbered cycles, so the run behaves like genuine multi-turn work rather than one upfront N-cycle plan.
@@ -222,7 +221,7 @@ plugins/
 
 ## Requirements
 
-- [Claude Code CLI](https://docs.anthropic.com/en/docs/claude-code) installed
+- [Claude Code CLI](https://code.claude.com/docs/en/overview) installed
 - Claude Code version with plugin support
 
 ## License
@@ -231,6 +230,6 @@ MIT - See [LICENSE](./LICENSE) for details.
 
 ## Links
 
-- [Claude Code Documentation](https://docs.anthropic.com/en/docs/claude-code)
-- [Plugin Development Guide](https://docs.anthropic.com/en/docs/claude-code/plugins)
+- [Claude Code Documentation](https://code.claude.com/docs/en/overview)
+- [Plugin Development Guide](https://code.claude.com/docs/en/plugins)
 - [Iyulab GitHub](https://github.com/iyulab)

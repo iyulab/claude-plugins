@@ -1,6 +1,7 @@
 ---
 name: backlog-discover
-description: Discovers new backlog phases for a project's ROADMAP.md and judges them like an owner-manager — running a convergent/emergent research playbook (vision-gap analysis, trend/competitive research, academic-research scan, appropriate-technology adoption judgment, positioning review, telemetry-az output reuse, voice-of-customer mining, active stewardship inspection of dependencies/config/docs/repo hygiene, technical-debt audits, developer-tooling gaps, active dogfooding, plus emergent techniques like pre-mortems, subtraction sessions, chaos engineering, fresh-eyes onboarding) on a persistent per-activity cadence, self-diagnosing which emergent session to rotate in when the backlog feels stale, then synthesizing the findings into a state-of-the-product diagnosis, an evidence-grounded importance ranking, and a dependency-ordered now/next/later staging toward the vision. Always produces a proposal document for human review; never merges into ROADMAP.md automatically. Use when the backlog is running dry, when run-cycle reports the feature frontier exhausted, when dependencies or project configuration may have gone stale, or periodically to keep the roadmap fed with fresh, philosophy-aligned candidates. An empty or already-recently-run backlog is a deepen-signal (use the product, inspect what you own, then dig into tech-health, research, and positioning in that order), never a done-signal. Fully independent of run-cycle — run-cycle only consumes ROADMAP.md, this skill only feeds it.
+description: Discovers and judges new backlog phases for a project's ROADMAP.md like an owner-manager — runs a convergent/emergent research playbook (vision-gap, trend/competitive research, domain-practice and academic scans, stewardship inspection of dependencies/config/docs/repo hygiene, telemetry reuse, active dogfooding, plus emergent sessions rotated in by symptom) on a persistent per-activity cadence, then synthesizes the findings into a state-of-the-product diagnosis, an evidence-grounded importance ranking, and a dependency-ordered now/next/later staging toward the vision. Always produces a proposal document for human review; never merges into ROADMAP.md automatically.
+when_to_use: Use when the backlog is running dry, when run-cycle reports the feature frontier exhausted, when dependencies or project configuration may have gone stale, or periodically to keep the roadmap fed with philosophy-aligned candidates. An empty or already-recently-run backlog is a deepen-signal — use the product, inspect what you own, then dig into tech-health, research, and positioning in that order — never a done-signal. Fully independent of run-cycle — run-cycle only consumes ROADMAP.md, this skill only feeds it.
 argument-hint: "[--modes <comma-list>] [--symptom <name>] [--dry-run]"
 disable-model-invocation: true
 allowed-tools: Read, Glob, Grep, Write, Edit, WebSearch, WebFetch, TodoWrite, Bash
@@ -8,7 +9,7 @@ allowed-tools: Read, Glob, Grep, Write, Edit, WebSearch, WebFetch, TodoWrite, Ba
 
 # Backlog Discovery
 
-Run the [Backlog Generation Playbook](references/playbook.md) — a menu of convergent
+Run the [Backlog Generation Playbook](${CLAUDE_SKILL_DIR}/references/playbook.md) — a menu of convergent
 (observe existing signals) and emergent (manufacture new signals) activities — to
 discover new phase-level backlog candidates when a project's `ROADMAP.md` runs dry, or
 periodically to keep it fed. This skill is **fully independent of `run-cycle`**:
@@ -17,49 +18,20 @@ to it, and never writes `ROADMAP.md` directly.
 
 ## Why this shape
 
-The two development skills play different roles on purpose. `run-cycle` acts as a **capable
-employee**: given a scope, it executes, verifies, and reports back. This skill acts as the
-**capable owner-manager** — the one who cares about the project as something they are
-answerable for. A manager does two things an executor does not: they decide *what deserves
-attention next*, and they **keep what already exists in good order**. The second half is easy
-to lose: a discovery skill that only looks forward will happily propose new capabilities
-while the dependencies rot, the quickstart breaks, and the CI config drifts out of sync with
-reality. Hence `stewardship-check` (관리 점검) as a short-cadence lane and the first rung of
-the deepen ladder.
-
-Concretely, a generic "brainstorm new features" prompt either runs the same handful of ideas
-every time (stale) or invents ungrounded scope (mindset violation — "no invention", no
-autonomous new product direction). This skill instead:
-
-1. Draws from a **fixed, named menu** (the playbook) so activities are legible and
-   repeatable, not reinvented per run.
-2. **Tracks cadence per activity** in a persistent state file, so a quarterly activity
-   doesn't re-run every invocation and a stale half-yearly one doesn't get forgotten.
-3. **Self-diagnoses** which emergent (deliberately provocative) session to run from
-   observable symptoms in the project's own history — not a random pick.
-4. **Never auto-merges.** Every discovered item — however well-argued — lands in a
-   proposal document. A human decides what enters `ROADMAP.md`. This is a stricter bar
-   than `run-cycle`'s in-cycle "autonomous-eligible" fast path, because this skill's
-   discoveries are external and speculative (web trends, competitor features, deliberately
-   engineered provocations) rather than a narrow "what does the diff I just wrote imply."
-5. **Inspects, not only imagines.** `stewardship-check` actively runs the project's own
-   dependency, config, doc, and repo-hygiene checks each sprint. Forward-looking research and
-   backward-looking upkeep are both the owner's job, and the upkeep half is the one that
-   silently decays if nobody schedules it.
-6. **Judges, not just collects.** Handing over 40 tagged findings is not a finished job —
-   it moves the whole burden of "what matters, in what order, and why" onto the reader.
-   P6 closes that gap: a state-of-the-product **diagnosis**, an evidence-grounded
-   **importance ranking**, and a dependency-ordered **staging** toward the vision. Judgment
-   is still a proposal, never a decision — ranking an item is not merging it (rule 1).
+`run-cycle` is the capable **employee** — given a scope, it executes, verifies, reports back. This
+skill is the capable **owner-manager**: it decides *what deserves attention next* **and keeps what
+already exists in good order**. That second half is the one a forward-only discovery skill loses,
+which is why `stewardship-check` (관리 점검) is a short-cadence lane and the first rung of the
+deepen ladder. Six properties follow — fixed named menu, per-activity cadence, symptom
+self-diagnosis, never auto-merges, inspects rather than only imagines, judges rather than only
+collects. Full rationale: [design-rationale.md](${CLAUDE_SKILL_DIR}/references/design-rationale.md).
 
 ## Unscoped Bash rationale
 
-`allowed-tools` includes `Bash` without scope, matching `run-cycle`. Activities span
-arbitrary project-specific commands (dependency/outdated audits, `gh issue list`,
-`git log` mining, package-registry lookups for the dependency-horizon-scan activity)
-across unknown project types — scoping would require per-project edits. In practice this
-skill is read-mostly (research + analysis, not code changes), so the blast radius of the
-unscoped surface is smaller than `run-cycle`'s, but the same justification applies.
+`allowed-tools` includes `Bash` without scope, matching `run-cycle`: activities span arbitrary
+project-specific commands (outdated/audit tooling, `gh issue list`, `git log` mining, registry
+lookups) across unknown project types, and scoping would require per-project edits. This skill is
+read-mostly, so the blast radius is smaller than `run-cycle`'s — the justification is the same.
 
 ## Parameters
 
@@ -395,7 +367,7 @@ P6's diagnosis reports the split either way, and a persistent skew is what P2's
 
 ### P5: Philosophy alignment
 
-Score each item using [philosophy-alignment-guide.md](../mindset/references/philosophy-alignment-guide.md)
+Score each item using [philosophy-alignment-guide.md](${CLAUDE_SKILL_DIR}/../mindset/references/philosophy-alignment-guide.md)
 (the same guide `issue`/`pr`/`telemetry-az` use). Low-scoring items are **kept but
 flagged** "정렬 미흡" in the proposal — this skill never silently drops an item; exclusion
 is a human call made when reviewing the proposal.
@@ -403,7 +375,7 @@ is a human call made when reviewing the proposal.
 ### P6: Synthesis — diagnose, rank, stage
 
 Discovery produced a pile of grounded items. This step turns it into something a human can
-decide on, using [synthesis-rubric.md](references/synthesis-rubric.md) for the scoring
+decide on, using [synthesis-rubric.md](${CLAUDE_SKILL_DIR}/references/synthesis-rubric.md) for the scoring
 tables and constraints. Three outputs, in order:
 
 1. **현재 상태 진단** — four sentences from what was *actually observed this run*, one per
@@ -432,7 +404,7 @@ If discovery produced no items at all (all four deepen-ladder lanes came up empt
 ### P7: Proposal document
 
 Write `<root>/backlog-discovery/proposal-YYYY-MM-DD.md` using
-[proposal-template.md](references/proposal-template.md). This is the **terminal output**
+[proposal-template.md](${CLAUDE_SKILL_DIR}/references/proposal-template.md). This is the **terminal output**
 of this skill — `ROADMAP.md` is never written here. List skipped activities explicitly
 with their skip reason (never silent).
 

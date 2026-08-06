@@ -1,8 +1,8 @@
 # IYU Plugin
 
-[![Claude Code Plugin](https://img.shields.io/badge/Claude%20Code-Plugin-blueviolet?logo=anthropic&logoColor=white)](https://docs.anthropic.com/en/docs/claude-code/plugins)
+[![Claude Code Plugin](https://img.shields.io/badge/Claude%20Code-Plugin-blueviolet?logo=anthropic&logoColor=white)](https://code.claude.com/docs/en/plugins)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-1.26.0-blue.svg)](./plugin.json)
+[![Version](https://img.shields.io/badge/version-1.27.0-blue.svg)](./.claude-plugin/plugin.json)
 
 Productivity toolkit for open-source library maintainers and developers.
 
@@ -70,10 +70,12 @@ Plan-driven or input-driven development execution.
 Iterative development cycles with evaluation and continuity tracking.
 
 ```bash
-/iyu:run-cycle 5      # 5 cycles
-/iyu:run-cycle 3 2    # 3 cycles starting from cycle 2
-/iyu:run-cycle --dry-run
+/iyu:run-cycle        # 5 cycles (default)
+/iyu:run-cycle 10     # up to 10 cycles
 ```
+
+One parameter, the cycle budget — anything you write alongside the invocation is read as scope
+context. The starting cycle number is derived from the existing logs (highest index + 1), not passed.
 
 Each cycle: Scope → Research → Implement → Test → Evaluate → Carry-Forward.
 
@@ -93,9 +95,9 @@ Cycles maintain continuity — unresolved issues and pending decisions automatic
 
 When primary work finishes early and cycles remain, run-cycle does not stop idle. It climbs a **Surplus-Cycle Value Ladder** — investing the remaining budget across the full software lifecycle: **① main loop → ② durable value** (research → refactoring → docs/assets) **→ ③ stability** (tests/monitoring → security/compliance → resilience) **→ ④ efficiency** (DevOps → DX). It acts only where the project shows a concrete signal; additive/low-risk work is done in-cycle, invasive/opinionated work is proposed for human decision. Doc-sync is the always-applicable floor of this ladder.
 
-Before committing, run-cycle runs a **lightweight release-readiness check** — version consistency across version-bearing files, CHANGELOG coverage, doc-sync, and an evidence block of the actual test/build/lint output. It verifies and packages only; tagging, publishing, and pushing stay with the human / CI. Skipped on `--no-commit` / `--dry-run`. The commit itself defaults to **one per run** (bundling beats fragmenting), splitting on **verified-cycle boundaries** only when a long run's single diff would no longer be reviewable in one pass — each cycle's passing STEP 3 is already a clean rollback point.
+Before committing, run-cycle runs a **lightweight release-readiness check** — version consistency across version-bearing files, CHANGELOG coverage, doc-sync, and an evidence block of the actual test/build/lint output. It verifies and packages only; tagging, publishing, and pushing stay with the human / CI. The commit itself defaults to **one per run** (bundling beats fragmenting), splitting on **verified-cycle boundaries** only when a long run's single diff would no longer be reviewable in one pass — each cycle's passing STEP 3 is already a clean rollback point.
 
-Cycle accounting respects `start_cycle`: when the run starts at cycle *K*, only logs from *K* onward count toward the budget, so a repo carrying logs from earlier runs can't read as already over budget and stop before doing any work.
+Cycle accounting is relative to where the run started: Preparation derives the starting index from the existing logs and records it (with the budget) in every cycle log header, and only logs from that index onward count toward the budget — so a repo carrying logs from earlier runs can't read as already over budget and stop before doing any work. The Stop hook reads those headers, since it gets no invocation arguments of its own.
 
 ### /iyu:telemetry-az
 

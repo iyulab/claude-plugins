@@ -4,8 +4,9 @@ description: Triages external issues with critical evaluation against project ph
 argument-hint: <issue-url | file-path | "issue text"> [--quick] [--save] [--no-research]
 disable-model-invocation: true
 context: fork
-agent: Explore
-allowed-tools: Read, Glob, Grep, WebFetch, WebSearch, TodoWrite, Bash(gh *)
+agent: general-purpose
+background: false
+allowed-tools: Read, Glob, Grep, Write, WebFetch, WebSearch, TodoWrite, Bash(gh *)
 ---
 
 # Issue Triage
@@ -47,12 +48,12 @@ Don't take the request at face value:
 
 If classified as a bug:
 - **Root Cause Analysis**: Symptom ≠ cause. Build hypothesis tree, trace cause chain: `[Action] → [Component] → [ROOT CAUSE] → [Symptom]`
-- **Similar Pattern Detection**: After identifying root cause, search for the same pattern elsewhere. Classify by risk (Critical/High/Medium/Low). See [pattern-detection-guide.md](../mindset/references/pattern-detection-guide.md).
-- **Solution Research**: For complex bugs (5+ files, unfamiliar territory, security/performance), use WebSearch for latest approaches. See [research-methodology.md](references/research-methodology.md).
+- **Similar Pattern Detection**: After identifying root cause, search for the same pattern elsewhere. Classify by risk (Critical/High/Medium/Low). See [pattern-detection-guide.md](${CLAUDE_SKILL_DIR}/../mindset/references/pattern-detection-guide.md).
+- **Solution Research**: For complex bugs (5+ files, unfamiliar territory, security/performance), use WebSearch for latest approaches. See [research-methodology.md](${CLAUDE_SKILL_DIR}/references/research-methodology.md).
 
 ### Phase 2: Philosophy Alignment
 
-Read CLAUDE.md / README.md. Evaluate using the [philosophy-alignment-guide.md](../mindset/references/philosophy-alignment-guide.md):
+Read CLAUDE.md / README.md. Evaluate using the [philosophy-alignment-guide.md](${CLAUDE_SKILL_DIR}/../mindset/references/philosophy-alignment-guide.md):
 
 | Dimension | Question |
 |-----------|----------|
@@ -75,7 +76,7 @@ Evaluate: Technical Complexity, Breaking Changes, Maintenance Burden, Dependenci
 | Feasibility MED | ADAPT | DEFER/REDIRECT |
 | Feasibility LOW | DEFER | DECLINE |
 
-For decision examples, see [decision-examples.md](../mindset/references/decision-examples.md).
+For decision examples, see [decision-examples.md](${CLAUDE_SKILL_DIR}/../mindset/references/decision-examples.md).
 
 ### Phase 5: "Think 10 from 1" (skip if --quick)
 
@@ -89,7 +90,7 @@ Extract latent insights beyond the immediate request:
 
 ### Phase 6: Response Draft
 
-Structure by decision type and contributor context. For templates, see [response-templates.md](references/response-templates.md).
+Structure by decision type and contributor context. For templates, see [response-templates.md](${CLAUDE_SKILL_DIR}/references/response-templates.md).
 
 ### Quick Mode (--quick)
 

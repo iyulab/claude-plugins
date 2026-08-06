@@ -1,6 +1,7 @@
 ---
 name: telemetry-az
-description: Analyzes Azure Application Insights telemetry since the last run to surface defects, performance regressions, and feature-drop signals — tracked run-over-run as a quality trend (error-rate/p95/issue-count direction over the last N runs, with closed-issue recurrence detection) — plus a run-over-run user-analytics report (active-user growth, feature/page preference shifts, engagement trends vs prior runs). It triages findings against project philosophy, files issues for threshold-crossing ones, and leads every report with a both-purpose Trend section backed by a 12-run history. Use when periodically reviewing production telemetry, e.g. "check app insights for new issues", "analyze telemetry regressions", "is quality trending up or down", "how is usage trending vs last run", "run the telemetry triage".
+description: Analyzes Azure Application Insights telemetry since the last run to surface defects, performance regressions, and feature-drop signals, tracked run-over-run as a quality trend (error-rate/p95/issue-count direction, with closed-issue recurrence detection), plus a report-only user-analytics reading (active-user growth, feature/page preference shifts, engagement). Triages findings against project philosophy, files issues only for threshold-crossing ones, and leads every report with a both-purpose Trend section backed by a 12-run history.
+when_to_use: Use when periodically reviewing production telemetry, e.g. "check app insights for new issues", "analyze telemetry regressions", "is quality trending up or down", "how is usage trending vs last run", "run the telemetry triage".
 argument-hint: "[--since <ISO8601>] [--dry-run] [--no-issues]"
 disable-model-invocation: true
 allowed-tools: Read, Glob, Grep, Write, Edit, WebSearch, Bash(az *)
@@ -191,13 +192,13 @@ not the app id. (Gitignore it only if your project prefers; the report still mas
 - **First run** (no `.last-run.json`): default the window to the last 7 days and note this
   in the report.
 - Window end = `now()` — captured **once** by the watermark probe (see
-  [kql-queries.md](references/kql-queries.md)), then passed as `--end-time` on every data
+  [kql-queries.md](${CLAUDE_SKILL_DIR}/references/kql-queries.md)), then passed as `--end-time` on every data
   query, never from the local clock.
 
 ### P2: Collect
 
 Capture `<nowUtc>` first via a probe query (`print nowUtc = now(), windowDays = …` — see
-[kql-queries.md](references/kql-queries.md)); reuse `nowUtc` for both `--end-time` and the new
+[kql-queries.md](${CLAUDE_SKILL_DIR}/references/kql-queries.md)); reuse `nowUtc` for both `--end-time` and the new
 watermark, and `windowDays` for user-analytics normalization (P2b). Computing `windowDays`
 in-band keeps the skill within `Bash(az *)` — no shell `date` needed. Then run each data query:
 
@@ -214,7 +215,7 @@ time flags are supplied. A KQL `where timestamp` filter alone does NOT widen the
 service applies the offset first, so without these flags the query silently returns only the
 last hour and the rest of `[lastRunUtc, nowUtc]` is lost. Use `--apps` (the canonical name;
 `--app` works only via CLI prefix-matching and is fragile). Default KQL for the signal
-classes lives in [kql-queries.md](references/kql-queries.md). Append any `config.customQueries`.
+classes lives in [kql-queries.md](${CLAUDE_SKILL_DIR}/references/kql-queries.md). Append any `config.customQueries`.
 
 Four signal classes:
 
@@ -234,7 +235,7 @@ the issue to Class 3 rather than double-filing. Do not guess at telemetry you ca
 ### P2b: User analytics (run-over-run)
 
 Build the user-analytics reading — **purpose 2**. Run the Class 4 queries
-([kql-queries.md](references/kql-queries.md)) and compare against history:
+([kql-queries.md](${CLAUDE_SKILL_DIR}/references/kql-queries.md)) and compare against history:
 
 1. **Normalize.** Convert this run's active-user count and per-event/per-page counts to
    **per-day rates** (`metric / windowDays`, `windowDays = nowUtc − lastRunUtc` in days).
@@ -334,7 +335,7 @@ directly. The skill's KQL complements Smart Detection — it does not replace it
 
 **Philosophy alignment** — decisions must align with the project, per the mindset:
 read the project's CLAUDE.md / README and weigh each finding through
-[philosophy-alignment-guide.md](../mindset/references/philosophy-alignment-guide.md).
+[philosophy-alignment-guide.md](${CLAUDE_SKILL_DIR}/../mindset/references/philosophy-alignment-guide.md).
 A telemetry signal that conflicts with the project's intended scope is a finding about
 *scope or instrumentation*, not an automatic backlog item.
 
@@ -358,7 +359,7 @@ Create an issue file **only** for findings at or above `config.thresholds.issueM
 ### P6: Report
 
 Write `<root>/telemetry/report-YYYY-MM-DD.md` using
-[report-template.md](references/report-template.md). The report **leads with a Trend section**
+[report-template.md](${CLAUDE_SKILL_DIR}/references/report-template.md). The report **leads with a Trend section**
 (both purposes, run-over-run) and then carries the full ledger:
 
 - **Trend (top)** — a compact run-over-run dashboard. Purpose-1 row block from P2c

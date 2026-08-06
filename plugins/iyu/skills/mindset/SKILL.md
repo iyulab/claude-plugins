@@ -54,6 +54,6 @@ Beyond the main loop (plan → execute → verify → cleanup), convert surplus 
 
 ## Reference Materials
 
-- For philosophy scoring methodology, see [philosophy-alignment-guide.md](references/philosophy-alignment-guide.md)
-- For decision examples across all verdict types, see [decision-examples.md](references/decision-examples.md)
-- For pattern detection methodology, see [pattern-detection-guide.md](references/pattern-detection-guide.md)
+- For philosophy scoring methodology, see [philosophy-alignment-guide.md](${CLAUDE_SKILL_DIR}/references/philosophy-alignment-guide.md)
+- For decision examples across all verdict types, see [decision-examples.md](${CLAUDE_SKILL_DIR}/references/decision-examples.md)
+- For pattern detection methodology, see [pattern-detection-guide.md](${CLAUDE_SKILL_DIR}/references/pattern-detection-guide.md)

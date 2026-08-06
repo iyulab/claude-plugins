@@ -4,8 +4,9 @@ description: Reviews pull requests with project philosophy alignment
 argument-hint: <pr-url | pr-number> [--quick] [--save] [--security-focus]
 disable-model-invocation: true
 context: fork
-agent: Explore
-allowed-tools: Read, Glob, Grep, WebFetch, WebSearch, TodoWrite, Bash(gh *)
+agent: general-purpose
+background: false
+allowed-tools: Read, Glob, Grep, Write, WebFetch, WebSearch, TodoWrite, Bash(gh *)
 ---
 
 # PR Review
@@ -54,7 +55,7 @@ Security issues are always Blocker.
 
 ### 4. Philosophy Alignment
 
-Read CLAUDE.md / README.md. Evaluate using the [philosophy-alignment-guide.md](../mindset/references/philosophy-alignment-guide.md):
+Read CLAUDE.md / README.md. Evaluate using the [philosophy-alignment-guide.md](${CLAUDE_SKILL_DIR}/../mindset/references/philosophy-alignment-guide.md):
 
 | Dimension | Question |
 |-----------|----------|
@@ -75,7 +76,7 @@ Read CLAUDE.md / README.md. Evaluate using the [philosophy-alignment-guide.md](.
 | Philosophy MED | APPROVE_WITH_NOTES | REQUEST_CHANGES |
 | Philosophy LOW | REDIRECT | DECLINE |
 
-For decision examples, see [decision-examples.md](../mindset/references/decision-examples.md).
+For decision examples, see [decision-examples.md](${CLAUDE_SKILL_DIR}/../mindset/references/decision-examples.md).
 
 ### 6. Response Draft
 
@@ -84,7 +85,7 @@ Adjust tone by contributor type:
 - **Returning**: Thanks + focused feedback
 - **Core**: Peer-level discussion
 
-For tone rules, see [tone-rules.md](references/tone-rules.md).
+For tone rules, see [tone-rules.md](${CLAUDE_SKILL_DIR}/references/tone-rules.md).
 
 ### Quick Mode (--quick)
 

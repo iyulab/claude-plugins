@@ -8,6 +8,63 @@ bugs or docs. MAJOR is never bumped automatically.
 > History is reconstructed from git from v1.11.0 onward. Earlier versions live in
 > the git log only.
 
+## [1.27.0] — 2026-08-07
+
+Conformance pass against the current Claude Code skill/plugin specification. Three of these were
+features that could not run at all.
+
+### Fixed
+- **The `run-cycle` Stop hook could not do its job.** It was a `type: prompt` hook — a single
+  tool-less LLM call over the hook input JSON — while its instructions told it to glob the cycle
+  logs, read the latest and previous log, and confirm the End-of-Run Report exists. None of that is
+  possible without tools, so the run's only *enforcement* surface was deciding on guesswork. It is
+  now a `type: agent` hook (tool access, up to 50 turns) with `timeout: 180`.
+- **The hook was reading a budget it never received.** `$ARGUMENTS` in a hook prompt is the hook
+  input JSON (`session_id`, `transcript_path`, `cwd`, …), not the skill's invocation arguments, so
+  the cycle budget was simply absent from every `completed < budget` comparison. Each cycle log
+  header now carries `Budget:` / `Start:` / `Status:`, and the hook reads them from disk — the same
+  durable-state-over-memory rule the rest of the skill already follows. Because the hook can only
+  trust a log *this* run wrote, a cycle's log is opened as a header-only stub when the cycle starts
+  (the first in Preparation) and flipped to `Status: complete` when it ends; the hook counts
+  completed logs only, and treats a newest log with no header at all as "this run wrote nothing yet"
+  rather than as budget exhaustion.
+- **The hook's answer format did not match the contract.** Prompt and agent hooks must return
+  `{"ok": true|false, "reason": "…"}`; the prompt asked for the words BLOCK and ALLOW. The output
+  contract is now stated explicitly.
+- **`/iyu:issue --save` and `/iyu:pr --save` could not write anything.** Both skills forked into
+  `agent: Explore`, whose tool set excludes `Write` — and `allowed-tools` grants approval, not
+  capability, so listing tools there never helped. Both now fork into `general-purpose`, which also
+  restores automatic CLAUDE.md loading for skills whose whole job is philosophy alignment.
+- **Both triage skills returned asynchronously.** Since Claude Code v2.1.218 a forked skill runs in
+  the background by default, which does not fit an interactive triage. Both set `background: false`.
+- **`marketplace.json` failed `claude plugin validate --strict`** — `homepage` and `license` sat
+  under `metadata`, which only recognizes `pluginRoot`. They moved to the plugin entry, where they
+  are valid. Both manifests now pass `--strict`.
+- Cross-skill reference links (`../mindset/references/…`) resolved against the working directory
+  rather than the skill directory. All skill-to-reference links now use `${CLAUDE_SKILL_DIR}`.
+- The plugin README's version badge pointed at a non-existent `./plugin.json`, and doc links across
+  both READMEs pointed at the retired `docs.anthropic.com` paths.
+
+### Changed
+- **`run-cycle` takes one parameter: the cycle budget.** `--dry-run` and `--no-commit` are gone, and
+  the starting cycle number is no longer passed — Preparation derives it from the existing logs
+  (highest index + 1). Anything written alongside the invocation is read as scope context. Removing
+  the flags also removes the positional-argument collision that made `/iyu:run-cycle --dry-run` read
+  `--dry-run` as the cycle count. `/iyu:run` keeps its flags and now parses them flags-first.
+- `backlog-discover`'s design rationale moved to `references/design-rationale.md`, bringing
+  `SKILL.md` back under the 500-line guidance with a summary and a link in its place.
+- `backlog-discover` and `telemetry-az` descriptions were compressed and their trigger text split
+  into `when_to_use` (1497 → 1188 and 810 → 767 characters). Nothing was being truncated: both skills
+  are `disable-model-invocation: true`, so their descriptions never enter the skill listing where the
+  1,536-character cap applies. `backlog-discover` sitting at 1497 was a trap waiting for the day that
+  flag comes off, not a live defect.
+- `plugin.json` gained `$schema`, `homepage`, `repository`, and `license`; `marketplace.json` gained
+  `$schema` and moved `description`/`version` to the top level.
+- `CLAUDE.md` documented commands and agents this plugin does not ship, in a format Claude Code has
+  since merged into skills. It now describes the skill frontmatter actually in use, plus the two
+  traps this release hit: `allowed-tools` is approval rather than capability, and a `type: prompt`
+  hook cannot read files.
+
 ## [1.26.0] — 2026-08-04
 
 ### Changed

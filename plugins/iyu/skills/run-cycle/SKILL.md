@@ -1,18 +1,19 @@
 ---
 name: run-cycle
 description: Executes adaptive iterative development cycles — each cycle is a self-contained plan/execute/verify/reflect loop that reshapes the roadmap and derives emergent follow-on scope from its own output
-argument-hint: "[total_cycles] [start_cycle] [--dry-run] [--no-commit]"
+argument-hint: "[total_cycles]"
 disable-model-invocation: true
 allowed-tools: Read, Glob, Grep, Write, Edit, TodoWrite, WebFetch, WebSearch, Bash
 hooks:
   Stop:
     - hooks:
-        - type: prompt
+        - type: agent
+          timeout: 180
           prompt: |
-            Decide block/allow from durable on-disk state — the cycle logs ARE the state. Do not rely on conversation memory or re-derive the plan.
-            Invocation arguments: $ARGUMENTS (total cycle budget, optional start cycle — default 1).
+            Decide block/allow from durable on-disk state — the cycle logs ARE the state. Read them with your tools; do not rely on conversation memory, on the hook input alone, or on re-deriving the plan.
+            Hook input (JSON): $ARGUMENTS — use its `cwd` as the search root. It does NOT carry the run's cycle budget; step 1 reads that from the logs.
             0. Resolve the log directory from disk — do NOT assume a literal path. Glob `**/cycle-logs/cycle-*.md` (skip `node_modules`, `.git`, build output). Exactly one `cycle-logs/` (commonly `claudedocs/cycle-logs/`) — use it. Several (an umbrella repo tracking several submodules) — take the one holding the most recently modified `cycle-*.md`; that is the run writing now. Every path below is relative to that ONE directory; mixing in a sibling submodule's logs corrupts the count in step 1. **No match at all** — the run has not written cycle 1 yet: treat cycles completed as 0, treat the latest/previous log as absent in steps 2–2b, and continue to step 3 (with no log there is no frontier token, so step 3 blocks — a run that stopped before its first log is never a valid stop). Do NOT allow merely because no directory resolved.
-            1. List `cycle-*.md` in the resolved directory. **Cycles completed = how many were completed BY THIS RUN**, i.e. the count of logs whose index is >= the start cycle — NOT the raw file count. A repo carrying logs from earlier runs with a later start cycle would otherwise read as already over budget and allow-stop before doing any work at all.
+            1. List `cycle-*.md` in the resolved directory and read the **highest-indexed** one's header (`Budget:` / `Start:` / `Status:`). Every log this skill writes carries them from the moment its cycle starts, and they are the only place the hook can learn this run's budget — the hook input carries no invocation arguments. **Cycles completed = logs whose index is >= `Start:` AND whose `Status:` is `complete`** — not the raw file count, and never counting the in-progress log of the cycle running now. One state is NOT budget exhaustion: the newest log has **no `Budget:`/`Start:` header at all**. Such a log predates this scheme, so it belongs to an earlier run and this run has written nothing yet — treat cycles completed as 0 and continue to step 3 (which blocks, since there is no frontier token for this run). Do NOT extend that to a headered, `complete` log at its own budget ceiling: from the hook's side that is indistinguishable from this run finishing cleanly, and blocking there would produce a run that can never end. The narrow window it leaves — a stop between Preparation's start and the stub write, in a repo whose previous run also filled its budget — fails toward allowing, which the user resolves by invoking again; the reverse failure they cannot escape.
             2. Read the latest cycle log. Distinguish TWO kinds of human blocker, they behave oppositely:
                - Run-fatal `HUMAN-NEEDED:` — a constitution conflict / structural invalidation that poisons ALL remaining work. This ends the run.
                - Item-level `BLOCKED-ITEM:` in the Blocked-on-Human ledger — one scope needs a credential or user-only decision, but other work is independent. This PARKS one scope; it does NOT end the run.
@@ -25,6 +26,7 @@ hooks:
             3. Respond BLOCK if ALL hold: completed < total budget; no run-fatal `HUMAN-NEEDED:` was emitted; AND ( at least one UNBLOCKED autonomous candidate remains — any of the items in step 2 — OR neither frontier token from step 2a is present, i.e. emergent derivation was skipped — OR step 2b found a dropped ledger entry, in which case the block is to reconstruct it from the previous log ). An item-level `BLOCKED-ITEM:` / Blocked-on-Human entry is NEVER by itself a reason to allow stopping while other unblocked work exists — park it and keep going.
             4. Respond ALLOW if: completed >= total budget; OR a run-fatal `HUMAN-NEEDED:` was emitted; OR every remaining candidate is either done or parked in the Blocked-on-Human ledger (NO unblocked autonomous work remains anywhere) AND the latest log carries `FRONTIER-EXHAUSTED:` AND the value ladder exhausted ("lifecycle verified"). Before responding ALLOW on ANY of these paths, confirm a `RUN-SUMMARY-*.md` exists in the resolved directory covering this run — the End-of-Run Report is required on every termination path. If it is missing, respond BLOCK with "generate the End-of-Run Report first"; that block is satisfied by writing the report.
             Guard: never BLOCK for MORE WORK once completed >= total budget — that is the hard ceiling. The single permitted block at or past the ceiling is the missing End-of-Run Report (step 4), which one turn of writing resolves. The healthy terminal state is "all remaining work is human-blocked or exhausted", NOT "the first human blocker was hit".
+            Output contract — respond with JSON and nothing else: ALLOW is `{"ok": true, "reason": "<one line>"}`; BLOCK is `{"ok": false, "reason": "<what to do next — this text becomes the run's next instruction>"}`. "BLOCK"/"ALLOW" above name the two decisions; `ok` is how you report them.
 ---
 
 # Development Cycle Runner
@@ -91,10 +93,18 @@ Two cases the plain rules do not settle:
 
 ## Parameters
 
-- Total cycles: `$0` (default: 5)
-- Starting cycle number: `$1` (default: 1)
-- `--dry-run`: Preparation + phase backlog only
-- `--no-commit`: Skip final commit
+**One parameter: the cycle budget.** `$0` = total cycles (default: 5). Anything else in
+`$ARGUMENTS`, and anything the user wrote alongside the invocation, is **scope context** — it feeds
+Preparation step 1, not a flag parser. There are no flags: a run always executes, and always commits.
+
+**The starting cycle number is derived, not passed.** Preparation reads the existing
+`<root>/cycle-logs/cycle-*.md`, takes the highest index, and starts at *that + 1* (1 when none
+exist). The repo already knows where the last run stopped; asking the caller to restate it only
+creates a way to get it wrong.
+
+**Record both in every cycle log header** (`Budget:` / `Start:` — see Cycle Log). The Stop hook has
+no session context and receives no invocation arguments, so the logs are the only place it can read
+them; omit the lines and it falls back to a default budget and may allow a stop early.
 
 **`N` is a ceiling, not a target.** It bounds how many cycles *may* run — it is not a quota of scopes to fill in advance. Do not pre-partition `N` into `N` scopes. If the roadmap runs dry before `N`, terminate early (see Surplus-Cycle Value Ladder). If more work surfaces than `N` can hold, stop at `N` and carry the rest forward. The right mental model is "I have up to `N` turns," never "I must plan `N` things now."
 
@@ -124,13 +134,25 @@ Glob: <root>/cycle-logs/cycle-*.md
 
 Review the most recent log's **Carry-Forward** and **Roadmap Revisions** sections. These are inherited obligations and prior re-planning decisions.
 
+**Derive this run's starting cycle number here**: highest existing `cycle-{NN}` index + 1, or 1 if
+none exist.
+
+**Then immediately open the first cycle log as a stub** — `<root>/cycle-logs/cycle-{Start}.md`
+containing only the header (`Date` / `Root` / `Budget` / `Start` / `Status: in-progress`), before any
+cycle work begins. This is not bookkeeping: the Stop hook gets no invocation arguments and can only
+learn this run's budget from a log *this run wrote*. Without the stub, a stop in the window before
+the first cycle completes leaves the hook reading the **previous** run's log — whose count is
+already at or past its own budget — and it would allow the run to end having done nothing. Each
+cycle flips its own `Status` to `complete` when its log is finished (STEP 5), and the hook counts
+only completed logs.
+
 ### 3. Plan Discovery (only if no scope from above)
 
 Stop at first found: CLAUDE.md → AGENTS.md → `<root>/ROADMAP.md` (the resolved root from step 0 — the *same* file STEP 5 would create, never a differently-located one) / TASKS.md / TODO.md → docs/ → README.md. If nothing found, ask the user. Do not invent scope.
 
 ### 4. Philosophy Alignment (high-level only)
 
-Evaluate the overall goal — not every future cycle — against CLAUDE.md / README.md, using the **four canonical dimensions** of [philosophy-alignment-guide.md](../mindset/references/philosophy-alignment-guide.md) (Core Mission Fit · Scope Alignment · Pattern Consistency · User Base Impact). That guide is the single definition of "the four dimensions" across this plugin — `issue`, `pr`, and `backlog-discover` score against the same four, so do not maintain a divergent set here.
+Evaluate the overall goal — not every future cycle — against CLAUDE.md / README.md, using the **four canonical dimensions** of [philosophy-alignment-guide.md](${CLAUDE_SKILL_DIR}/../mindset/references/philosophy-alignment-guide.md) (Core Mission Fit · Scope Alignment · Pattern Consistency · User Base Impact). That guide is the single definition of "the four dimensions" across this plugin — `issue`, `pr`, and `backlog-discover` score against the same four, so do not maintain a divergent set here.
 
 One **run-specific** check rides alongside them, and it is not one of the four: **Dependency Direction** — no upstream→downstream leakage (a consuming project's domain concept must not be pushed into a library it consumes).
 
@@ -146,9 +168,7 @@ Create `<root>/ROADMAP.md` if step 3 found none (`<root>` from step 0 — if the
 
 **Hard rule — the roadmap must not know cycle numbers.** Do NOT produce a `Cycle 1 = …, Cycle 2 = …` table, and do NOT assign scope to any cycle beyond the first. You cannot know what Cycle 2+ should contain — that is decided by the preceding cycle's STEP 5, by design (see "Observed failure mode" above). A cycle-numbered scope table here is the single failure this skill exists to prevent.
 
-Then scope **only Cycle 1**: pick the one most valuable phase to start, and leave the rest of the backlog as undated phases.
-
-**If --dry-run, stop here.**
+Then scope **only the first cycle of this run**: pick the one most valuable phase to start, and leave the rest of the backlog as undated phases.
 
 ---
 
@@ -158,7 +178,9 @@ Every cycle runs these six steps in order. Steps are **differentiated by weight*
 
 ### STEP 0: Re-plan (always, light)
 
-The first thing any cycle does is check whether the plan it inherited is still correct.
+The first thing any cycle does is check whether the plan it inherited is still correct. Open this
+cycle's log stub first (header only, `Status: in-progress`) — Preparation already opened the run's
+first one; every later cycle opens its own here.
 
 **Scope exactly one cycle — this one.** STEP 0 decides what *this* cycle does, nothing further. Do not lay out cycle 2, 3, … N here: the first cycle is not a planning summit for the whole run, and a cycle-numbered table is forbidden (see "Observed failure mode"). The next cycle's scope is produced by *this* cycle's STEP 5, once you know what this cycle revealed.
 
@@ -298,6 +320,10 @@ This step has two jobs: (a) record what cannot be resolved autonomously, and (b)
 
 **Do NOT carry forward defects that could have been fixed in STEP 4.** If you can fix it, fix it now.
 
+**Close the log**: fill in every section above, then flip the header's `Status:` to `complete`. The
+Stop hook counts completed logs only — a cycle whose log still says `in-progress` reads as the cycle
+running now, which is exactly right while it is, and wrong the moment the cycle is actually done.
+
 ---
 
 ## Continuity-Doc Hygiene
@@ -320,12 +346,21 @@ Hygiene never gates termination — it is doc upkeep inside STEP 5 and the doc-s
 
 ## Cycle Log
 
-Write `<root>/cycle-logs/cycle-{NN}.md` after each cycle:
+Each cycle's log is **opened as a header-only stub when the cycle begins** and completed when it
+ends — the first one in Preparation, every later one at the start of its own STEP 0. `Status:` flips
+to `complete` only when the sections below are filled in; the Stop hook counts completed logs and
+reads `Budget:`/`Start:` from the newest one, so a log that exists from the moment a cycle starts is
+what keeps the hook anchored to *this* run.
+
+`<root>/cycle-logs/cycle-{NN}.md`:
 
 ```markdown
 # Cycle {NN}: {Title}
 Date: {YYYY-MM-DD}
 Root: {resolved continuity root, e.g. `claudedocs/`}
+Budget: {total cycles N for this run}
+Start: {starting cycle number for this run}
+Status: {in-progress | complete}
 
 ## Re-plan
 {Trigger detected (if any) and scope decision — or "Plan valid, inherited scope"}
@@ -394,7 +429,7 @@ This is the project-specific judgment a generic harness cannot supply, and it is
 
 ## End-of-Run Report
 
-At run end — on **every** termination path (budget reached, HARD STOP, or early exhaustion) — synthesize one **report to the human** before the final commit. This is the "delegate reports back to their manager" moment: what got done, what was decided autonomously and can still be corrected, and what was escalated because it was not the delegate's to decide. Write it to `<root>/cycle-logs/RUN-SUMMARY-{YYYY-MM-DD}.md` (a run-level artifact, distinct from per-cycle logs — beside them so the Stop hook finds it in the directory it already resolved) **and** surface the same three parts in the final chat response. Generate it even under `--no-commit` (it is a report, not a commit); skip only under `--dry-run`.
+At run end — on **every** termination path (budget reached, HARD STOP, or early exhaustion) — synthesize one **report to the human** before the final commit. This is the "delegate reports back to their manager" moment: what got done, what was decided autonomously and can still be corrected, and what was escalated because it was not the delegate's to decide. Write it to `<root>/cycle-logs/RUN-SUMMARY-{YYYY-MM-DD}.md` (a run-level artifact, distinct from per-cycle logs — beside them so the Stop hook finds it in the directory it already resolved) **and** surface the same three parts in the final chat response. It is unconditional — a run has no mode in which the report is skipped.
 
 Three parts — draw them straight from the ledgers the cycles already maintained; this is a report, not a re-derivation:
 
@@ -408,7 +443,7 @@ If a `RUN-SUMMARY-{date}.md` already exists (a resumed or same-day run), append 
 
 ## Commit
 
-Before the single end-of-run commit, run a **lightweight release-readiness check** (skip entirely on `--no-commit` / `--dry-run`). It *verifies and packages* — it never performs a release.
+Before the single end-of-run commit, run a **lightweight release-readiness check**. It *verifies and packages* — it never performs a release.
 
 **Checklist** (items the project lacks are N/A — skip them, do not invent them):
 
@@ -432,10 +467,13 @@ Then:
 
 - Generate the **End-of-Run Report** (above) first — it is the run's report-to-human and must exist before the code is committed
 - **Commit boundary — default once per run, split only when the single diff stops being reviewable.** One commit after all cycles complete (or on HARD STOP / early termination) is the default, and it is the right default: the governing policy is anti-fragmentation (bundle into logical units; do not let commit count balloon). But a long run collapses many verified states into one unreviewable diff with **no rollback boundary between cycles** — a regression introduced in cycle K and caught in K+3 has no commit edge to revert to. So when the run is long enough that a reader could not review the diff in one pass, split on **verified-cycle boundaries** (each cycle's passing STEP 3 is already a clean point), grouping inseparable cycles together. Never split below a verified cycle, and never commit an unverified state
-- Use built-in `/commit`
+- Commit with `git` directly, following the project's message convention. If the session has a
+  commit skill available (`/commit` ships in some plugin sets, not in Claude Code itself), use it
+  instead of hand-rolling the message
 - **Do NOT perform the release** — no tagging, publishing, or pushing; that stays with the human / CI
 - **NEVER bump MAJOR version**
 
 ## Start
 
-Begin: Preparation → Cycle 1 → Cycle 2 → ... → Cycle N (or until HARD STOP / early termination).
+Begin: Preparation → the first cycle of this run (derived index) → the next → … until the budget `N`
+is spent, or HARD STOP / early termination.
