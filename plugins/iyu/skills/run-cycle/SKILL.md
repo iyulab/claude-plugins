@@ -315,6 +315,12 @@ This step has two jobs: (a) record what cannot be resolved autonomously, and (b)
 - **Structural Improvement Proposals**: Refactoring candidates and better patterns found in STEP 4 — with rationale and recommended approach. Human decides when/whether to act.
 - **Pending Human Decisions**: Breaking API, major architecture, ambiguous scope, and every *discussion-class* emergent candidate above
 - **Roadmap Revisions**: If STEP 4's roadmap-impact judgment said "yes" — record the change to `ROADMAP.md` (phase level) and log it
+- **Release placement**: If the backlog carries a push/publish/release item, apply
+  [release-cadence.md](${CLAUDE_SKILL_DIR}/../_shared/release-cadence.md) §2 and move it to the phase
+  boundary it belongs to — remaining work that touches the same consumer-facing surface means the
+  release goes *after* it, since publishing mid-phase buys a version the next few items obsolete and
+  each pushed pipeline spends a shared CI budget. The outcome is a **reordered `ROADMAP.md`** with a
+  one-line reason at the marker (§4), not a note. Log the move under Roadmap Revisions
 - **Continuity-doc hygiene (every cycle, unconditional)**: Apply **Continuity-Doc Hygiene** (section below) — migrate every completed phase/item found in `ROADMAP.md` (and `HANDOFF.md`, if the project keeps one) to `HISTORY.md`, and keep the handoff current + next only. Runs even when nothing else in the roadmap changed.
 - **Next-Cycle Scope**: This is where the next cycle is actually planned — concretely, for **one** cycle only. Draw it from three sources in priority order: (1) inherited / this-cycle Carry-Forward defects, (2) mid-cycle discoveries (a problem too large for this cycle, or one deserving its own), (3) the highest-value **autonomous-eligible Emergent Next Capability**. Only when all three are empty — feature frontier explicitly judged exhausted — does Next-Cycle Scope become "none", handing off to the value ladder. Do **not** scope cycle+2 and beyond — those stay phase-level in the backlog until their predecessor's STEP 5 reaches them.
 
@@ -465,7 +471,10 @@ Then:
 - Commit with `git` directly, following the project's message convention. If the session has a
   commit skill available (`/commit` ships in some plugin sets, not in Claude Code itself), use it
   instead of hand-rolling the message
-- **Do NOT perform the release** — no tagging, publishing, or pushing; that stays with the human / CI
+- **Do NOT perform the release** — no tagging, publishing, or pushing. A run ends at a commit; taking
+  the work out is a separate, human-initiated decision (`/iyu:ship`, or the project's own path)
+  because pushing spends CI budget and publishing cannot be undone. If the run left the project at a
+  point worth releasing, say so in the End-of-Run Report and stop there
 - **NEVER bump MAJOR version**
 
 ## Start

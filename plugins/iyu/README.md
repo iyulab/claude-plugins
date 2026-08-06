@@ -2,7 +2,7 @@
 
 [![Claude Code Plugin](https://img.shields.io/badge/Claude%20Code-Plugin-blueviolet?logo=anthropic&logoColor=white)](https://code.claude.com/docs/en/plugins)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-1.28.0-blue.svg)](./.claude-plugin/plugin.json)
+[![Version](https://img.shields.io/badge/version-1.29.0-blue.svg)](./.claude-plugin/plugin.json)
 
 Productivity toolkit for open-source library maintainers and developers.
 
@@ -26,7 +26,8 @@ Productivity toolkit for open-source library maintainers and developers.
 | **Mindset** | Skill | Auto | Shared "Critical but Constructive" philosophy + reference materials |
 | **Issue & PR Triage** | Skill | Auto | Conversational triage advice with decision matrices, response templates, and tone rules |
 | `/iyu:run-cycle` | Skill | Manual | Iterative development cycles with Stop hook |
-| `/iyu:handoff` | Skill | Manual | Session closeout — continuity-doc upkeep, next scope, pending decisions |
+| `/iyu:handoff` | Skill | Manual | Session closeout — continuity-doc upkeep, next scope, re-ordering, pending decisions |
+| `/iyu:ship` | Skill | Manual | Version bump → commit → push → CI watch, gated on whether now is the moment |
 | `/iyu:telemetry-az` | Skill | Manual | Azure App Insights telemetry triage, issue discovery + run-over-run user analytics |
 | `/iyu:backlog-discover` | Skill | Manual | Playbook-driven backlog discovery + diagnose/rank/stage — proposal only, never auto-merges |
 
@@ -81,12 +82,47 @@ next scope across the user / developer / operator lenses. It reconstructs what h
 log`, the existing continuity docs, and the latest cycle log — not from the conversation, which may
 already be compacted.
 
+It also **re-orders what remains**: deriving what comes next and deciding what order the rest sits
+in are different jobs, and the item most often misplaced is the release. Work still pending on the
+same consumer-facing surface pushes a release item to that phase boundary — and the outcome is the
+reordered file, not a paragraph about it.
+
 It deliberately does **not** commit and does **not** implement: the handoff describes a state, and
 changing that state while writing it makes the description wrong.
 
 Shares [`_shared/continuity-docs.md`](./skills/_shared/continuity-docs.md) with `/iyu:run-cycle` —
 where the docs live, what belongs in each, the hygiene pass, and how next scope is derived are
 defined once, in one file, for both.
+
+### /iyu:ship
+
+Take finished work out, and confirm it landed.
+
+```bash
+/iyu:ship --commit-only   # bump + changelog + commit
+/iyu:ship --no-publish    # ...+ push + watch the CI run
+/iyu:ship                 # ...+ publish, if the moment is right
+/iyu:ship minor           # force the bump level
+```
+
+**Staged, because the stages cost differently.** `bump + commit` is local. `push` reaches the remote
+and **spends CI budget**. `publish` reaches **consumers and cannot be undone**. Each stage is
+reachable without the next.
+
+**Step 0 asks whether now is the moment.** Before anything else it reads the remaining backlog: if
+unfinished work would touch the same consumer-facing surface, it reports the trade-off and asks
+rather than deciding — *"4 items remain that change the same CLI output; publishing now means a
+re-release when they land. Push without publishing, or publish anyway?"* A release that will require
+a re-release shortly is close to no release at all, and the project's rhythm is the project's to
+declare, not the skill's to impose.
+
+It watches the pipeline to completion (`gh run watch --exit-status`) rather than assuming a push
+succeeded, and on a red run it fetches the failing step, summarizes the cause, and **stops** — it
+does not push speculative fixes. It never bumps MAJOR, and it never reorders the backlog itself;
+that is `/iyu:handoff`'s job.
+
+Shares [`_shared/release-cadence.md`](./skills/_shared/release-cadence.md) with `/iyu:handoff` and
+`/iyu:run-cycle` — the placement test lives in one file for all three.
 
 ### /iyu:telemetry-az
 

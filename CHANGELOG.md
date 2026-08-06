@@ -8,6 +8,50 @@ bugs or docs. MAJOR is never bumped automatically.
 > History is reconstructed from git from v1.11.0 onward. Earlier versions live in
 > the git log only.
 
+## [1.29.0] — 2026-08-07
+
+Addresses the second gap the usage analysis found — 1,587 distinct release-related requests across
+107 projects, with `bump version, commit, push` and `push, cicd tracking` repeating near-verbatim
+250+ times — plus the scheduling problem underneath it.
+
+### Added
+
+- **`/iyu:ship` — take finished work out, and confirm it landed.** Version bump → commit → push →
+  **watch the CI run to completion**, reporting the failing step if it fails. The watching is the
+  part that usually gets skipped: a push whose pipeline failed twenty minutes later is not a
+  completed release.
+  - **Staged, because the stages cost differently.** `bump + commit` is local; `push` reaches the
+    remote and spends CI budget; `publish` reaches consumers and cannot be undone. `--commit-only`
+    and `--no-publish` stop at each boundary.
+  - **Step 0 asks whether now is the moment.** It reads the remaining backlog first, and if
+    unfinished work would touch the same consumer-facing surface it reports the trade-off and asks
+    rather than deciding. Publishing is irreversible and the project's rhythm is the project's to
+    set — the skill surfaces the judgment, it does not impose one.
+  - Never bumps MAJOR. Never fix-and-retries a red pipeline — it reports the cause and stops, since
+    whether that is a code defect, a flaky run, or an infrastructure problem is a human call. Never
+    reorders the backlog itself; that is `handoff`'s job.
+- **`skills/_shared/release-cadence.md` — when releasing belongs in the order.** Read by `handoff`
+  step 5, `run-cycle` STEP 5, and `ship` step 0. Deliberately separate from `continuity-docs.md`:
+  `ship` must answer "is now the moment?" without importing doc-hygiene rules, and release placement
+  is a scheduling rule that merely happens to be applied while writing those docs. Its core: release
+  is three stages with three costs; **a release that will require a re-release shortly is close to
+  no release at all**; and cadence is *declared by the project* (free-form) or inferred from tag
+  history **with the inference stated** — never a fixed set of named tiers the skill sorts projects
+  into.
+
+### Changed
+
+- **`/iyu:handoff` gained a re-ordering step.** Deriving *what* comes next and deciding *what order
+  the rest sits in* are different jobs, and skipping the second is how a release ends up scheduled
+  mid-phase — where publishing buys a version the next few items obsolete and each pushed pipeline
+  spends a shared CI budget. The outcome is an **edit to the order** in `ROADMAP.md`/`HANDOFF.md`
+  with a one-line reason at the marker, not a paragraph of reasoning the next session skips.
+- **`run-cycle` STEP 5 applies the same placement test** to any release item in the backlog, and
+  logs the move under Roadmap Revisions.
+- **`run-cycle`'s "do not perform the release" rule now says why**, and points at `/iyu:ship`: a run
+  ends at a commit because pushing spends CI budget and publishing cannot be undone. If the run left
+  the project at a point worth releasing, the End-of-Run Report says so and stops there.
+
 ## [1.28.0] — 2026-08-07
 
 Driven by measurement rather than guesswork: 27,121 recorded invocations over ~7 months were

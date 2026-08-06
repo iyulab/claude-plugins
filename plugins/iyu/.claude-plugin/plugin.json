@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "iyu",
-  "version": "1.28.0",
+  "version": "1.29.0",
   "description": "Productivity toolkit for library maintainers - adaptive iterative development cycles, session handoff and continuity-doc upkeep, conversational issue/PR triage, telemetry-driven issue discovery, and owner-manager backlog discovery that inspects what already exists (dependency currency, project configuration, docs and repo hygiene) while diagnosing, ranking, and staging new candidates with project philosophy alignment",
   "author": {
     "name": "iyulab",
@@ -45,6 +45,9 @@
     "housekeeping",
     "handoff",
     "session-continuity",
-    "roadmap-hygiene"
+    "roadmap-hygiene",
+    "release",
+    "ci",
+    "versioning"
   ]
 }

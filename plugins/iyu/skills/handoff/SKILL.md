@@ -21,7 +21,10 @@ pending, and the next scope lives only in a conversation that is about to disapp
 This skill is that closeout, detached from the cycle machinery. It shares its definitions with
 `run-cycle` rather than restating them: **[continuity-docs.md](${CLAUDE_SKILL_DIR}/../_shared/continuity-docs.md)**
 is the single source for where the documents live, what belongs in each, the hygiene pass, and how
-next scope is derived. Read it first — this file only adds what is specific to closing a session.
+next scope is derived, and
+**[release-cadence.md](${CLAUDE_SKILL_DIR}/../_shared/release-cadence.md)** is the single source for
+where release work sits in the order. Read both first — this file only adds what is specific to
+closing a session.
 
 ## Scope
 
@@ -70,7 +73,36 @@ Scope concretely for *one* next session, not five. Anything further out stays a 
 direction in `ROADMAP.md`. Concrete scope for sessions you cannot yet know about is the same failure
 `run-cycle` guards against with its no-cycle-numbers rule.
 
-### 5. Surface the decisions
+Step 5 then decides where the *rest* sits — deriving the next item and ordering the remainder are
+different jobs, and skipping the second is how a release ends up scheduled mid-phase.
+
+### 5. Re-order what remains
+
+Deriving *what* comes next is only half of it. The other half is **what order the rest sits in** —
+and the item that most often ends up in the wrong place is the release.
+
+Apply **[release-cadence.md](${CLAUDE_SKILL_DIR}/../_shared/release-cadence.md)** in full:
+
+- **§2, the placement test** — for any push/publish/release item in the backlog, check what remains
+  that would touch the same consumer-facing surface. Work still pending on that surface means the
+  release belongs *after* it: publishing mid-phase buys a version the next few items obsolete, and
+  every pushed pipeline spends a shared CI budget. Finished work that consumers are waiting on
+  pushes the other way. When the two genuinely conflict, that is a decision for step 6's
+  "Waiting on you", not one to settle here.
+- **§3** — follow the project's declared cadence; if there is none, infer it from tags and release
+  history and **say that you inferred it**.
+- **§4** — the outcome is an **edit to the order in `ROADMAP.md`/`HANDOFF.md`**, with a one-line
+  reason at the marker (`— after Phase 3; Phase 3 changes the same CLI output`). A paragraph of
+  reasoning is advice the next session skips; a reordered list is what it reads first.
+
+The same test applies to ordinary items when one obviously blocks another, but the release is the
+recurring case: it is easy to add "release" the moment work feels done, and then it sits in the
+middle of a phase that will change the same surface again.
+
+**Report what moved.** A silently reordered backlog is indistinguishable from drift. And reorder
+only — adding, dropping, or rescoping items is separate work with its own rules.
+
+### 6. Surface the decisions
 
 Two lists, kept apart because they behave differently:
 
@@ -115,8 +147,8 @@ emergent candidate. Anchored to a ROADMAP phase. One session's worth.}
 work, anything a fresh clone would not reveal.}
 ```
 
-Plus, as the hygiene pass requires: `ROADMAP.md` with completed work removed, and `HISTORY.md` with
-it appended.
+Plus: `ROADMAP.md` with completed work removed (hygiene pass) **and its remaining phases in the
+order step 5 settled on**, and `HISTORY.md` with the completed work appended.
 
 Then report the same five sections in chat — the file is for the next session, the response is for
 the person reading now.

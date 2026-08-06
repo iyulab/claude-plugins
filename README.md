@@ -39,7 +39,7 @@ How that differs from the mainstream:
 
 > **Versioning** — two independent version numbers exist by design: `marketplace.json → version` tracks the **marketplace registry** (structure of this catalog), while each plugin's `plugin.json → version` tracks that **plugin** itself. They advance separately. Per-plugin `keywords`, `homepage`, and `license` are sourced from `plugin.json` and mirrored into the marketplace entry — the marketplace's own `metadata` object only recognizes `pluginRoot`, so per-plugin fields belong on the entry, not there. See [CHANGELOG.md](./CHANGELOG.md) for the iyu plugin history.
 
-### iyu (v1.28.0)
+### iyu (v1.29.0)
 
 **Productivity toolkit for open-source library maintainers — adaptive iterative development, session continuity, issue triage, telemetry and backlog discovery**
 
@@ -48,7 +48,8 @@ How that differs from the mainstream:
 | `mindset` | Skill | Auto (background) | "Critical but Constructive" mindset for conversational triage/dev discussions |
 | `issue-triage` | Skill | Auto (conversational) | Decision matrices and triage advice |
 | `/iyu:run-cycle` | Skill | Manual | Adaptive iterative cycles (re-plan → execute → verify → reflect) |
-| `/iyu:handoff` | Skill | Manual | Session closeout — continuity docs, next scope, pending decisions |
+| `/iyu:handoff` | Skill | Manual | Session closeout — continuity docs, next scope, re-ordering, pending decisions |
+| `/iyu:ship` | Skill | Manual | Bump → commit → push → CI watch, gated on whether now is the moment |
 | `/iyu:telemetry-az` | Skill | Manual | Azure App Insights telemetry triage — defects, regressions, feature drop |
 | `/iyu:backlog-discover` | Skill | Manual | Playbook-driven backlog discovery + diagnose/rank/stage — proposal only |
 
@@ -74,7 +75,8 @@ The plugin automatically activates when you discuss issue evaluation or PR revie
 | Command | Description |
 |---------|-------------|
 | `/iyu:run-cycle` | Adaptive iterative development cycles |
-| `/iyu:handoff` | Session closeout and continuity-doc upkeep |
+| `/iyu:handoff` | Session closeout, continuity-doc upkeep, backlog re-ordering |
+| `/iyu:ship` | Version bump, commit, push, and CI tracking |
 | `/iyu:telemetry-az` | Azure App Insights telemetry triage and issue discovery |
 | `/iyu:backlog-discover` | Backlog discovery playbook — diagnose, rank, and stage candidates |
 
@@ -101,6 +103,20 @@ Rewrites `HANDOFF.md` to in-flight / next / waiting-on-you / decided / state-of-
 completed work into the `HISTORY.md` index, and derives the next scope. Reconstructs the session
 from git and the continuity docs rather than from the conversation, so it still works after a
 compaction. Does not commit and does not implement.
+
+##### /iyu:ship
+
+```bash
+/iyu:ship --commit-only   # bump + changelog + commit
+/iyu:ship --no-publish    # ...+ push + watch the CI run
+/iyu:ship                 # ...+ publish, if the moment is right
+```
+
+Staged because the stages cost differently: commit is local, push spends CI budget, publish reaches
+consumers irreversibly. Step 0 reads the remaining backlog first — if unfinished work would touch
+the same consumer-facing surface, it reports the trade-off and asks instead of publishing a version
+the next few items obsolete. Watches the pipeline to completion and, on failure, summarizes the
+failing step and stops rather than pushing speculative fixes.
 
 ##### /iyu:telemetry-az
 
