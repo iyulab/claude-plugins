@@ -26,13 +26,6 @@ deepen ladder. Six properties follow — fixed named menu, per-activity cadence,
 self-diagnosis, never auto-merges, inspects rather than only imagines, judges rather than only
 collects. Full rationale: [design-rationale.md](${CLAUDE_SKILL_DIR}/references/design-rationale.md).
 
-## Unscoped Bash rationale
-
-`allowed-tools` includes `Bash` without scope, matching `run-cycle`: activities span arbitrary
-project-specific commands (outdated/audit tooling, `gh issue list`, `git log` mining, registry
-lookups) across unknown project types, and scoping would require per-project edits. This skill is
-read-mostly, so the blast radius is smaller than `run-cycle`'s — the justification is the same.
-
 ## Parameters
 
 - `--modes <comma-list>` — force specific activities to run **regardless of cadence**
@@ -268,13 +261,6 @@ feeds P8's `history[]` entry, next run's recency suppression, and the "아이디
 Read the **two most recent** `<root>/backlog-discovery/proposal-*.md` and extract every
 item's `id` + title + the gap it named. This list is the run's **known-items set**, and P4
 checks each new finding against it.
-
-Why this step exists: P9 merge is manual, so most proposed items are *never adopted* — they
-are neither in `ROADMAP.md` nor retired. Without a dedupe basis, every run rediscovers the
-same gaps from scratch and the proposal pile grows without any of the documents referring to
-each other. This skill already solved that problem once, for technology candidates
-(`appropriate-tech`'s recorded `기각`/`보류` verdicts, rule 9); P2.5 + P4 extend the same
-discipline to ordinary items.
 
 If fewer than two prior proposals exist, the known-items set is whatever exists (possibly
 empty) — not an error.

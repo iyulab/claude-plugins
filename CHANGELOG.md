@@ -63,6 +63,15 @@ surfaces now hand up a **briefing** instead: options, a multi-angle read, and a 
   and `backlog-discover`'s owner-manager, which already said so.
 - Rule 2.5 in `/iyu:run-cycle` now links the shared lens file instead of restating the list. Behavior
   is unchanged; it is the extraction's second consumer.
+- **Rationale moved out of `run-cycle` and `backlog-discover` into their `references/`.** A loaded
+  skill's body is a recurring token cost, so instruction stays inline and explanation moves out —
+  `run-cycle` gains a `references/design-rationale.md` (why cycles, the cycle-numbered-roadmap
+  failure, why STEP 5 derives, the L0–L3 rationale, worked gate examples, the unscoped-`Bash` and
+  logs-are-memory decisions) and `backlog-discover` appends the same kind of material to its
+  existing one. Guidance that *counters a rationalization in the moment* — "'I would need X' is not
+  evidence that X is absent", "assumed blockers are how a run stalls with budget left" — stays
+  inline deliberately: for a discipline rule, the justification is the mechanism. No behavior
+  changes; both files move further under the 500-line guidance (483→471, 489→475).
 
 ## [1.29.0] — 2026-08-07
 

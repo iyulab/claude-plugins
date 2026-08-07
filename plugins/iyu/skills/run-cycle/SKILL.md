@@ -33,36 +33,23 @@ hooks:
 
 Execute iterative development cycles. Each cycle is a **self-contained micro-loop** — re-plan, design (if needed), execute, verify, reflect, derive-next. The roadmap is a **phase backlog, not a cycle plan**: only the current cycle is scoped concretely, and each cycle's outcome decides the next cycle's scope. Earlier cycles reshape the backlog based on what they reveal.
 
-## Why this shape
+Two rules follow from that, and they are the ones runs actually break:
 
-A single upfront N-cycle plan followed by sequential execution is indistinguishable from one large implementation — the "cycle" structure adds no discovery value. Real iterative work requires each cycle to:
+- **The roadmap must not know cycle numbers.** Concrete scope exists for one cycle — this one.
+  Everything beyond it is a phase-level direction.
+- **STEP 5 must actively derive** what this cycle's output implies next, across the
+  user/developer/operator lenses, and gate each candidate autonomous-eligible vs. discussion.
+  Skipping this is the early-termination failure users feel as "it only did the initial plan".
 
-1. Re-check assumptions made at the start
-2. Absorb what previous cycles learned
-3. Be able to **change the plan** when reality diverges
-4. **Derive the follow-on its own output now implies** — work that could not have been specified before the cycle existed
-
-The structure below keeps per-cycle overhead bounded while leaving room for mid-flight re-planning.
-
-### Observed failure mode this skill exists to prevent
-
-The seductive trap — observed in real runs — is to label a plan "directional" while filling it with a **cycle-numbered scope table** (Cycle 1 = X, Cycle 2 = Y, … Cycle N = Z). That is not a directional roadmap; it is a binding N-cycle plan wearing a directional label, and it collapses the multi-turn structure back into a single turn. **The roadmap must not know cycle numbers.** Concrete scope exists for exactly one cycle at a time — the one you are in. Everything beyond it is a phase-level direction, not an assigned cycle. The scope of cycle K+1 is *not yours to decide now*; it is decided by cycle K's STEP 5, by design — because only then do you know what cycle K revealed.
-
-This is **just-in-time scoping**: plan one cycle, run it, let it tell you the next.
-
-### Scope is discovered, not only inherited
-
-Just-in-time scoping has a second half that is easy to miss: the cycle's *own output is a source of the next cycle's scope*. A capability, once built, naturally implies follow-on work that could not have been named before it existed — you build single-file upload, and only then do "validate the upload", "accept multiple files", "handle the empty/oversized case" become concrete. **Failing to derive this emergent scope is the early-termination failure mode the user feels as "it only did the initial plan and quit":** a cycle finds no defects, sees a stable roadmap, writes "Next-Cycle Scope: none", and stops — even though the capability it just built is visibly incomplete to any user, developer, or operator of it.
-
-So every cycle's STEP 5 must **actively derive** what its output implies next, from multiple stakeholder lenses (user / developer / operator), and decide per candidate whether it is *autonomous-eligible* or a *human-discussion proposal*. This is not scope creep, because the autonomy bound is strict (see the derivation gate in STEP 5): only pattern-following completion that stays within the project's **declared role** is taken as autonomous scope. Anything that opens a new product direction, a new dependency/paradigm, or a genuine trade-off is routed to proposals for human decision — never self-decided. "Frontier exhausted" remains a legitimate, expected terminal state; it just has to be a *stated judgment* carried by the `FRONTIER-EXHAUSTED:` token, not an empty blank.
-
-## Unscoped Bash rationale
-
-`allowed-tools` includes `Bash` without scope. Development execution requires arbitrary build/test/lint/git commands across unknown projects — scoping would require per-project edits. Accepted deliberately; narrow-surface skills (`issue`, `pr`) use `Bash(gh *)` instead.
+Why — the failure modes behind both, the L0–L3 rationale, and the unscoped-`Bash` decision:
+**[references/design-rationale.md](${CLAUDE_SKILL_DIR}/references/design-rationale.md)**.
 
 ## Durable state over conversation memory
 
-This skill runs on the **host agent's native loop and context management** — it does NOT wrap itself in an external reset loop. But native context can be compacted or summarized mid-run, so a cycle must never depend on remembering earlier cycles from conversation alone. **The cycle logs ARE the memory.** Every cycle reconstructs its state from on-disk artifacts (previous `cycle-*.md`, `ROADMAP.md`, git log), so the run survives any native compaction transparently. Write logs richly enough that a fresh context could resume from them with zero conversational history. This is the minimal-intervention stance: don't rebuild context machinery the harness already owns — just keep durable state complete enough to survive it.
+**The cycle logs ARE the memory.** Native context can be compacted mid-run, so a cycle must never
+depend on remembering earlier cycles from conversation. Every cycle reconstructs its state from
+on-disk artifacts (previous `cycle-*.md`, `ROADMAP.md`, git log). Write logs richly enough that a
+fresh context could resume from them with zero conversational history.
 
 ## Continuity root — where that durable state lives
 
@@ -160,7 +147,7 @@ Create `<root>/ROADMAP.md` if step 3 found none (`<root>` from step 0 — if the
 - Include known unknowns and investigation needs, not presumed answers
 - `ROADMAP.md` holds **remaining** work only — completed phases live in `HISTORY.md` (see Continuity-Doc Hygiene)
 
-**Hard rule — the roadmap must not know cycle numbers.** Do NOT produce a `Cycle 1 = …, Cycle 2 = …` table, and do NOT assign scope to any cycle beyond the first. You cannot know what Cycle 2+ should contain — that is decided by the preceding cycle's STEP 5, by design (see "Observed failure mode" above). A cycle-numbered scope table here is the single failure this skill exists to prevent.
+**Hard rule — the roadmap must not know cycle numbers.** Do NOT produce a `Cycle 1 = …, Cycle 2 = …` table, and do NOT assign scope to any cycle beyond the first. You cannot know what Cycle 2+ should contain — that is decided by the preceding cycle's STEP 5, by design. A cycle-numbered scope table here is the single failure this skill exists to prevent.
 
 Then scope **only the first cycle of this run**: pick the one most valuable phase to start, and leave the rest of the backlog as undated phases.
 
@@ -176,7 +163,7 @@ The first thing any cycle does is check whether the plan it inherited is still c
 cycle's log stub first (header only, `Status: in-progress`) — Preparation already opened the run's
 first one; every later cycle opens its own here.
 
-**Scope exactly one cycle — this one.** STEP 0 decides what *this* cycle does, nothing further. Do not lay out cycle 2, 3, … N here: the first cycle is not a planning summit for the whole run, and a cycle-numbered table is forbidden (see "Observed failure mode"). The next cycle's scope is produced by *this* cycle's STEP 5, once you know what this cycle revealed.
+**Scope exactly one cycle — this one.** STEP 0 decides what *this* cycle does, nothing further. Do not lay out cycle 2, 3, … N here: the first cycle is not a planning summit for the whole run, and a cycle-numbered table is forbidden (rule 5). The next cycle's scope is produced by *this* cycle's STEP 5, once you know what this cycle revealed.
 
 **Bounded inputs** (keep this cheap — target <5 minutes):
 
@@ -205,7 +192,7 @@ first one; every later cycle opens its own here.
 | 🟡 SCOPE ADJUST | This cycle's scope needs trimming or expansion only | Adjust inline, proceed to STEP 1 |
 | ⚪ NONE | Plan still valid | Proceed with inherited scope |
 
-HARD STOP is **deliberately narrow** and **run-fatal**: it terminates the entire run, so it is reserved for structural invalidation that poisons all remaining work. A 🔵 BLOCKED item only parks one scope and the run continues on other work. Agent autonomy covers RE-PLAN and SCOPE ADJUST. If in doubt between RE-PLAN and HARD STOP, choose RE-PLAN; if in doubt between 🔵 BLOCKED-item and 🔴 HARD STOP, choose 🔵 BLOCKED — ending the whole run on a *local* blocker while other work remains is precisely the early-termination failure this skill exists to prevent.
+HARD STOP is **deliberately narrow**: it kills the whole run, so it is only for structural invalidation that poisons all remaining work. **If in doubt between RE-PLAN and HARD STOP, choose RE-PLAN; between 🔵 BLOCKED-item and 🔴 HARD STOP, choose 🔵 BLOCKED** — ending the whole run on a *local* blocker while other work remains is precisely the early-termination failure this skill exists to prevent.
 
 ### Self-unblock before parking (mandatory precondition of 🔵 BLOCKED)
 
@@ -220,7 +207,7 @@ Record what was tried in the ledger entry. An entry that cannot say what was att
 
 ### Decision leveling (overlay on the constructs above)
 
-Every decision a cycle faces sits at one of four levels, keyed on **two axes — stakes × reversibility (two-way vs one-way door)**. A capable delegate does not escalate by *importance* alone; they escalate what is **irreversible or theirs-alone**, and self-decide what is reversible. The levels are an **explanatory overlay** — they map onto constructs that already exist, and their operational markers are unchanged (L2 keeps `BLOCKED-ITEM:`, L3 keeps `HUMAN-NEEDED:`).
+Every decision a cycle faces sits at one of four levels, keyed on **stakes × reversibility** (two-way vs. one-way door) — escalate what is irreversible or theirs-alone, self-decide what is reversible. ([why](${CLAUDE_SKILL_DIR}/references/design-rationale.md))
 
 | Level | Test (stakes × reversibility) | Handling | Maps to |
 |-------|-------------------------------|----------|---------|
@@ -229,7 +216,7 @@ Every decision a cycle faces sits at one of four levels, keyed on **two axes —
 | **L2** | **irreversible / expensive to undo, or only a human can decide** — but other work is independent | park & batch, do not block the run | 🔵 BLOCKED-ITEM / Pending Human Decisions |
 | **L3** | run-fatal: poisons all remaining work | escalate & terminate | 🔴 HARD STOP (`HUMAN-NEEDED:`) |
 
-**In dubio, pro autonomy.** When a decision sits ambiguously between **L1** (self-decide + flag) and **L2** (escalate), **choose L1** — decide it, record it `provisional`, let the end-of-run report surface it for correction. Escalating a *reversible* decision is the "asks the boss about every little thing" failure this leveling exists to prevent; the Decisions Ledger makes L1 safe because nothing self-decided is hidden or unrecoverable. This is the same autonomy bias as "if in doubt, choose RE-PLAN / choose 🔵 BLOCKED", extended one rung further. **The one exception:** if the five lenses *irreducibly conflict* — no option is defensible across them — that conflict is itself an L2 signal; escalate rather than force a pick. L1 never gates termination: the run proceeds on provisional decisions and lets the human confirm or reverse them afterward.
+**In dubio, pro autonomy.** Ambiguous between **L1** and **L2** → **choose L1**: decide it, record it `provisional`, let the end-of-run report surface it for correction. Same bias as "if in doubt, choose RE-PLAN / choose 🔵 BLOCKED", one rung further. **The one exception:** if the five lenses *irreducibly conflict* — no option is defensible across them — that is itself an L2 signal; escalate rather than force a pick. L1 never gates termination.
 
 ### STEP 1: Design (conditional)
 
@@ -301,8 +288,9 @@ This step has two jobs: (a) record what cannot be resolved autonomously, and (b)
   - **Operator lens** — what does running this in production now require? (input validation, resource limits, an observability hook, an unhandled failure mode)
 
   Then classify **every** candidate through the **derivation gate** — this *is* the answer to "autonomous, or discussion?":
-  - **Autonomous-eligible** (→ becomes a Next-Cycle Scope / value-ladder candidate) when ALL hold: its *absence would be felt as incompleteness or a defect*; it stays within the project's **declared role and established patterns**; and it carries **no real trade-off** (pattern-following, additive, low-risk). *Worked examples:* the codebase already has a drag-drop pattern elsewhere → extending it to the new surface is autonomous; adding validation to a new upload path is autonomous.
-  - **Discussion / proposal-only** (→ Structural Improvement Proposals or Pending Human Decisions; **never** taken as autonomous scope) when it opens a **new product direction**, introduces a **new interaction paradigm, dependency, or surface** the project has not committed to, or involves a **trade-off only a human / product owner should weigh**. *Worked examples:* introducing drag-drop where no such pattern exists yet; "multi-file" when it would change the product's data model. Propose with rationale — do not self-decide.
+  - **Autonomous-eligible** (→ becomes a Next-Cycle Scope / value-ladder candidate) when ALL hold: its *absence would be felt as incompleteness or a defect*; it stays within the project's **declared role and established patterns**; and it carries **no real trade-off** (pattern-following, additive, low-risk).
+  - **Discussion / proposal-only** (→ Structural Improvement Proposals or Pending Human Decisions; **never** taken as autonomous scope) when it opens a **new product direction**, introduces a **new interaction paradigm, dependency, or surface** the project has not committed to, or involves a **trade-off only a human / product owner should weigh**. Propose with rationale — do not self-decide.
+  - Worked examples of both: [design-rationale.md](${CLAUDE_SKILL_DIR}/references/design-rationale.md).
   - **Frontier exhausted** — a valid, expected outcome: the capability is genuinely complete and any further extension would be scope creep or needs human direction.
 
   **Write the outcome as a token, not as prose.** The Emergent Next Capability line's **value** is one of exactly two markers — the Stop hook searches for them as literal strings, the same way it searches for `HUMAN-NEEDED:` and `BLOCKED-ITEM:`:

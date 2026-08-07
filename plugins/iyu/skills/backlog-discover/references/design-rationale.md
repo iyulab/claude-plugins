@@ -40,6 +40,21 @@ autonomous new product direction). This skill instead:
    **importance ranking**, and a dependency-ordered **staging** toward the vision. Judgment
    is still a proposal, never a decision — ranking an item is not merging it (rule 1).
 
+## Why P2.5 loads prior proposals
+
+P9 merge is manual, so most proposed items are *never adopted* — they are neither in `ROADMAP.md`
+nor retired. Without a dedupe basis, every run rediscovers the same gaps from scratch and the
+proposal pile grows without any of the documents referring to each other. The skill already solved
+that problem once, for technology candidates (`appropriate-tech`'s recorded `기각`/`보류` verdicts,
+rule 9); P2.5 + P4 extend the same discipline to ordinary items.
+
+## Why `allowed-tools` includes unscoped Bash
+
+Matching `run-cycle`: activities span arbitrary project-specific commands (outdated/audit tooling,
+`gh issue list`, `git log` mining, registry lookups) across unknown project types, and scoping would
+require per-project edits. This skill is read-mostly, so the blast radius is smaller than
+`run-cycle`'s — the justification is the same.
+
 ## Relationship to `run-cycle`
 
 The two skills are deliberately independent. `run-cycle` only ever *consumes* `ROADMAP.md`; this
