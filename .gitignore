@@ -3,7 +3,10 @@
 # Local plugin settings and state
 .claude/
 *.local.md
-CLAUDE.md
+
+# AGENTS.md holds the repo guidance and is tracked; CLAUDE.md is the one-line
+# import that makes Claude Code load it (Claude Code does not read AGENTS.md).
+# Personal, machine-local guidance goes in CLAUDE.local.md, covered by *.local.md.
 
 # Generated reports
 claudedocs/
