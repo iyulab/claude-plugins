@@ -26,7 +26,7 @@ Productivity toolkit for open-source library maintainers and developers.
 | **Mindset** | Skill | Auto | Shared "Critical but Constructive" philosophy + reference materials |
 | **Issue & PR Triage** | Skill | Auto | Conversational triage advice with decision matrices, response templates, and tone rules |
 | `/iyu:run-cycle` | Skill | Manual | Iterative development cycles with Stop hook |
-| `/iyu:handoff` | Skill | Manual | Session closeout — continuity-doc upkeep, next scope, re-ordering, pending decisions |
+| `/iyu:handoff` | Skill | Manual | Session closeout — continuity-doc upkeep, next scope, re-ordering, decisions briefed with options + a recommendation |
 | `/iyu:ship` | Skill | Manual | Version bump → commit → push → CI watch, gated on whether now is the moment |
 | `/iyu:telemetry-az` | Skill | Manual | Azure App Insights telemetry triage, issue discovery + run-over-run user analytics |
 | `/iyu:backlog-discover` | Skill | Manual | Playbook-driven backlog discovery + diagnose/rank/stage — proposal only, never auto-merges |
@@ -87,12 +87,34 @@ in are different jobs, and the item most often misplaced is the release. Work st
 same consumer-facing surface pushes a release item to that phase boundary — and the outcome is the
 reordered file, not a paragraph about it.
 
+**Decisions are briefed, not just listed.** Where `run-cycle` is the capable employee, this skill
+works like the capable **team lead**: the calls that are the owner's to make go up as **options with
+a recommendation**, not as questions. Each decision-class entry carries at least two options (one of
+them usually "defer") with their real consequences, a **cross-lens read** of how the leading options
+differ across the five co-equal lenses (근본/정석/표준/세련/철학), and a named recommendation with its
+reason and **what it locks in** — the irreversibility being the thing the owner is actually deciding
+about. Options must be *observed* — grounded in the tree just read, not generated to fill the slot.
+Resource-blockers (a missing credential, an access grant) keep the shorter blocker · tried ·
+what-would-unblock shape; there is nothing to choose there. And the format never becomes a reason to
+escalate more: if you can recommend an option *and* the choice is reversible, it belongs under
+"Decided this session" instead — and if nothing is left that needs you, the section says **"None"**,
+which is the good outcome, not a gap to fill.
+
+The same shape is used wherever a decision leaves the agent —
+[`_shared/decision-briefing.md`](./skills/_shared/decision-briefing.md) is read by `handoff` step 6,
+`run-cycle`'s End-of-Run Report, and `ship` step 0. Only the carrier differs: the first two write a
+document section, `ship` puts the options and the recommendation **into the question it asks** and
+waits for the answer.
+
 It deliberately does **not** commit and does **not** implement: the handoff describes a state, and
 changing that state while writing it makes the description wrong.
 
 Shares [`_shared/continuity-docs.md`](./skills/_shared/continuity-docs.md) with `/iyu:run-cycle` —
 where the docs live, what belongs in each, the hygiene pass, and how next scope is derived are
-defined once, in one file, for both.
+defined once, in one file, for both — and
+[`_shared/decision-lenses.md`](./skills/_shared/decision-lenses.md), which defines those five lenses
+for both purposes: `run-cycle` reads them to *self-decide* a reversible choice, this skill reads
+them to *brief* an irreversible one.
 
 ### /iyu:ship
 
@@ -109,12 +131,12 @@ Take finished work out, and confirm it landed.
 and **spends CI budget**. `publish` reaches **consumers and cannot be undone**. Each stage is
 reachable without the next.
 
-**Step 0 asks whether now is the moment.** Before anything else it reads the remaining backlog: if
-unfinished work would touch the same consumer-facing surface, it reports the trade-off and asks
-rather than deciding — *"4 items remain that change the same CLI output; publishing now means a
-re-release when they land. Push without publishing, or publish anyway?"* A release that will require
-a re-release shortly is close to no release at all, and the project's rhythm is the project's to
-declare, not the skill's to impose.
+**Step 0 asks whether now is the moment** — and asks it as a **briefing**, not a question. Before
+anything else it reads the remaining backlog; if unfinished work would touch the same
+consumer-facing surface, it lays out the options (publish now / push without publishing / batch into
+the next version), what each costs, and which one it would pick and why — then waits. A release that
+will require a re-release shortly is close to no release at all, and the project's rhythm is the
+project's to declare, not the skill's to impose. If the test clears, no question is asked at all.
 
 It watches the pipeline to completion (`gh run watch --exit-status`) rather than assuming a push
 succeeded, and on a red run it fetches the failing step, summarizes the cause, and **stops** — it
@@ -122,7 +144,9 @@ does not push speculative fixes. It never bumps MAJOR, and it never reorders the
 that is `/iyu:handoff`'s job.
 
 Shares [`_shared/release-cadence.md`](./skills/_shared/release-cadence.md) with `/iyu:handoff` and
-`/iyu:run-cycle` — the placement test lives in one file for all three.
+`/iyu:run-cycle` — the placement test lives in one file for all three — and
+[`_shared/decision-briefing.md`](./skills/_shared/decision-briefing.md) with the same trio, which is
+why step 0's question carries options and a recommendation.
 
 ### /iyu:telemetry-az
 

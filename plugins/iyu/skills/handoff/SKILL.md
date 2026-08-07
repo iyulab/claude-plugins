@@ -12,6 +12,11 @@ allowed-tools: Read, Glob, Grep, Write, Edit, TodoWrite, Bash
 Write down what the next session needs and nothing else. The output is judged by one test:
 **could someone with no access to this conversation pick up the work from these files alone?**
 
+Work this like a capable **team lead** closing out the week. `run-cycle` is the employee who
+executes a scope and reports back; this skill is the lead who says where the work stands, what the
+team does next, and — for the calls that are the owner's to make — hands up **options with a
+recommendation**, not questions (step 6).
+
 ## Why this exists separately
 
 `/iyu:run-cycle` already closes out its own runs — but only its own. Most sessions are not cycle
@@ -102,19 +107,36 @@ middle of a phase that will change the same surface again.
 **Report what moved.** A silently reordered backlog is indistinguishable from drift. And reorder
 only — adding, dropping, or rescoping items is separate work with its own rules.
 
-### 6. Surface the decisions
+### 6. Surface the decisions — briefed, not just listed
 
 Two lists, kept apart because they behave differently:
 
-- **Waiting on a human** — irreversible or human-only decisions, and anything blocked on a
-  credential, an access grant, or an external dependency. Each entry records the blocker,
-  **what was already tried**, and what would unblock it. Before writing one: check whether the
-  resource is actually missing (look, don't assume) and whether a governing doc, an accepted issue,
-  or a prior decision already answers it. An assumed blocker parks work that could have proceeded.
+- **Waiting on a human** — irreversible or human-only **decisions**, plus anything **blocked on a
+  resource** (a credential, an access grant, an external dependency).
 - **Decided along the way** — reversible choices made during the session that carried a real
   trade-off. Each with its alternatives, the trade-off, and a one-line **"to correct: <the reverse
   action>"**. Presenting these is what makes deciding-then-reporting safe rather than sneaky. Pure
   taste choices are not recorded.
+
+Before writing any "waiting on you" entry, run the self-unblock check: is the resource *actually*
+missing (look, don't assume), and does a governing doc, an accepted issue, or a prior decision
+already answer the question? An assumed blocker parks work that could have proceeded.
+
+Then brief them. A capable team lead does not hand the owner a question — they hand over the
+options, what each costs and buys, and which one they would pick and why, because the owner's job is
+to decide, not to re-derive the analysis.
+
+Apply **[decision-briefing.md](${CLAUDE_SKILL_DIR}/../_shared/decision-briefing.md)** in full: the
+two entry shapes (§1 — resource-blockers stay short, decision-class gets briefed), the four parts
+(§2), and the guards (§3). Three of those guards decide how this section reads:
+
+- **Grounded options.** Feasibility and cost come from the tree you read in step 2. Rule 4's *do not
+  implement* still holds — reading to ground an option is not starting the work — and rule 2 governs
+  what you cannot observe: unknown stays "unknown", with the command that would settle it.
+- **Recommendable + reversible → not here.** It belongs under **Decided this session**. The briefing
+  format makes escalation comfortable; that is exactly why it must not become the default.
+- **Nothing to decide → say "None".** If everything remaining can be carried autonomously, that is
+  the finding, and it is a good one. Never manufacture a decision to fill the section.
 
 If the project already uses decision IDs (`HD-01`, `D-03`, …), continue that numbering rather than
 starting a scheme of your own.
@@ -137,7 +159,22 @@ starting a scheme of your own.
 emergent candidate. Anchored to a ROADMAP phase. One session's worth.}
 
 ## Waiting on you
-{Blocked items + human-only decisions: blocker · what was tried · what would unblock it. Or "None".}
+{"None" — the right answer whenever everything left can be carried autonomously — or entries in the
+two shapes below: the first decision-class, the second resource-blocked.}
+
+### {HD-01} {the decision, in one line}
+- **Options**
+  - **A. {option}** — {consequence, grounded in what you read}
+  - **B. {option}** — {consequence}
+  - **C. Defer** — {what happens meanwhile}
+- **Cross-lens read**: {only the lenses that separate the options — e.g. "B is 세련하지만 표준에서
+  벗어남: the ecosystem does A"}
+- **Recommendation**: {A} — {reason, 1-2 sentences}. **Locks in**: {what becomes hard to undo}.
+
+### {HD-02} {what is blocked}
+- **Blocker**: {the missing credential / access / dependency}
+- **Tried**: {what was actually attempted}
+- **Unblocks it**: {the specific thing you need}
 
 ## Decided this session
 {Reversible self-made decisions: decision · trade-off · to correct. Or "None".}
@@ -151,7 +188,9 @@ Plus: `ROADMAP.md` with completed work removed (hygiene pass) **and its remainin
 order step 5 settled on**, and `HISTORY.md` with the completed work appended.
 
 Then report the same five sections in chat — the file is for the next session, the response is for
-the person reading now.
+the person reading now. "Waiting on you" is the section that person actually acts on, so carry the
+options, the cross-lens read, and the recommendation into the response too; a chat summary that
+compresses a briefed decision back into "needs your input" undoes step 6.
 
 ## Rules
 
@@ -163,5 +202,9 @@ the person reading now.
    instead.
 4. **Do not implement.** If step 2 surfaces a defect, record it — fixing it starts a new session's
    work and leaves the handoff describing a state that no longer exists.
-5. **One root per handoff.** In an umbrella repo, several submodules touched means several handoffs,
+5. **Recommend, don't ask — but only where a decision exists.** A decision-class entry leaves with
+   options and a recommendation; a bare question is an incomplete entry. An **empty** section is a
+   complete one: if nothing left needs the human, "None" is the finding, not a slot to fill. And if
+   you can recommend it *and* it is reversible, it belongs in "Decided this session", not here.
+6. **One root per handoff.** In an umbrella repo, several submodules touched means several handoffs,
    each in its own root.

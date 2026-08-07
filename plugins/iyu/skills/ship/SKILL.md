@@ -34,14 +34,28 @@ warrant one, stop and say so.
 backlog, and check whether unfinished work would touch the same consumer-facing surface this release
 would expose.
 
-If it would:
+If the test clears, say nothing and proceed — there is no question to ask.
 
-> **Report it and ask.** "4 items remain in Phase 3 that change the same CLI output; publishing now
-> means a re-release when they land. Push without publishing, or publish anyway?"
+If it does not, **ask, and put the analysis in the question** per
+**[decision-briefing.md](${CLAUDE_SKILL_DIR}/../_shared/decision-briefing.md) §2**. Here the
+briefing is the question itself, not a document section: the options, what each costs, and which one
+you would pick, so the answer needs a judgment rather than an investigation.
 
-Do not decide this alone. Publishing is irreversible, the project's rhythm is the project's to set
-(§3 — read the declaration, or infer it *and say you inferred it*), and a release that will need a
-re-release next week is close to no release at all.
+> **The decision** — publish 1.4.0 now, or after the 4 remaining Phase 3 items?
+> **Options** — (A) publish now: the 3 merged fixes reach consumers today, and Phase 3 changes the
+> same CLI output, so a re-release follows within the week. (B) push without publishing
+> (`--no-publish`): consumers wait, nothing is locked in, CI still validates. (C) publish now and
+> batch Phase 3 into 1.5.0: same as A but the re-release is planned rather than reactive.
+> **Lens read** — A is 표준 for a project that publishes per merge, but poor 근본 fit here: the
+> surface is mid-change. B keeps the version line honest at the cost of delivery.
+> **Recommendation** — B. The fixes are not urgent and Phase 3 lands soon. **Locks in**: nothing;
+> publishing later stays open. A would lock in a version number consumers install and a changelog
+> entry superseded next week.
+
+Then **wait**. Do not decide this alone and do not treat the recommendation as pre-approval:
+publishing is irreversible, silence is not consent (§3), the project's rhythm is the project's to
+set (release-cadence §3 — read the declaration, or infer it *and say you inferred it*), and a
+release that will need a re-release next week is close to no release at all.
 
 `--commit-only` and `--no-publish` skip this check for the stages they exclude: committing and
 pushing are not what the test guards.
@@ -119,7 +133,7 @@ stop, rather than triggering a second path.
 ```markdown
 ## Ship — {version}
 
-**Moment**: {cleared, or the trade-off raised and how it was answered}
+**Moment**: {cleared — or the options raised, which one was recommended, and which one you chose}
 **Verified**: {actual test/build/lint output}
 **Commit**: {sha} {subject}
 **Push**: {branch → remote, or PR URL}

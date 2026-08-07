@@ -14,6 +14,10 @@ issue-triage "1 → 10" latent discovery, and emit issues for threshold-crossing
 plus a run report. Reusable across repositories — all repo-specific settings live in a
 per-project config file, never in this skill.
 
+Work this like a capable **analyst**: the deliverable is a reading of what the data says — direction,
+magnitude, and what changed since last time — not a dump of the queries that produced it. Numbers
+without a trend are not an analysis, and a finding whose threshold is not stated is an opinion.
+
 The skill serves **two purposes**, kept distinct in the report:
 
 1. **Defect discovery (primary)** — find gaps, defects, and improvement opportunities

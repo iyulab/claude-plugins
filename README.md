@@ -71,7 +71,7 @@ you feel the specific need.
 | Reach for | What it does | When |
 |---|---|---|
 | `/iyu:run-cycle [N]` | Re-plan → execute → verify → reflect → derive next, N times | You have work to do. `N` is a ceiling, not a target — it stops early when the backlog is genuinely done |
-| `/iyu:handoff` | Rewrites the continuity docs, derives next scope, re-orders what's left | You're stopping, or the docs no longer match reality |
+| `/iyu:handoff` | Rewrites the continuity docs, derives next scope, re-orders what's left, briefs your decisions with options + a recommendation | You're stopping, or the docs no longer match reality |
 | `/iyu:ship` | Bump → commit → push → watch CI to completion | A phase is finished and ready to leave the machine. Asks first whether now is the moment |
 | `/iyu:backlog-discover` | Research playbook → diagnosis, ranking, staged proposal | The backlog is running dry, or `run-cycle` reported the frontier exhausted |
 | `/iyu:telemetry-az` | Reads Azure App Insights, files issues for threshold-crossing findings | Periodically, to let production tell you what's actually broken |
@@ -128,6 +128,11 @@ completed work into the `HISTORY.md` index, and derives the next scope. Reconstr
 from git and the continuity docs rather than from the conversation, so it still works after a
 compaction. Does not commit and does not implement.
 
+Decisions that are yours to make arrive **briefed like a team lead would brief them** — options with
+their real consequences, a cross-lens read (근본/정석/표준/세련/철학) of how the leading ones differ,
+and a recommendation stating what it locks in — instead of a question you have to research yourself.
+When nothing left needs you, the section simply says "None"; it never invents a decision to fill.
+
 ##### /iyu:ship
 
 ```bash
@@ -138,9 +143,10 @@ compaction. Does not commit and does not implement.
 
 Staged because the stages cost differently: commit is local, push spends CI budget, publish reaches
 consumers irreversibly. Step 0 reads the remaining backlog first — if unfinished work would touch
-the same consumer-facing surface, it reports the trade-off and asks instead of publishing a version
-the next few items obsolete. Watches the pipeline to completion and, on failure, summarizes the
-failing step and stops rather than pushing speculative fixes.
+the same consumer-facing surface, it lays out the options with a recommendation and waits, instead
+of publishing a version the next few items obsolete; if nothing conflicts, it asks nothing. Watches
+the pipeline to completion and, on failure, summarizes the failing step and stops rather than
+pushing speculative fixes.
 
 ##### /iyu:telemetry-az
 

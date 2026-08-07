@@ -8,6 +8,62 @@ bugs or docs. MAJOR is never bumped automatically.
 > History is reconstructed from git from v1.11.0 onward. Earlier versions live in
 > the git log only.
 
+## [1.30.0] — 2026-08-07
+
+The skills listed the owner's decisions as bare questions. A question hands the whole investigation
+back to the person with the least context on the work that produced it — so all three decision
+surfaces now hand up a **briefing** instead: options, a multi-angle read, and a recommendation.
+
+### Added
+
+- **`skills/_shared/decision-briefing.md` — the shape a decision takes when it goes up.** Read by
+  **`handoff` step 6 · `run-cycle` End-of-Run Report part 2 · `ship` step 0** — the same trio that
+  shares `release-cadence.md`. The four parts are constant; the carrier differs: handoff writes a
+  `HANDOFF.md` section, run-cycle a `RUN-SUMMARY` section, and **ship asks interactively and waits**,
+  which is why its briefing lands *in the question* rather than in a document.
+- **Decision briefing in `/iyu:handoff` step 6.** "Waiting on you" now holds two distinct entry
+  shapes rather than one blurred list:
+  - **Resource-blocked** (a missing credential, an access grant) keeps the short blocker · what was
+    tried · what would unblock it form. There is nothing to choose there, and forcing an options
+    table onto it produces filler.
+  - **Decision-class** carries four things: the decision in one line; **at least two options** with
+    their concrete consequences (usually one of them "defer"); a **cross-lens read** of how the
+    leading options differ; and a **recommendation** naming one option, its reason, and **what it
+    locks in** — the irreversibility being what the owner is actually deciding about.
+  The slots live in the `HANDOFF.md` output template, not only in the prose: the template is what
+  gets filled in. The chat report carries them too, since compressing a briefed decision back into
+  "needs your input" would undo the step.
+- **`skills/_shared/decision-lenses.md` — the five co-equal lenses, defined once.**
+  근본/정석/표준/세련/철학, with 철학 deferring to `mindset`'s four-dimension guide. Two consumers,
+  two purposes: `run-cycle` rule 2.5 reads them to **self-decide** a reversible choice without
+  asking, `handoff` step 6 reads them to **brief** an irreversible one. Which purpose applies is
+  settled by reversibility before the file is opened. Irreducible cross-lens conflict stays an
+  escalation signal in both.
+
+### Changed
+
+- **`/iyu:run-cycle`'s End-of-Run Report part 2 and `/iyu:ship`'s step 0 use the same shape.** The
+  run's deferred L2 decisions are briefed at report time — a synthesis of ledgers that already
+  exist; the per-cycle `BLOCKED-ITEM:` entry format is deliberately **unchanged**, since those
+  entries govern termination and adding briefing work to the parking path would slow the run.
+  `ship` step 0 now poses the release-timing trade-off as options + recommendation, and its report
+  records which option was chosen.
+- **Three guards keep the briefing from inverting the plugin's autonomy bias.** A polished
+  escalation format is an incentive to escalate more, so: options must be **observed, not invented**
+  (feasibility and cost come from what was actually read; unknown cost stays "unknown" with the
+  command that would settle it); *having* a recommendation never makes an entry human-only — a
+  recommendable **reversible** choice belongs under "Decided this session" (this guard applies only
+  where the consumer has an autonomy path, not to `ship`, whose decision is irreversible by
+  definition); and **an empty section is a valid, often preferable outcome** — if everything left can
+  be carried autonomously, the answer is "None", and manufacturing a decision to fill the slots is
+  worse than a blank section. Silence is not consent: nothing proceeds on a recommendation by
+  default.
+- **Personas made explicit where they were missing.** `/iyu:handoff` works like a capable **team
+  lead**, `/iyu:telemetry-az` like a capable **analyst** — matching `run-cycle`'s capable employee
+  and `backlog-discover`'s owner-manager, which already said so.
+- Rule 2.5 in `/iyu:run-cycle` now links the shared lens file instead of restating the list. Behavior
+  is unchanged; it is the extraction's second consumer.
+
 ## [1.29.0] — 2026-08-07
 
 Addresses the second gap the usage analysis found — 1,587 distinct release-related requests across
