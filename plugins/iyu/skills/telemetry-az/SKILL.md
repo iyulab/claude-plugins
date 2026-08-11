@@ -49,7 +49,7 @@ unscoped `run`/`run-cycle` skills.
 Paths are relative to the repo's **docs root** (`<root>`). Resolve it per
 **[continuity-docs.md](${CLAUDE_SKILL_DIR}/../_shared/continuity-docs.md) §1** — the shared
 definition every skill in this plugin uses. In an umbrella repo, pick the candidate covering the
-package this run reports on (`targetPackage`).
+package this run reports on (`targetPackage`). Write the report in the session's language, per §5.
 
 Landing in the same root matters here specifically: `/iyu:backlog-discover` reads the reports and
 issue drafts written below, so a root mismatch makes it report "telemetry-az not configured"

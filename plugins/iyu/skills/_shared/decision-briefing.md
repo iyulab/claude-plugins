@@ -70,3 +70,7 @@ test clearing means no question is asked at all.)
 `BLOCKED-ITEM:` entry keeps its existing short form — those ledger entries govern termination, and
 adding briefing work to the parking path slows the run. The briefing happens once, at the End-of-Run
 Report, synthesizing ledgers that already exist.
+
+**Write the briefing in the session's language**, per
+**[continuity-docs.md §5](./continuity-docs.md#5-output-language)** — the four-part shape is the
+contract, not the English wording of these examples. Decision IDs (`HD-01`) stay literal.

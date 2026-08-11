@@ -44,7 +44,8 @@ collects. Full rationale: [design-rationale.md](${CLAUDE_SKILL_DIR}/references/d
 
 Paths below are relative to the repo's **docs root** (`<root>`). Resolve it per
 **[continuity-docs.md](${CLAUDE_SKILL_DIR}/../_shared/continuity-docs.md) §1** — the shared
-definition every skill in this plugin uses. Resolve before reading or writing anything.
+definition every skill in this plugin uses. Resolve before reading or writing anything. Write the
+proposal document in the session's language, per **§5**.
 
 Landing in the same root as the others is not cosmetic: the roadmap this skill proposes into must
 be the one `/iyu:run-cycle` consumes, and the telemetry lane below reads what `/iyu:telemetry-az`

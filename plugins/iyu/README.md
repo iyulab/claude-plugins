@@ -26,7 +26,7 @@ Productivity toolkit for open-source library maintainers and developers.
 | **Mindset** | Skill | Auto | Shared "Critical but Constructive" philosophy + reference materials |
 | **Issue & PR Triage** | Skill | Auto | Conversational triage advice with decision matrices, response templates, and tone rules |
 | `/iyu:run-cycle` | Skill | Manual | Iterative development cycles with Stop hook |
-| `/iyu:handoff` | Skill | Manual | Session closeout — continuity-doc upkeep, next scope, re-ordering, decisions briefed with options + a recommendation |
+| `/iyu:handoff` | Skill | Manual + model-invoked | Session closeout — continuity-doc upkeep, next scope, re-ordering, decisions briefed with options + a recommendation |
 | `/iyu:ship` | Skill | Manual | Version bump → commit → push → CI watch, gated on whether now is the moment |
 | `/iyu:telemetry-az` | Skill | Manual | Azure App Insights telemetry triage, issue discovery + run-over-run user analytics |
 | `/iyu:backlog-discover` | Skill | Manual | Playbook-driven backlog discovery + diagnose/rank/stage — proposal only, never auto-merges |
@@ -81,6 +81,12 @@ play**, migrates completed work out of `ROADMAP.md` into the `HISTORY.md` index,
 next scope across the user / developer / operator lenses. It reconstructs what happened from `git
 log`, the existing continuity docs, and the latest cycle log — not from the conversation, which may
 already be compacted.
+
+Unlike the plugin's other command skills, Claude can also start this one on its own — only on a
+concrete signal that the session is actually ending or the continuity docs are visibly stale, and
+always announcing the run before touching a file. It is the one command skill safe to self-invoke:
+it never commits, pushes, or implements, so a mistimed run costs nothing worse than a re-editable
+file.
 
 It also **re-orders what remains**: deriving what comes next and deciding what order the rest sits
 in are different jobs, and the item most often misplaced is the release. Work still pending on the

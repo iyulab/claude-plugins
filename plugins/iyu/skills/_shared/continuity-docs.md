@@ -117,3 +117,21 @@ Classify every emergent candidate before proposing it:
 
 "Nothing left" is a legitimate outcome, but it must be a **stated judgment** across all three
 lenses, never an empty section.
+
+---
+
+## 5. Output language
+
+Every template in this plugin's skills (`## In flight`, `## Waiting on you`, `### {HD-01} …`, and
+similar) is shown in English because these files are themselves written in English — it is not an
+instruction to write the output in English. **Write the prose — chat responses and document
+content alike — in the language the current session is actually conducted in.** A Korean-language
+session produces a Korean `HANDOFF.md` and a Korean chat report; an English one produces English.
+If a continuity doc being edited already has an established language (existing headings, existing
+prose), match it in place rather than switching mid-document, even if it differs from the session's
+language — a document should not fragment into two languages across one hygiene pass.
+
+**Exception — literal machine-matched tokens stay in English, unmodified, regardless of session
+language:** `HUMAN-NEEDED:`, `BLOCKED-ITEM:`, `FRONTIER-OPEN:`, `FRONTIER-EXHAUSTED:`, and decision
+IDs (`HD-01`, `D-03`). The Stop hook and cross-run references match these as literal strings; the
+label after the colon, and the rest of the entry, still follows the sentence above.

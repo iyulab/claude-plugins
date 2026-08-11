@@ -54,9 +54,10 @@ fresh context could resume from them with zero conversational history.
 ## Continuity root — where that durable state lives
 
 **[continuity-docs.md](${CLAUDE_SKILL_DIR}/../_shared/continuity-docs.md) is the definition** — §1
-for resolving the root and what lives in it, §2 for what belongs in each document. `handoff`,
-`backlog-discover`, and `telemetry-az` read the same file, which is what keeps all four landing in
-one directory. Do not restate those rules here; a second copy drifts.
+for resolving the root and what lives in it, §2 for what belongs in each document, §5 for the
+language logs and reports are written in. `handoff`, `backlog-discover`, and `telemetry-az` read the
+same file, which is what keeps all four landing in one directory. Do not restate those rules here; a
+second copy drifts.
 
 Run-specific on top of it:
 

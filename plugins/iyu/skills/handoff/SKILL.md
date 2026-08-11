@@ -1,9 +1,8 @@
 ---
 name: handoff
 description: Closes out a work session — records where things stand, migrates completed work out of the continuity docs into the history index, derives and stages the next scope, and surfaces the decisions that are waiting on a human. Produces the document a fresh session (or another person) resumes from, so nothing depends on the current conversation surviving.
-when_to_use: Use when wrapping up a session, when the roadmap and handoff have drifted from what actually happened, or when you want the next scope written down before context runs out. Typical asks - "세션 종료를 위한 정리", "HANDOFF/ROADMAP 업데이트", "다음 작업범위 제안", "로드맵 최신화", "wrap up and hand off".
+when_to_use: User-invoked with "세션 종료를 위한 정리", "HANDOFF/ROADMAP 업데이트", "다음 작업범위 제안", "로드맵 최신화", "wrap up and hand off". Model-invoked (announce before running, per Rule 7) only on a concrete signal that the session is actually ending — the user is closing out or the context window is nearly exhausted — or when HANDOFF.md/ROADMAP.md are visibly stale against what git log shows happened. Not for mid-task pauses, and never as a substitute for asking what to do next.
 argument-hint: "[focus or scope note]"
-disable-model-invocation: true
 allowed-tools: Read, Glob, Grep, Write, Edit, TodoWrite, Bash
 ---
 
@@ -208,3 +207,6 @@ compresses a briefed decision back into "needs your input" undoes step 6.
    you can recommend it *and* it is reversible, it belongs in "Decided this session", not here.
 6. **One root per handoff.** In an umbrella repo, several submodules touched means several handoffs,
    each in its own root.
+7. **Model-invoked runs announce first.** When this skill starts without an explicit user invocation
+   (`/iyu:handoff`), say in one line that a handoff is running and why, *before* touching any file —
+   the rewrite is reversible, but a silent one still surprises whoever is reading the conversation.
