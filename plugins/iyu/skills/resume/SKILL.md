@@ -57,6 +57,19 @@ the last `/iyu:handoff` (a dependency landed, a design doc changed), note it —
 scope from scratch is `/iyu:handoff`'s job, not this one's; a real re-derivation belongs in a fresh
 `/iyu:handoff` run, not a patch applied here.
 
+**Split each list into 코드 작업 / 비코드 작업.** Code work is anything that changes what ships
+(source, tests, config, build). Non-code work is everything else the continuity docs track — docs, an
+issue draft, a roadmap edit, a release or external-communication step. The presentation split is what
+carries the real payload to step 4 — that's where it's read to judge reversibility — so a bucket with
+nothing in it just reads "None" rather than being dropped.
+
+**`## Next` empty → say so and recommend `/iyu:backlog-discover`.** Same closing move `run-cycle`'s
+End-of-Run Report makes when a run ends on `FRONTIER-EXHAUSTED:` with budget left: an empty backlog
+isn't this skill's gap to fill — resume never derives scope, it only reads (rule 1) — it's a pointer
+to the skill that does. A pointer only: name the recommendation, do not invoke it. Only say this when
+`## Next` itself is empty; an empty `## Waiting on you` with items still in `## Next` is step 4's good
+outcome, not this one.
+
 ### 4. Brief what handoff flagged
 
 For each entry in `## Waiting on you`:
@@ -70,8 +83,18 @@ For each entry in `## Waiting on you`:
   invented), the **cross-lens read**
   ([decision-lenses.md](${CLAUDE_SKILL_DIR}/../_shared/decision-lenses.md), only the lenses that
   separate the leading options), and a **named recommendation** with what it locks in.
+  **Judge reversibility by the step-3 split.** A code decision reverses through the ordinary channel
+  (git revert / edit again) — most read L1 once a recommendation exists. A non-code decision is
+  reversible only if undoing it costs nothing beyond editing a doc; anything the central policy
+  already gates on a human — `git push`, registering a GitHub issue, a major-version bump,
+  publish/release — stays L2 no matter how confident the recommendation is, because reversing it means
+  undoing an action outside this repo, not editing a file in it.
   **Recommendable + reversible → do not brief it as a decision.** Decide it yourself, proceed, and
-  record it in step 5 as a self-made choice instead (decision-briefing.md's guard).
+  record it in step 5 as a self-made choice instead (decision-briefing.md's guard). **Surface it
+  anyway** — one line alongside the briefing, decision · trade-off · **to correct: <the reverse
+  action>**, the same shape `run-cycle`'s End-of-Run Report part 3 uses for its Decisions Ledger. This
+  is confirm-not-approval: say it, record it (step 5), and move on — do not wait on a reply the way a
+  decision-class entry does (rule 3 is unaffected, only 다른점 있는지 gets a look).
 
 Nothing flagged → say "None" and move straight to confirming In flight / Next. Do not manufacture a
 decision to fill the section.
@@ -79,11 +102,14 @@ decision to fill the section.
 ### 5. Wait, then record immediately
 
 Unlike `/iyu:handoff` and `/iyu:run-cycle`, this skill's entire point is to pause here — present the
-briefing, then wait for the human's pick on every decision-class entry (silence is not consent).
+briefing, then wait for the human's pick on every decision-class entry (silence is not consent). A
+step-4 self-made choice does not wait — it was already decided and surfaced; write it in immediately,
+the same as a decision-class answer.
 
-The moment an answer lands, write it into `<root>/HANDOFF.md`'s `## Decided this session` section
-(create the section if absent) in the same shape `/iyu:handoff` uses: decision · trade-off · **to
-correct: <the reverse action>**. Do this now, not at the next `/iyu:handoff` — that is the entire
+The moment an answer lands (or a self-made choice was surfaced), write it into
+`<root>/HANDOFF.md`'s `## Decided this session` section (create the section if absent) in the same
+shape `/iyu:handoff` uses: decision · trade-off · **to correct: <the reverse action>**. Do this now,
+not at the next `/iyu:handoff` — that is the entire
 reason this step exists separately from the briefing itself. When `/iyu:handoff` next runs, it reads
 this entry as an inherited fact (its step 2), not something to re-derive from a git diff that may not
 even show it.
@@ -109,3 +135,11 @@ is not a contract that overrides a direct instruction given afterward.
    starting the work; once decisions are settled, step 6 is where real work begins, not before.
 6. **Model-invoked runs announce first.** Same as `/iyu:handoff` rule 7 — say in one line that a
    resume is running and why, before touching any file.
+7. **Code vs non-code splits both presentation and the reversibility read.** Step 3 shows In
+   flight/Next as 코드 작업 / 비코드 작업; step 4 reuses that split for its L1/L2 judgment — a code
+   decision defaults toward self-decide once a recommendation exists, while a non-code decision that
+   touches an action central policy already gates on a human (push, GitHub issue registration, a
+   major-version bump, publish/release) stays briefed no matter how confident the recommendation is.
+8. **An empty `## Next` gets a pointer, not an invocation.** Recommend `/iyu:backlog-discover` by
+   name and stop there — resume does not call it, the same non-merging boundary `run-cycle`'s closing
+   line keeps toward the same skill.

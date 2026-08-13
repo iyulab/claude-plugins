@@ -8,6 +8,25 @@ bugs or docs. MAJOR is never bumped automatically.
 > History is reconstructed from git from v1.11.0 onward. Earlier versions live in
 > the git log only.
 
+## [1.33.0] — 2026-08-14
+
+### Changed
+
+- **`/iyu:resume` splits "In flight"/"Next" into 코드 작업 / 비코드 작업**, and feeds that split into
+  step 4's reversibility read: a code decision defaults toward self-decide once a recommendation
+  exists, while a non-code decision touching an action central policy already gates on a human
+  (`git push`, a GitHub issue registration, a major-version bump, publish/release) stays briefed
+  regardless of confidence — closing a gap where the "recommendable + reversible → self-decide" guard
+  had no principled way to tell the two apart.
+- **`/iyu:resume` points at `/iyu:backlog-discover` when `## Next` is empty**, mirroring the closing
+  line `run-cycle`'s End-of-Run Report already writes when a run ends on `FRONTIER-EXHAUSTED:` with
+  budget left. A pointer only — resume never invokes it, keeping the two skills' non-merging boundary
+  intact.
+- **`/iyu:resume` surfaces self-decided step-4 entries alongside the briefing** instead of silently
+  proceeding — decision · trade-off · to correct, the same shape `run-cycle`'s End-of-Run Report part 3
+  uses for its Decisions Ledger. Confirm-not-approval: it doesn't wait on a reply, but it gives the
+  human a quick "anything different?" look at what got decided for them.
+
 ## [1.32.0] — 2026-08-13
 
 Usage analysis found `/iyu:handoff` doing double duty: called at session close as designed, and again

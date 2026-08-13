@@ -130,11 +130,18 @@ Open a session from the files `/iyu:handoff` left, instead of re-deriving the sa
 
 Reads `HANDOFF.md`/`ROADMAP.md` as they stand — no git-log reconstruction, no hygiene pass, no
 migrating anything to `HISTORY.md`; that stays `/iyu:handoff`'s job entirely, so running both is two
-different jobs, not double work. It presents "In flight" and "Next" for confirmation (flagging
-staleness if the tree has moved since the last handoff), then **briefs** every decision `/iyu:handoff`
-only flagged: grounded options, the cross-lens read (근본/정석/표준/세련/철학), and a named
-recommendation with what it locks in — the same shape `/iyu:handoff` used to produce at close, done
-here instead, fresh, at the moment someone is actually about to act on it.
+different jobs, not double work. It presents "In flight" and "Next" for confirmation, split into 코드
+작업 / 비코드 작업 (flagging staleness if the tree has moved since the last handoff; an empty "Next"
+gets a pointer to `/iyu:backlog-discover`, not an invocation), then **briefs** every decision
+`/iyu:handoff` only flagged: grounded options, the cross-lens read (근본/정석/표준/세련/철학), and a
+named recommendation with what it locks in — the same shape `/iyu:handoff` used to produce at close,
+done here instead, fresh, at the moment someone is actually about to act on it. That code/non-code
+split also drives the reversibility read: a code decision defaults toward self-decide once a
+recommendation exists, while a non-code decision touching something central policy already gates on a
+human (push, a GitHub issue registration, a major-version bump, publish) stays briefed regardless of
+confidence. A self-decided entry doesn't disappear — it's surfaced alongside the briefing (decision ·
+trade-off · to correct) for a quick "anything different?" look, confirm-not-approval, and recorded the
+same as an answered decision.
 
 **It is the only skill in this plugin whose entire point is to pause and wait.** Every decision-class
 entry gets an answer before work starts — and the instant one lands, it is written into `HANDOFF.md`'s
