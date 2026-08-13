@@ -66,7 +66,7 @@ Two traps worth restating, both hit this plugin before:
 
 ## Current Plugins
 
-### iyu (v1.30.0)
+### iyu (v1.32.0)
 
 Productivity toolkit for open-source maintainers. **Design principle**: teach Claude what is
 *different* about a project, not how to develop software — skills supply decision frameworks, Claude
@@ -81,7 +81,8 @@ the user-facing description. Read the skill file before changing a skill.
 | `mindset` | Auto-activating "critical but constructive" maintenance philosophy | — |
 | `issue-triage` | Auto-activating decision matrices for issue/PR triage discussions | — |
 | `/iyu:run-cycle [N]` | Adaptive cycles: re-plan → design → execute → verify → reflect → derive-next, `N` a ceiling | capable **employee** |
-| `/iyu:handoff` | Session closeout: continuity docs, next scope, re-ordering, briefed decisions | capable **team lead** |
+| `/iyu:handoff` | Session closeout: continuity docs, next scope, re-ordering, decisions *flagged* (not briefed) | capable **team lead** |
+| `/iyu:resume` | Session opener: reads what handoff left, *briefs* flagged decisions, records the pick immediately | the one **picking up the memo** |
 | `/iyu:ship` | Bump → commit → push → watch CI → publish, each stage stoppable | — |
 | `/iyu:backlog-discover` | Research playbook → diagnosis, ranking, staged proposal (never auto-merged) | capable **owner-manager** |
 | `/iyu:telemetry-az` | App Insights triage: defect issues + report-only usage trends | capable **analyst** |
@@ -91,10 +92,10 @@ copies of a rule become four rules the moment one is edited:
 
 | File | Defines | Read by |
 |---|---|---|
-| `continuity-docs.md` | root resolution · what belongs in each doc · hygiene pass · next-scope derivation | run-cycle, handoff, backlog-discover, telemetry-az |
+| `continuity-docs.md` | root resolution · what belongs in each doc · hygiene pass · next-scope derivation | run-cycle, handoff, resume, backlog-discover, telemetry-az |
 | `release-cadence.md` | three stages/three costs · the placement test · cadence declaration · reorder-don't-explain | run-cycle, handoff, ship |
-| `decision-briefing.md` | the two entry shapes · the four parts of a briefing · the guards | run-cycle, handoff, ship |
-| `decision-lenses.md` | the five co-equal lenses (근본/정석/표준/세련/철학) | run-cycle (self-decide), decision-briefing (brief) |
+| `decision-briefing.md` | the two entry shapes · the four parts of a briefing · the guards | run-cycle, resume, ship |
+| `decision-lenses.md` | the five co-equal lenses (근본/정석/표준/세련/철학) | run-cycle (self-decide), resume (brief) |
 
 The four canonical philosophy dimensions live only in
 `skills/mindset/references/philosophy-alignment-guide.md`.

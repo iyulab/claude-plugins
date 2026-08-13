@@ -4,8 +4,8 @@
 for two different purposes, and the lenses are the same in both:
 
 - `run-cycle` rule 2.5 — to **self-decide** a reversible (L1) choice and proceed without asking.
-- `handoff` step 6 — to **brief** an irreversible or human-only (L2) choice: the options, how each
-  reads across the lenses, and which one is recommended.
+- `resume` step 4 — to **brief** an irreversible or human-only (L2) choice that `handoff` flagged: the
+  options, how each reads across the lenses, and which one is recommended.
 
 Same vocabulary, opposite outcomes. Which purpose applies is decided *before* this file is opened,
 by reversibility — not by how interesting the decision is.
@@ -37,7 +37,7 @@ indefensible on others, and no reframing dissolves it — that conflict is **its
 signal. Do not force a pick to keep moving.
 
 - In `run-cycle`, this is the one exception to *in dubio, pro autonomy*: treat it as L2.
-- In `handoff`, say so explicitly in the recommendation slot — "no option is defensible across the
+- In `resume`, say so explicitly in the recommendation slot — "no option is defensible across the
   lenses; the conflict is X vs Y" — rather than manufacturing a preference.
 
 A lens disagreement is ordinary and expected; most decisions have one. It is only *irreducible* when

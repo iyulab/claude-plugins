@@ -2,7 +2,7 @@
 
 [![Claude Code Plugin](https://img.shields.io/badge/Claude%20Code-Plugin-blueviolet?logo=anthropic&logoColor=white)](https://code.claude.com/docs/en/plugins)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-1.29.0-blue.svg)](./.claude-plugin/plugin.json)
+[![Version](https://img.shields.io/badge/version-1.32.0-blue.svg)](./.claude-plugin/plugin.json)
 
 Productivity toolkit for open-source library maintainers and developers.
 
@@ -26,7 +26,8 @@ Productivity toolkit for open-source library maintainers and developers.
 | **Mindset** | Skill | Auto | Shared "Critical but Constructive" philosophy + reference materials |
 | **Issue & PR Triage** | Skill | Auto | Conversational triage advice with decision matrices, response templates, and tone rules |
 | `/iyu:run-cycle` | Skill | Manual | Iterative development cycles with Stop hook |
-| `/iyu:handoff` | Skill | Manual + model-invoked | Session closeout — continuity-doc upkeep, next scope, re-ordering, decisions briefed with options + a recommendation |
+| `/iyu:handoff` | Skill | Manual + model-invoked | Session closeout — continuity-doc upkeep, next scope, re-ordering, decisions flagged (not briefed) for `/iyu:resume` |
+| `/iyu:resume` | Skill | Manual + model-invoked | Session opener — reads the continuity docs, briefs the decisions handoff flagged with options + a recommendation, records the pick immediately |
 | `/iyu:ship` | Skill | Manual | Version bump → commit → push → CI watch, gated on whether now is the moment |
 | `/iyu:telemetry-az` | Skill | Manual | Azure App Insights telemetry triage, issue discovery + run-over-run user analytics |
 | `/iyu:backlog-discover` | Skill | Manual | Playbook-driven backlog discovery + diagnose/rank/stage — proposal only, never auto-merges |
@@ -93,24 +94,21 @@ in are different jobs, and the item most often misplaced is the release. Work st
 same consumer-facing surface pushes a release item to that phase boundary — and the outcome is the
 reordered file, not a paragraph about it.
 
-**Decisions are briefed, not just listed.** Where `run-cycle` is the capable employee, this skill
-works like the capable **team lead**: the calls that are the owner's to make go up as **options with
-a recommendation**, not as questions. Each decision-class entry carries at least two options (one of
-them usually "defer") with their real consequences, a **cross-lens read** of how the leading options
-differ across the five co-equal lenses (근본/정석/표준/세련/철학), and a named recommendation with its
-reason and **what it locks in** — the irreversibility being the thing the owner is actually deciding
-about. Options must be *observed* — grounded in the tree just read, not generated to fill the slot.
-Resource-blockers (a missing credential, an access grant) keep the shorter blocker · tried ·
-what-would-unblock shape; there is nothing to choose there. And the format never becomes a reason to
-escalate more: if you can recommend an option *and* the choice is reversible, it belongs under
-"Decided this session" instead — and if nothing is left that needs you, the section says **"None"**,
-which is the good outcome, not a gap to fill.
+**Decisions are flagged here, not briefed.** This skill used to also brief pending decisions with
+options and a recommendation — it no longer does. A briefing is analysis aimed at whoever resumes,
+and producing it at close means it sits, possibly staling, until someone actually acts on it. This
+skill now stops at **naming** a decision-class item in one line (resource-blockers still keep their
+short blocker · tried · what-would-unblock form, since that's a fact, not a choice) — briefing it is
+[`/iyu:resume`](#iyuresume)'s job, done fresh at the moment someone is actually about to act on it.
+If you can already see the answer *and* the choice is reversible, it never reaches "Waiting on you"
+at all — it's decided on the spot and recorded under "Decided this session" instead. Nothing left
+that needs a human is a good outcome, reported as **"None"**, not a gap to fill.
 
-The same shape is used wherever a decision leaves the agent —
-[`_shared/decision-briefing.md`](./skills/_shared/decision-briefing.md) is read by `handoff` step 6,
-`run-cycle`'s End-of-Run Report, and `ship` step 0. Only the carrier differs: the first two write a
-document section, `ship` puts the options and the recommendation **into the question it asks** and
-waits for the answer.
+The four-part briefing shape itself — decision · grounded options · cross-lens read · named
+recommendation — lives in [`_shared/decision-briefing.md`](./skills/_shared/decision-briefing.md),
+read by `/iyu:resume` step 4, `run-cycle`'s End-of-Run Report, and `ship` step 0. Only the carrier
+differs: `resume` and `run-cycle` write a document section, `ship` puts the options and the
+recommendation **into the question it asks** and waits for the answer.
 
 It deliberately does **not** commit and does **not** implement: the handoff describes a state, and
 changing that state while writing it makes the description wrong.
@@ -119,8 +117,33 @@ Shares [`_shared/continuity-docs.md`](./skills/_shared/continuity-docs.md) with 
 where the docs live, what belongs in each, the hygiene pass, and how next scope is derived are
 defined once, in one file, for both — and
 [`_shared/decision-lenses.md`](./skills/_shared/decision-lenses.md), which defines those five lenses
-for both purposes: `run-cycle` reads them to *self-decide* a reversible choice, this skill reads
-them to *brief* an irreversible one.
+for the two self-decide/brief purposes described below.
+
+### /iyu:resume
+
+Open a session from the files `/iyu:handoff` left, instead of re-deriving the same ground twice.
+
+```bash
+/iyu:resume              # confirm state + brief every flagged decision
+/iyu:resume "decisions"  # narrow to just the decisions
+```
+
+Reads `HANDOFF.md`/`ROADMAP.md` as they stand — no git-log reconstruction, no hygiene pass, no
+migrating anything to `HISTORY.md`; that stays `/iyu:handoff`'s job entirely, so running both is two
+different jobs, not double work. It presents "In flight" and "Next" for confirmation (flagging
+staleness if the tree has moved since the last handoff), then **briefs** every decision `/iyu:handoff`
+only flagged: grounded options, the cross-lens read (근본/정석/표준/세련/철학), and a named
+recommendation with what it locks in — the same shape `/iyu:handoff` used to produce at close, done
+here instead, fresh, at the moment someone is actually about to act on it.
+
+**It is the only skill in this plugin whose entire point is to pause and wait.** Every decision-class
+entry gets an answer before work starts — and the instant one lands, it is written into `HANDOFF.md`'s
+"Decided this session" section immediately, not left for the next `/iyu:handoff` to reconstruct from a
+git diff that might not even show it. That immediate write-back is what keeps a decision from being
+lost if the session ends, or compacts, before the next handoff runs.
+
+Like `/iyu:handoff`, this is safe to self-invoke on a narrow signal (a fresh session with no stated
+task and an existing `HANDOFF.md`) — it only reads and appends one decision record, never implements.
 
 ### /iyu:ship
 
@@ -151,8 +174,8 @@ that is `/iyu:handoff`'s job.
 
 Shares [`_shared/release-cadence.md`](./skills/_shared/release-cadence.md) with `/iyu:handoff` and
 `/iyu:run-cycle` — the placement test lives in one file for all three — and
-[`_shared/decision-briefing.md`](./skills/_shared/decision-briefing.md) with the same trio, which is
-why step 0's question carries options and a recommendation.
+[`_shared/decision-briefing.md`](./skills/_shared/decision-briefing.md) with `/iyu:resume` and
+`/iyu:run-cycle`, which is why step 0's question carries options and a recommendation.
 
 ### /iyu:telemetry-az
 
@@ -289,24 +312,29 @@ iyu/
 ├── .claude-plugin/
 │   └── plugin.json
 ├── skills/
+│   ├── _shared/
+│   │   ├── continuity-docs.md
+│   │   ├── decision-briefing.md
+│   │   ├── decision-lenses.md
+│   │   └── release-cadence.md
 │   ├── mindset/
 │   │   ├── SKILL.md
 │   │   └── references/
+│   ├── issue-triage/
+│   │   ├── SKILL.md
+│   │   └── references/
+│   ├── run-cycle/
+│   │   ├── SKILL.md
+│   │   └── references/
+│   ├── handoff/
+│   │   └── SKILL.md
+│   ├── resume/
+│   │   └── SKILL.md
+│   ├── ship/
+│   │   └── SKILL.md
 │   ├── backlog-discover/
 │   │   ├── SKILL.md
 │   │   └── references/
-│   ├── issue-triage/
-│   │   └── SKILL.md
-│   ├── issue/
-│   │   ├── SKILL.md
-│   │   └── references/
-│   ├── pr/
-│   │   ├── SKILL.md
-│   │   └── references/
-│   ├── run/
-│   │   └── SKILL.md
-│   ├── run-cycle/
-│   │   └── SKILL.md
 │   └── telemetry-az/
 │       ├── SKILL.md
 │       └── references/

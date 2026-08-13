@@ -1,6 +1,6 @@
 ---
 name: handoff
-description: Closes out a work session — records where things stand, migrates completed work out of the continuity docs into the history index, derives and stages the next scope, and surfaces the decisions that are waiting on a human. Produces the document a fresh session (or another person) resumes from, so nothing depends on the current conversation surviving.
+description: Closes out a work session — records where things stand, migrates completed work out of the continuity docs into the history index, derives and stages the next scope, and flags (not briefs) the decisions waiting on a human for `/iyu:resume` to brief when the next session opens. Produces the document a fresh session (or another person) resumes from, so nothing depends on the current conversation surviving.
 when_to_use: User-invoked with "세션 종료를 위한 정리", "HANDOFF/ROADMAP 업데이트", "다음 작업범위 제안", "로드맵 최신화", "wrap up and hand off". Model-invoked (announce before running, per Rule 7) only on a concrete signal that the session is actually ending — the user is closing out or the context window is nearly exhausted — or when HANDOFF.md/ROADMAP.md are visibly stale against what git log shows happened. Not for mid-task pauses, and never as a substitute for asking what to do next.
 argument-hint: "[focus or scope note]"
 allowed-tools: Read, Glob, Grep, Write, Edit, TodoWrite, Bash
@@ -12,9 +12,9 @@ Write down what the next session needs and nothing else. The output is judged by
 **could someone with no access to this conversation pick up the work from these files alone?**
 
 Work this like a capable **team lead** closing out the week. `run-cycle` is the employee who
-executes a scope and reports back; this skill is the lead who says where the work stands, what the
-team does next, and — for the calls that are the owner's to make — hands up **options with a
-recommendation**, not questions (step 6).
+executes a scope and reports back; this skill is the lead who says where the work stands and what the
+team does next — and, for the calls that are the owner's to make, **names them** so `/iyu:resume` can
+brief them properly when the next session actually opens (step 6).
 
 ## Why this exists separately
 
@@ -29,6 +29,13 @@ next scope is derived, and
 **[release-cadence.md](${CLAUDE_SKILL_DIR}/../_shared/release-cadence.md)** is the single source for
 where release work sits in the order. Read both first — this file only adds what is specific to
 closing a session.
+
+**This skill used to also brief pending decisions — it no longer does.** A briefing is analysis aimed
+at whoever resumes; producing it here means it is written once at close and then sits, possibly
+staling, until someone actually acts on it. That is `/iyu:resume`'s job now: it grounds the same
+decision in the repo as it stands the moment someone is about to act on it, and it is the one place a
+decision gets written back the instant it is made. This skill's job stops at *naming* what is
+undecided (step 6) — cleanup and continuity-doc upkeep, nothing more.
 
 ## Scope
 
@@ -53,6 +60,10 @@ The conversation may already be compacted, and it is not the record. Read the ac
 - The most recent `cycle-logs/cycle-*.md`, if the project runs cycles — its Carry-Forward, ledgers,
   and Next-Cycle Scope are inherited obligations, not history
 - Any `<root>/issues/` drafts written this session
+- The existing `## Decided this session` entries in `HANDOFF.md`, if `/iyu:resume` already recorded
+  one earlier in this same session — carry these forward as **fact**, not something to re-derive; a
+  decision `/iyu:resume` wrote back the instant it was made may leave no distinguishing git diff to
+  reconstruct it from
 
 **Unobserved data stays "unknown".** A handoff asserting a test passed, when no one ran it, is worse
 than one saying "unverified" — the next session builds on it. If something matters and is unknown,
@@ -106,7 +117,7 @@ middle of a phase that will change the same surface again.
 **Report what moved.** A silently reordered backlog is indistinguishable from drift. And reorder
 only — adding, dropping, or rescoping items is separate work with its own rules.
 
-### 6. Surface the decisions — briefed, not just listed
+### 6. Flag the decisions — name them, don't brief them
 
 Two lists, kept apart because they behave differently:
 
@@ -121,19 +132,19 @@ Before writing any "waiting on you" entry, run the self-unblock check: is the re
 missing (look, don't assume), and does a governing doc, an accepted issue, or a prior decision
 already answer the question? An assumed blocker parks work that could have proceeded.
 
-Then brief them. A capable team lead does not hand the owner a question — they hand over the
-options, what each costs and buys, and which one they would pick and why, because the owner's job is
-to decide, not to re-derive the analysis.
+Apply **[decision-briefing.md](${CLAUDE_SKILL_DIR}/../_shared/decision-briefing.md) §1** for the
+entry shapes — but stop at naming, not briefing:
 
-Apply **[decision-briefing.md](${CLAUDE_SKILL_DIR}/../_shared/decision-briefing.md)** in full: the
-two entry shapes (§1 — resource-blockers stay short, decision-class gets briefed), the four parts
-(§2), and the guards (§3). Three of those guards decide how this section reads:
-
-- **Grounded options.** Feasibility and cost come from the tree you read in step 2. Rule 4's *do not
-  implement* still holds — reading to ground an option is not starting the work — and rule 2 governs
-  what you cannot observe: unknown stays "unknown", with the command that would settle it.
-- **Recommendable + reversible → not here.** It belongs under **Decided this session**. The briefing
-  format makes escalation comfortable; that is exactly why it must not become the default.
+- **Resource-blocked** entries keep their short factual form (§1): blocker · what was tried · what
+  would unblock it. This is a fact, not a decision, so it is written here in full, same as always.
+- **Decision-class** entries get **one line only**: the decision, phrased so it can be answered.
+  **Do not generate options, a cross-lens read, or a recommendation here** — that analysis is
+  `/iyu:resume`'s job, done fresh against the repo as it stands when someone is actually about to act
+  on it, rather than produced now and left to stale until then.
+- **Recommendable + reversible → not here at all.** If you can already see the answer and it's
+  reversible, that is not a pending decision — decide it, proceed, and record it under **Decided
+  along the way** instead. The one-line-flag format makes it cheap to escalate; that is exactly why
+  it must not become the default for anything you could have just decided.
 - **Nothing to decide → say "None".** If everything remaining can be carried autonomously, that is
   the finding, and it is a good one. Never manufacture a decision to fill the section.
 
@@ -159,16 +170,10 @@ emergent candidate. Anchored to a ROADMAP phase. One session's worth.}
 
 ## Waiting on you
 {"None" — the right answer whenever everything left can be carried autonomously — or entries in the
-two shapes below: the first decision-class, the second resource-blocked.}
+two shapes below: the first decision-class (flagged, not briefed — `/iyu:resume` briefs it), the
+second resource-blocked.}
 
-### {HD-01} {the decision, in one line}
-- **Options**
-  - **A. {option}** — {consequence, grounded in what you read}
-  - **B. {option}** — {consequence}
-  - **C. Defer** — {what happens meanwhile}
-- **Cross-lens read**: {only the lenses that separate the options — e.g. "B is 세련하지만 표준에서
-  벗어남: the ecosystem does A"}
-- **Recommendation**: {A} — {reason, 1-2 sentences}. **Locks in**: {what becomes hard to undo}.
+### {HD-01} {the decision, in one line — that is all; `/iyu:resume` briefs this next}
 
 ### {HD-02} {what is blocked}
 - **Blocker**: {the missing credential / access / dependency}
@@ -187,9 +192,9 @@ Plus: `ROADMAP.md` with completed work removed (hygiene pass) **and its remainin
 order step 5 settled on**, and `HISTORY.md` with the completed work appended.
 
 Then report the same five sections in chat — the file is for the next session, the response is for
-the person reading now. "Waiting on you" is the section that person actually acts on, so carry the
-options, the cross-lens read, and the recommendation into the response too; a chat summary that
-compresses a briefed decision back into "needs your input" undoes step 6.
+the person reading now. Carry the flagged decisions into the response too, exactly as one-liners; do
+not improvise options or a recommendation in chat that step 6 deliberately left for `/iyu:resume` to
+produce later.
 
 ## Rules
 
@@ -201,10 +206,11 @@ compresses a briefed decision back into "needs your input" undoes step 6.
    instead.
 4. **Do not implement.** If step 2 surfaces a defect, record it — fixing it starts a new session's
    work and leaves the handoff describing a state that no longer exists.
-5. **Recommend, don't ask — but only where a decision exists.** A decision-class entry leaves with
-   options and a recommendation; a bare question is an incomplete entry. An **empty** section is a
-   complete one: if nothing left needs the human, "None" is the finding, not a slot to fill. And if
-   you can recommend it *and* it is reversible, it belongs in "Decided this session", not here.
+5. **Flag, don't brief — but only where a decision exists.** A decision-class entry leaves as one
+   line naming the choice; generating options, a cross-lens read, or a recommendation here is
+   `/iyu:resume`'s job, not this skill's. An **empty** section is a complete one: if nothing left
+   needs the human, "None" is the finding, not a slot to fill. And if you can already see the answer
+   *and* it is reversible, it belongs in "Decided this session", not here.
 6. **One root per handoff.** In an umbrella repo, several submodules touched means several handoffs,
    each in its own root.
 7. **Model-invoked runs announce first.** When this skill starts without an explicit user invocation

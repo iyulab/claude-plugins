@@ -5,9 +5,15 @@ reaches the person who owns it. Three consumers read it:
 
 | Consumer | Where the briefing lands |
 |---|---|
-| `handoff` step 6 | the **"Waiting on you"** section of `HANDOFF.md` |
+| `resume` step 4 | the **"Waiting on you"** section of `HANDOFF.md`, briefed at the moment someone is about to act on it |
 | `run-cycle` End-of-Run Report part 2 | the **deferred-decisions (L2)** section of `RUN-SUMMARY-{date}.md` |
 | `ship` step 0 | the **question itself** — asked interactively, and the run waits for the answer |
+
+`handoff` still *writes* the "Waiting on you" section, but only the entry shape (§1) — it names a
+decision-class item in one line and stops there. The four-part briefing below is produced by `resume`,
+not by `handoff`: flagging happens where the decision is discovered (session close), briefing happens
+where it is about to be acted on (session open) — the same split `run-cycle` already draws between its
+per-cycle `BLOCKED-ITEM:` ledger entry and its End-of-Run Report synthesis (§3).
 
 A question hands the whole investigation back to the person with the *least* context on the work
 that produced it. A briefing hands over the analysis and asks only for the judgment. That is the
@@ -52,7 +58,7 @@ irreversible decision. The entry waits. (`ship` step 0 is the interactive case: 
 not treat a recommendation as pre-approval for the stage that cannot be undone.)
 
 **A recommendation does not make an entry human-only** — *applies where the consumer has an autonomy
-path* (`handoff`, `run-cycle`). If you can recommend an option **and** the choice is reversible, that
+path* (`resume`, `run-cycle`). If you can recommend an option **and** the choice is reversible, that
 is the signal to decide it and record it as a self-made reversible decision instead. A polished
 escalation format is an incentive to escalate more; this guard is what keeps it from quietly
 rewriting the autonomy contract. It does **not** apply to `ship` step 0, where the decision is
@@ -69,7 +75,10 @@ test clearing means no question is asked at all.)
 **Brief where decisions are reported, not where work is parked.** In `run-cycle`, the per-cycle
 `BLOCKED-ITEM:` entry keeps its existing short form — those ledger entries govern termination, and
 adding briefing work to the parking path slows the run. The briefing happens once, at the End-of-Run
-Report, synthesizing ledgers that already exist.
+Report, synthesizing ledgers that already exist. `handoff`/`resume` draw the identical split across two
+skills instead of two steps: `handoff` only names a decision-class item (§1's short entry shape,
+applied to a decision rather than a blocker); `resume` is where the full four-part briefing happens,
+grounded fresh in whatever is true when someone is actually about to act on it.
 
 **Write the briefing in the session's language**, per
 **[continuity-docs.md §5](./continuity-docs.md#5-output-language)** — the four-part shape is the

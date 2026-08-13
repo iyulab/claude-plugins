@@ -8,6 +8,64 @@ bugs or docs. MAJOR is never bumped automatically.
 > History is reconstructed from git from v1.11.0 onward. Earlier versions live in
 > the git log only.
 
+## [1.32.0] — 2026-08-13
+
+Usage analysis found `/iyu:handoff` doing double duty: called at session close as designed, and again
+at session open — manually, since nothing else read the docs it wrote and briefed what was left
+undecided. Splitting that second use into its own skill fixes both the redundant re-derivation (a
+full evidence-reconstruction + hygiene pass run against a session that had not started yet) and a
+durability gap (a decision settled in conversation at session-open had no write-back path until the
+*next* `/iyu:handoff` tried to infer it from a git diff that might not even show it).
+
+### Added
+
+- **`/iyu:resume` — opens a session from the files `/iyu:handoff` left.** Read-only against
+  `HANDOFF.md`/`ROADMAP.md` (no git-log reconstruction, no hygiene pass, nothing migrated to
+  `HISTORY.md` — that stays entirely `/iyu:handoff`'s job), it presents in-flight/next for
+  confirmation and **briefs** every decision handoff only flagged: grounded options, the cross-lens
+  read, and a named recommendation with what it locks in — the same four-part shape
+  `/iyu:handoff` used to produce at close, now produced fresh at open instead. It is the one skill in
+  the plugin whose entire point is to pause and wait for an answer, and the moment one lands it is
+  written into `HANDOFF.md`'s "Decided this session" section immediately, not deferred to the next
+  handoff's reconstruction. Safe to self-invoke on the same narrow bar as `/iyu:handoff` (a fresh
+  session with no stated task and an existing `HANDOFF.md`), since it only reads and appends one
+  decision record.
+
+### Changed
+
+- **`/iyu:handoff` step 6 now *flags* decisions instead of *briefing* them.** A decision-class entry
+  in "Waiting on you" is one line naming the choice — no options, no cross-lens read, no
+  recommendation generated at close time, where they would sit stale until someone actually acts on
+  them. Resource-blocked entries (a missing credential, an access grant) are unaffected — that shape
+  was always a fact, not a decision, so `/iyu:handoff` keeps writing it in full.
+- **`decision-briefing.md` and `decision-lenses.md`** now name `/iyu:resume` as the briefing consumer
+  in place of `/iyu:handoff` step 6; `/iyu:handoff`'s use of `decision-briefing.md` narrows to §1's
+  entry shapes only.
+- **`continuity-docs.md`'s artifact table** notes `/iyu:resume` as a (partial) writer of
+  `HANDOFF.md` — its `## Decided this session` section only; every other document and section stays
+  `/iyu:handoff`'s alone.
+
+## [1.31.0] — 2026-08-11
+
+`/iyu:handoff` was the only one of five command skills with no irreversible step (no commit, no push,
+no implement), which made locking it to manual-only an unjustified exception under the plugin's own
+reversibility bias.
+
+### Added
+
+- **`/iyu:handoff` can self-invoke.** Only on a concrete session-ending or doc-staleness signal,
+  announcing before it touches a file; the other command skills stay manual since each carries an
+  irreversible or human-only step.
+- **`continuity-docs.md` §5 — output language follows the session.** Templates are shown in English
+  because the files defining them are English, not as an instruction to write output in English;
+  reports and continuity docs now match the session's actual language, with machine-matched tokens
+  (`HUMAN-NEEDED:`, decision IDs, …) staying literal regardless.
+
+### Fixed
+
+- Reports and continuity docs were defaulting to English even in a non-English session — the
+  templates' own English text was being reproduced instead of translated.
+
 ## [1.30.0] — 2026-08-07
 
 The skills listed the owner's decisions as bare questions. A question hands the whole investigation

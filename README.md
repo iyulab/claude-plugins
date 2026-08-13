@@ -39,7 +39,7 @@ How that differs from the mainstream:
 
 > **Versioning** — two independent version numbers exist by design: `marketplace.json → version` tracks the **marketplace registry** (structure of this catalog), while each plugin's `plugin.json → version` tracks that **plugin** itself. They advance separately. Per-plugin `keywords`, `homepage`, and `license` are sourced from `plugin.json` and mirrored into the marketplace entry — the marketplace's own `metadata` object only recognizes `pluginRoot`, so per-plugin fields belong on the entry, not there. See [CHANGELOG.md](./CHANGELOG.md) for the iyu plugin history.
 
-### iyu (v1.29.0)
+### iyu (v1.32.0)
 
 **Productivity toolkit for open-source library maintainers — adaptive iterative development, session continuity, issue triage, telemetry and backlog discovery**
 
@@ -50,13 +50,17 @@ the conversation — so any of them can be picked up in a fresh session, after a
 someone else.
 
 ```
-   /iyu:backlog-discover ──proposes──▶  ROADMAP.md  ──▶ /iyu:run-cycle ──▶ /iyu:handoff ──▶ /iyu:ship
-     what's worth doing?                what's left      build & verify     close out &      take it out
-             ▲                                                             re-order          & watch CI
-             │                                                                                    │
-             └────────────────── /iyu:telemetry-az ◀── what production says ◀─────────────────────┘
+   /iyu:backlog-discover ──proposes──▶  ROADMAP.md  ──▶ /iyu:resume ──▶ /iyu:run-cycle ──▶ /iyu:handoff ──▶ /iyu:ship
+     what's worth doing?                what's left      open & decide    build & verify     close out &      take it out
+             ▲                                                                                re-order          & watch CI
+             │                                                                                                     │
+             └────────────────── /iyu:telemetry-az ◀── what production says ◀──────────────────────────────────────┘
                                   defects → issues → back into the backlog
 ```
+
+`/iyu:resume` also reads the `HANDOFF.md` the previous `/iyu:handoff` left, not just `ROADMAP.md` —
+that is where the loop actually closes: `handoff` flags a decision at close, `resume` briefs and
+settles it at the next open.
 
 You do not need all of it. **Start with two:**
 
@@ -71,7 +75,8 @@ you feel the specific need.
 | Reach for | What it does | When |
 |---|---|---|
 | `/iyu:run-cycle [N]` | Re-plan → execute → verify → reflect → derive next, N times | You have work to do. `N` is a ceiling, not a target — it stops early when the backlog is genuinely done |
-| `/iyu:handoff` | Rewrites the continuity docs, derives next scope, re-orders what's left, briefs your decisions with options + a recommendation | You're stopping, or the docs no longer match reality |
+| `/iyu:handoff` | Rewrites the continuity docs, derives next scope, re-orders what's left, **flags** pending decisions for `/iyu:resume` to brief | You're stopping, or the docs no longer match reality |
+| `/iyu:resume` | Reads `HANDOFF.md`/`ROADMAP.md`, **briefs** the decisions handoff flagged with options + a recommendation, records the pick immediately | You're opening a session and a `HANDOFF.md` already exists |
 | `/iyu:ship` | Bump → commit → push → watch CI to completion | A phase is finished and ready to leave the machine. Asks first whether now is the moment |
 | `/iyu:backlog-discover` | Research playbook → diagnosis, ranking, staged proposal | The backlog is running dry, or `run-cycle` reported the frontier exhausted |
 | `/iyu:telemetry-az` | Reads Azure App Insights, files issues for threshold-crossing findings | Periodically, to let production tell you what's actually broken |
@@ -128,10 +133,26 @@ completed work into the `HISTORY.md` index, and derives the next scope. Reconstr
 from git and the continuity docs rather than from the conversation, so it still works after a
 compaction. Does not commit and does not implement.
 
-Decisions that are yours to make arrive **briefed like a team lead would brief them** — options with
-their real consequences, a cross-lens read (근본/정석/표준/세련/철학) of how the leading ones differ,
-and a recommendation stating what it locks in — instead of a question you have to research yourself.
-When nothing left needs you, the section simply says "None"; it never invents a decision to fill.
+Decisions that are yours to make are **flagged, not briefed** — one line naming the choice, nothing
+more. Briefing it (options, a cross-lens read, a recommendation) is `/iyu:resume`'s job, done fresh
+right before someone is actually about to act on it rather than produced now and left to stale. When
+nothing left needs you, the section simply says "None"; it never invents a decision to fill.
+
+##### /iyu:resume
+
+```bash
+# Open the session: confirm state, brief and settle every flagged decision
+/iyu:resume
+```
+
+Reads `HANDOFF.md`/`ROADMAP.md` as they stand — no git-log reconstruction, no hygiene pass, nothing
+migrated to `HISTORY.md`; that stays entirely `/iyu:handoff`'s job. Presents in-flight/next for
+confirmation, then **briefs** each decision handoff only flagged — options with their real
+consequences, a cross-lens read (근본/정석/표준/세련/철학) of how the leading ones differ, and a
+recommendation stating what it locks in — grounded in the repo as it stands right now. It is the one
+skill here whose whole point is to pause and wait: the instant an answer lands, it is written into
+`HANDOFF.md`'s "Decided this session" section immediately, so a session that ends before the next
+`/iyu:handoff` doesn't lose it.
 
 ##### /iyu:ship
 

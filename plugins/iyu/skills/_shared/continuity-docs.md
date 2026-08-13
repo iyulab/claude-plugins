@@ -1,8 +1,8 @@
 # Continuity docs — the shared contract
 
 **This file is the single definition** of where a project's dev-tracking documents live and what
-belongs in each. `run-cycle`, `handoff`, `backlog-discover`, and `telemetry-az` all read it. Copies
-of these rules inside individual skills drift apart; keep the definition here and link to it.
+belongs in each. `run-cycle`, `handoff`, `resume`, `backlog-discover`, and `telemetry-az` all read it.
+Copies of these rules inside individual skills drift apart; keep the definition here and link to it.
 
 (`_shared/` holds no `SKILL.md`, so it is reference material, not a skill.)
 
@@ -15,7 +15,7 @@ Every artifact below lives **together in one directory**, the *continuity root* 
 | Artifact | Path | Written by |
 |---|---|---|
 | Phase backlog (remaining work) | `<root>/ROADMAP.md` | run-cycle, handoff |
-| Handoff (current + next) | `<root>/HANDOFF.md` | run-cycle, handoff |
+| Handoff (current + next) | `<root>/HANDOFF.md` | run-cycle, handoff — plus `resume`, which only ever appends to its `## Decided this session` section |
 | Completed-work index | `<root>/HISTORY.md` | run-cycle, handoff |
 | Cycle logs | `<root>/cycle-logs/cycle-{NN}.md` | run-cycle |
 | End-of-Run Report | `<root>/cycle-logs/RUN-SUMMARY-{YYYY-MM-DD}.md` | run-cycle |

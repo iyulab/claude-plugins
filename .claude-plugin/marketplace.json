@@ -12,8 +12,8 @@
     {
       "name": "iyu",
       "source": "./plugins/iyu",
-      "description": "Productivity toolkit for library maintainers - adaptive iterative development cycles, session handoff and continuity-doc upkeep, conversational issue/PR triage, telemetry-driven issue discovery, and owner-manager backlog discovery that inspects what already exists (dependency currency, project configuration, docs and repo hygiene) while diagnosing, ranking, and staging new candidates with project philosophy alignment",
-      "version": "1.31.0",
+      "description": "Productivity toolkit for library maintainers - adaptive iterative development cycles, session handoff/resume and continuity-doc upkeep, conversational issue/PR triage, telemetry-driven issue discovery, and owner-manager backlog discovery that inspects what already exists (dependency currency, project configuration, docs and repo hygiene) while diagnosing, ranking, and staging new candidates with project philosophy alignment",
+      "version": "1.32.0",
       "author": {
         "name": "iyulab"
       },
@@ -54,6 +54,7 @@
         "maintenance",
         "housekeeping",
         "handoff",
+        "resume",
         "session-continuity",
         "roadmap-hygiene",
         "release",
