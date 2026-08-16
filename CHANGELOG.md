@@ -8,6 +8,27 @@ bugs or docs. MAJOR is never bumped automatically.
 > History is reconstructed from git from v1.11.0 onward. Earlier versions live in
 > the git log only.
 
+## [1.34.0] — 2026-08-16
+
+Usage feedback: `/iyu:resume` was proceeding straight into implementation once decisions were
+answered, collapsing the boundary with `/iyu:run-cycle` it was designed to keep. Separately, it only
+replayed `## In flight`/`## Next` as written, even when circumstances had visibly moved past what the
+docs still assumed — leaving reprioritization, missing prerequisites, and questionable plan items for
+someone to catch by hand.
+
+### Changed
+
+- **`/iyu:resume` no longer starts the work.** Step 6 ("Start the work") is replaced with a hard stop:
+  the skill ends at a settled, confirmed scope and never proceeds into implementation on its own.
+  Starting the work is a separate, explicit instruction or `/iyu:run-cycle`.
+- **`/iyu:resume` now synthesizes instead of replaying.** Step 3 applies judgment to `## In
+  flight`/`## Next` against current state (git log/status, `HISTORY.md` tail, recent memory): it
+  proposes reordering when recorded priority no longer fits, derives prerequisites the plan is
+  missing, and objects to items that no longer look reasonable — all as proposals, not silent edits.
+  A proposal that rises to decision-class is briefed the same as a handoff-flagged one (step 4); a
+  confirmed reorder is recorded in `HANDOFF.md`'s "Decided this session" for the next `/iyu:handoff` to
+  apply to `ROADMAP.md` — resume still never writes `ROADMAP.md` directly.
+
 ## [1.33.0] — 2026-08-14
 
 ### Changed

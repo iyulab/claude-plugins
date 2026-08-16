@@ -27,7 +27,7 @@ Productivity toolkit for open-source library maintainers and developers.
 | **Issue & PR Triage** | Skill | Auto | Conversational triage advice with decision matrices, response templates, and tone rules |
 | `/iyu:run-cycle` | Skill | Manual | Iterative development cycles with Stop hook |
 | `/iyu:handoff` | Skill | Manual + model-invoked | Session closeout — continuity-doc upkeep, next scope, re-ordering, decisions flagged (not briefed) for `/iyu:resume` |
-| `/iyu:resume` | Skill | Manual + model-invoked | Session opener — reads the continuity docs, briefs the decisions handoff flagged with options + a recommendation, records the pick immediately |
+| `/iyu:resume` | Skill | Manual + model-invoked | Session opener — reads the continuity docs and current state, synthesizes/reprioritizes, briefs flagged and derived decisions with options + a recommendation, records the pick immediately, stops before execution |
 | `/iyu:ship` | Skill | Manual | Version bump → commit → push → CI watch, gated on whether now is the moment |
 | `/iyu:telemetry-az` | Skill | Manual | Azure App Insights telemetry triage, issue discovery + run-over-run user analytics |
 | `/iyu:backlog-discover` | Skill | Manual | Playbook-driven backlog discovery + diagnose/rank/stage — proposal only, never auto-merges |
@@ -128,29 +128,35 @@ Open a session from the files `/iyu:handoff` left, instead of re-deriving the sa
 /iyu:resume "decisions"  # narrow to just the decisions
 ```
 
-Reads `HANDOFF.md`/`ROADMAP.md` as they stand — no git-log reconstruction, no hygiene pass, no
+Reads `HANDOFF.md`/`ROADMAP.md` as they stand, plus enough current state (git log/status, `HISTORY.md`
+tail, recent memory) to judge whether they still hold — no cycle-log reading, no hygiene pass, no
 migrating anything to `HISTORY.md`; that stays `/iyu:handoff`'s job entirely, so running both is two
-different jobs, not double work. It presents "In flight" and "Next" for confirmation, split into 코드
-작업 / 비코드 작업 (flagging staleness if the tree has moved since the last handoff; an empty "Next"
-gets a pointer to `/iyu:backlog-discover`, not an invocation), then **briefs** every decision
-`/iyu:handoff` only flagged: grounded options, the cross-lens read (근본/정석/표준/세련/철학), and a
-named recommendation with what it locks in — the same shape `/iyu:handoff` used to produce at close,
-done here instead, fresh, at the moment someone is actually about to act on it. That code/non-code
-split also drives the reversibility read: a code decision defaults toward self-decide once a
-recommendation exists, while a non-code decision touching something central policy already gates on a
-human (push, a GitHub issue registration, a major-version bump, publish) stays briefed regardless of
-confidence. A self-decided entry doesn't disappear — it's surfaced alongside the briefing (decision ·
-trade-off · to correct) for a quick "anything different?" look, confirm-not-approval, and recorded the
-same as an answered decision.
+different jobs, not double work. It applies judgment to what it read, not just replaying it: reorder
+"Next" when the recorded priority no longer fits current state, derive prerequisites the plan is
+missing, and object to anything that no longer looks reasonable — presented as proposals, split into
+코드 작업 / 비코드 작업 (flagging staleness if the tree has moved since the last handoff; an empty
+"Next" gets a pointer to `/iyu:backlog-discover`, not an invocation — synthesis reorders known work, it
+doesn't discover unscoped work). It then **briefs** every decision-class item, whether flagged by
+`/iyu:handoff` or raised by its own synthesis: grounded options, the cross-lens read
+(근본/정석/표준/세련/철학), and a named recommendation with what it locks in. That code/non-code split
+also drives the reversibility read: a code decision defaults toward self-decide once a recommendation
+exists, while a non-code decision touching something central policy already gates on a human (push, a
+GitHub issue registration, a major-version bump, publish) stays briefed regardless of confidence. A
+self-decided entry doesn't disappear — it's surfaced alongside the briefing (decision · trade-off · to
+correct) for a quick "anything different?" look, confirm-not-approval, and recorded the same as an
+answered decision.
 
-**It is the only skill in this plugin whose entire point is to pause and wait.** Every decision-class
-entry gets an answer before work starts — and the instant one lands, it is written into `HANDOFF.md`'s
-"Decided this session" section immediately, not left for the next `/iyu:handoff` to reconstruct from a
-git diff that might not even show it. That immediate write-back is what keeps a decision from being
-lost if the session ends, or compacts, before the next handoff runs.
+**It is the only skill in this plugin whose entire point is to pause and wait — and then stop.** Every
+decision-class entry gets an answer before the session-opening work is called done — and the instant
+one lands, it is written into `HANDOFF.md`'s "Decided this session" section immediately, not left for
+the next `/iyu:handoff` to reconstruct from a git diff that might not even show it (a confirmed reorder
+lands there too, for the next handoff to apply to `ROADMAP.md`). That immediate write-back is what
+keeps a decision from being lost if the session ends, or compacts, before the next handoff runs. Once
+the scope is settled, `/iyu:resume` stops — it never proceeds into implementation on its own; starting
+the work is a separate, explicit instruction or `/iyu:run-cycle`.
 
 Like `/iyu:handoff`, this is safe to self-invoke on a narrow signal (a fresh session with no stated
-task and an existing `HANDOFF.md`) — it only reads and appends one decision record, never implements.
+task and an existing `HANDOFF.md`) — it proposes and decides but never implements.
 
 ### /iyu:ship
 

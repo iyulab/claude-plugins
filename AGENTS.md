@@ -82,7 +82,7 @@ the user-facing description. Read the skill file before changing a skill.
 | `issue-triage` | Auto-activating decision matrices for issue/PR triage discussions | — |
 | `/iyu:run-cycle [N]` | Adaptive cycles: re-plan → design → execute → verify → reflect → derive-next, `N` a ceiling | capable **employee** |
 | `/iyu:handoff` | Session closeout: continuity docs, next scope, re-ordering, decisions *flagged* (not briefed) | capable **team lead** |
-| `/iyu:resume` | Session opener: reads what handoff left, *briefs* flagged decisions, records the pick immediately | the one **picking up the memo** |
+| `/iyu:resume` | Session opener: reads what handoff left, synthesizes/reprioritizes against current state, *briefs* flagged and derived decisions, records the pick immediately, then stops short of execution | capable **employee opening the session** |
 | `/iyu:ship` | Bump → commit → push → watch CI → publish, each stage stoppable | — |
 | `/iyu:backlog-discover` | Research playbook → diagnosis, ranking, staged proposal (never auto-merged) | capable **owner-manager** |
 | `/iyu:telemetry-az` | App Insights triage: defect issues + report-only usage trends | capable **analyst** |
