@@ -16,6 +16,7 @@ Every artifact below lives **together in one directory**, the *continuity root* 
 |---|---|---|
 | Phase backlog (remaining work) | `<root>/ROADMAP.md` | run-cycle, handoff |
 | Handoff (current + next) | `<root>/HANDOFF.md` | run-cycle, handoff — plus `resume`, which only ever appends to its `## Decided this session` section |
+| Cross-session thread ledger | `<root>/STRANDS.md` | run-cycle (per-cycle update) — handoff (compression, via §3) |
 | Completed-work index | `<root>/HISTORY.md` | run-cycle, handoff |
 | Cycle logs | `<root>/cycle-logs/cycle-{NN}.md` | run-cycle |
 | End-of-Run Report | `<root>/cycle-logs/RUN-SUMMARY-{YYYY-MM-DD}.md` | run-cycle |
@@ -67,6 +68,26 @@ grow monotonically until "what's left?" is buried under "what's done".
 | `ROADMAP.md` | Phase-level directions, remaining only. Known unknowns and investigation needs | Completed phases. **Cycle numbers** — it is a backlog, not an itinerary |
 | `HANDOFF.md` | What is in flight and what comes next, anchored to backlog phases | Past-session narrative. Anything already done |
 | `HISTORY.md` | A pure index, newest first, one compressed entry per completed phase | Detail — cycle logs and git history are the record |
+| `STRANDS.md` | Which dominant strand each cycle served, and interruption/resume transitions | Task detail (cycle logs own that), issues (issues/ owns that), completed-work narrative (HISTORY.md owns that), a session's current-vs-next snapshot (HANDOFF.md owns that — STRANDS.md is the cumulative cross-session record HANDOFF.md deliberately does not keep) |
+
+A **strand** is identified by the concern it serves (a `ROADMAP.md` phase title, or a short ad-hoc
+label for off-roadmap work like `"사용자 요청: 로그인 버그 긴급 수정"`), not by the *kind* of work a
+cycle did — the same strand can be advanced by a bugfix, a phase push, a discussion/decision, or a
+docs cycle. `STRANDS.md` format:
+
+```markdown
+# STRANDS
+> History: [HISTORY.md](HISTORY.md)
+
+## 진행 중
+- {strand} — 시작: {date} cycle-{MM}, 최근: {date} cycle-{NN} (누적 {k} cycle)
+
+## 중단됨 (복귀 검토 후보)
+- {strand} — 마지막: {date} cycle-{NN} — 전환 사유: "{한 줄: 무엇으로 전환했는지}"
+
+## 완료·졸업 (HISTORY.md 참조, 압축됨)
+- {strand} — {date range}
+```
 
 `HISTORY.md` entry format:
 
@@ -87,9 +108,14 @@ Apply whenever continuity docs are written — every `run-cycle` STEP 5, every `
    it; deep dives start at the index and follow the reference.
 3. **Rewrite `HANDOFF.md` to current + next only** (if the project keeps one). Past-session
    narrative is dropped, not accumulated.
-4. **Link line** — keep `> History: [HISTORY.md](HISTORY.md)` at the top of each continuity doc
+4. **Compress `STRANDS.md`.** Drop `## 완료·졸업` entries beyond a small recent window — `HISTORY.md`
+   already holds the durable record, this is not a second index of it. Leave `## 중단됨` entries in
+   place until either resumed (moved back to `## 진행 중` by a later `run-cycle`) or explicitly
+   retired by a `backlog-discover` `dormant-strand-review` verdict — hygiene never silently drops an
+   open `## 중단됨` entry on its own.
+5. **Link line** — keep `> History: [HISTORY.md](HISTORY.md)` at the top of each continuity doc
    (create on first migration) so history stays one hop away.
-5. **Size signal (soft)** — a continuity doc still long (~200+ lines) *after* migration means detail
+6. **Size signal (soft)** — a continuity doc still long (~200+ lines) *after* migration means detail
    is living at the wrong layer: split phase detail into `<root>/plans/` and leave links. A judgment
    signal, not a hard rule.
 
@@ -107,6 +133,13 @@ Both `run-cycle`'s STEP 5 and `handoff` answer "what comes next?". The sources, 
    lenses: **user** (what would they now expect or hit?), **developer/maintainer** (what did it
    leave brittle, duplicated, or untested?), **operator** (what does running this now require?).
 4. **The phase backlog** — the next-most-valuable unblocked phase.
+
+`STRANDS.md`'s `## 중단됨` section is a fifth, narrower source: a strand interrupted recently enough
+to still be worth a quick "resume this now?" check belongs here, surfaced the same way as any other
+known-but-reordered work — it is not new discovery. A strand that has stayed interrupted for a long
+time (multiple `backlog-discover` cadences) is no longer this section's concern; it is
+`backlog-discover`'s `dormant-strand-review` (see that skill's SKILL.md), which closes with a
+reignite/shrink/retire verdict rather than a scheduling nudge.
 
 Classify every emergent candidate before proposing it:
 
