@@ -310,7 +310,7 @@ This step has two jobs: (a) record what cannot be resolved autonomously, and (b)
   release goes *after* it, since publishing mid-phase buys a version the next few items obsolete and
   each pushed pipeline spends a shared CI budget. The outcome is a **reordered `ROADMAP.md`** with a
   one-line reason at the marker (§4), not a note. Log the move under Roadmap Revisions
-- **Continuity-doc hygiene (every cycle, unconditional)**: Apply **Continuity-Doc Hygiene** (section below) — migrate every completed phase/item found in `ROADMAP.md` (and `HANDOFF.md`, if the project keeps one) to `HISTORY.md`, and keep the handoff current + next only. Runs even when nothing else in the roadmap changed.
+- **Continuity-doc hygiene (every cycle, unconditional)**: Apply **Continuity-Doc Hygiene** (section below) — migrate every completed phase/item found in `ROADMAP.md` (and `HANDOFF.md`, if the project keeps one) to `HISTORY.md`, keep the handoff current + next only, and update `STRANDS.md` (see below). Runs even when nothing else in the roadmap changed.
 - **Next-Cycle Scope**: This is where the next cycle is actually planned — concretely, for **one** cycle only. Draw it from three sources in priority order: (1) inherited / this-cycle Carry-Forward defects, (2) mid-cycle discoveries (a problem too large for this cycle, or one deserving its own), (3) the highest-value **autonomous-eligible Emergent Next Capability**. Only when all three are empty — feature frontier explicitly judged exhausted — does Next-Cycle Scope become "none", handing off to the value ladder. Do **not** scope cycle+2 and beyond — those stay phase-level in the backlog until their predecessor's STEP 5 reaches them.
 
 **Do NOT carry forward defects that could have been fixed in STEP 4.** If you can fix it, fix it now.
@@ -331,6 +331,24 @@ runs the same pass; that is why it lives in one file.
 Two things specific to running it inside a cycle: `HISTORY.md` entries carry this run's `(cycle-NN)`
 as their reference, and hygiene **never gates termination** — it is doc upkeep inside STEP 5 and the
 doc-sync floor, not a completion criterion, and it adds nothing to the Stop-hook logic.
+
+**`STRANDS.md` update (every cycle, unconditional).** Per
+[continuity-docs.md](${CLAUDE_SKILL_DIR}/../_shared/continuity-docs.md)'s `STRANDS.md` contract:
+
+1. Name the strand this cycle predominantly served — usually the `ROADMAP.md` phase it advanced, or
+   a short ad-hoc label if it departed from one (e.g. an urgent user request).
+2. If it matches the current `## 진행 중` entry: increment its cumulative cycle count and update
+   `최근` to this cycle.
+3. If it differs from the current `## 진행 중` entry: move that entry to `## 중단됨`, recording this
+   cycle's strand name as the one-line transition reason; start a new `## 진행 중` entry for this
+   cycle's strand (시작 = this cycle).
+4. If this cycle resumes a strand currently listed under `## 중단됨`: move it back to `## 진행 중`,
+   keeping its original 시작 date and adding this cycle to its cumulative count.
+5. If this cycle's `## 진행 중` strand reaches completion (its `ROADMAP.md` phase migrates to
+   `HISTORY.md` this same STEP): move its `STRANDS.md` entry to `## 완료·졸업` as one line with the
+   date range — the same migration `HISTORY.md` just received, recorded in both places.
+
+Create `STRANDS.md` with just the `# STRANDS` header and empty sections if it does not exist yet.
 
 ---
 
