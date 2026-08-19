@@ -43,7 +43,8 @@ ask.
 
 Read `<root>/HANDOFF.md` and `<root>/ROADMAP.md` as they stand. Then ground judgment in current
 state, not just the doc text: `git status` / `git log -1` since the last handoff, the tail of
-`HISTORY.md` for what actually shipped, and recent memory (`MEMORY.md` and relevant memory files)
+`HISTORY.md` for what actually shipped, `<root>/STRANDS.md`'s `## 중단됨` section (if the file
+exists) for anything recently sidelined, and recent memory (`MEMORY.md` and relevant memory files)
 touching this root. This is not `/iyu:handoff`'s evidence reconstruction — no cycle-log reading, no
 hygiene pass, no migrating anything to `HISTORY.md`. Those stay `/iyu:handoff`'s job; this read grounds
 step 3's judgment in what changed since, it does not redo the archaeology.
@@ -58,6 +59,14 @@ Don't just replay `## In flight` / `## Next` as written — apply judgment to wh
 - **Flag staleness.** If `## In flight` describes something half-done but the tree is clean, or the
   last commit contradicts what `## Next` assumes, say so before presenting either — a stale doc handed
   over silently defeats the point of resuming from it.
+- **Surface a recent interruption.** If `STRANDS.md`'s `## 중단됨` has an entry interrupted within
+  roughly the last session (freshest `마지막` entry relative to `HANDOFF.md`'s own last-updated
+  date), mention it as an objection-style flag — "want to resume `{strand}` now, or keep the current
+  order?" — using the same reasoning as any other objection in this step. This is not new discovery
+  (rule 9): the strand is already-known, already-scoped work being reordered, not scoped from
+  scratch. An entry that has stayed interrupted far longer than one session is not this skill's
+  concern — that is `/iyu:backlog-discover`'s `dormant-strand-review`, which judges reignite vs.
+  retire with evidence rather than a scheduling nudge.
 - **Reorder** when the recorded priority no longer fits current state (a dependency landed, a blocker
   resolved, an external deadline shifted) — present the proposed order next to the recorded one, with
   the reason.
