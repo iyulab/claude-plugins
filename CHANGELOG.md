@@ -8,6 +8,35 @@ bugs or docs. MAJOR is never bumped automatically.
 > History is reconstructed from git from v1.11.0 onward. Earlier versions live in
 > the git log only.
 
+## [1.35.0] — 2026-08-19
+
+Usage feedback: `/iyu:backlog-discover` was producing only 1-2 items per run, even on the exact
+condition (an empty backlog) meant to trigger a fuller reassessment — the dry-backlog "deepen ladder"
+stopped at the first lane that produced anything, and nothing tracked whether in-flight or interrupted
+work was quietly stalling or drifting apart from the rest of the backlog.
+
+### Added
+
+- **`STRANDS.md`**, a new continuity artifact tracking which dominant strand of work each cycle
+  serves, across sessions — written by `/iyu:run-cycle` every cycle, read by `/iyu:resume` (recent
+  interruptions) and `/iyu:backlog-discover` (long-stale ones). Compressed by the existing
+  continuity-doc hygiene pass; a strand only retires once a human reviews and accepts a
+  `dormant-strand-review` verdict — nothing auto-retires.
+- **Two new `/iyu:backlog-discover` activities**: `strand-deepening` investigates the surface around a
+  strand that's stayed active without finishing; `dormant-strand-review` judges reignite /
+  shrink-and-resume / retire for a strand that's stayed interrupted well past normal cadence.
+- **A self-correcting temporal-axis balance check** (past/present/future), derived automatically from
+  each activity's own nature rather than a manual tag, so the two activities above never crowd out
+  vision-pulling ones like `vision-gap` or `working-backwards`.
+
+### Changed
+
+- **`/iyu:backlog-discover`'s dry-backlog trigger now forces a full four-lane sweep** instead of
+  stopping at the first lane with material — an empty backlog is exactly the condition where search
+  should widen, not narrow. Steady-state (cadence-driven) behavior is unchanged.
+- **Every discovery proposal now requires all three horizons (now/next/later) populated or explicitly
+  explained**, with the near horizon staying concrete and the far horizon allowed to stay directional.
+
 ## [1.34.0] — 2026-08-16
 
 Usage feedback: `/iyu:resume` was proceeding straight into implementation once decisions were
