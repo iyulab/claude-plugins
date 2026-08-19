@@ -18,6 +18,7 @@ reviews this file and asks explicitly for selected items to be merged.
 - 재발견 항목: {n}건 — {이전 제안서에서 이어받아 증거만 누적한 항목 수, 없으면 "없음"}
 - 가치축 균형: 비즈니스 {n} / 기술건전성 {n} / 사용자요청 {n} — {한 축이 지난 3회 실행 대비 현저히 낮으면 치우침 경고}
 - 탐구축 균형: SW기술 {n} / 도메인전문 {n} — {한 축이 0이거나 1/4 미만이면 편중 명시 + 왜 비었는지(활동 미도래/신호 부재/미시도)}
+- 시간축 균형: 과거정리 {n} / 현재위치 {n} / 미래견인 {n} — {미래견인이 과거+현재+미래 합의 1/4 미만이면 치우침 경고}
 
 ## 현재 상태 진단
 
@@ -38,7 +39,10 @@ reviews this file and asks explicitly for selected items to be merged.
 | 다음 | {제목} | {n.n} | {1~5} | {…} | {비용 높음이면 분해안 링크} |
 | 나중 | {제목} | {n.n} | {1~5} | {…} | {지금 하지 않는 이유 1줄} |
 
-- 배치를 덮어쓴 제약: {의존 우선 / 증거 하한(강도 1~2) / 되돌리기 불가 → Discussion / 축 편중 — 적용된 것만}
+> 지금/다음/나중 각 지평은 최소 한 항목이 있거나 비어 있는 이유가 한 줄로 적혀 있어야 한다
+> (synthesis-rubric.md §③ 제약 6).
+
+- 배치를 덮어쓴 제약: {의존 우선 / 증거 하한(강도 1~2) / 되돌리기 불가 → Discussion / 축 편중(가치·탐구·시간) / 지평 미채움 사유 — 적용된 것만}
 - 순환 의존으로 새로 세운 항목: {있으면 항목명, 없으면 "없음"}
 
 ## 발굴 항목
@@ -83,6 +87,10 @@ reviews this file and asks explicitly for selected items to be merged.
   evidence instead.
 - The 단계 구성 horizons (`지금`/`다음`/`나중`) are an **ordering**, never a schedule, and
   never grant merge eligibility — see the note below on 분류.
+- Every horizon must be non-empty or carry a one-line reason why not — see synthesis-rubric.md §③
+  제약 6. 지금 stays concrete; 다음/나중 may be stated as direction rather than scoped work.
+- 시간축(과거/현재/미래) is derived automatically from source activity (SKILL.md P4) — do not ask
+  for a manual tag per item; the summary line aggregates it from each item's 출처 활동.
 - "예상 규모" must stay phase-level (a direction, not a cycle count) — this mirrors
   `run-cycle`'s rule that only the *current* cycle is ever concretely scoped; a discovery
   proposal is even further upstream than that.
