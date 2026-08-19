@@ -199,9 +199,13 @@ Conflating the two would make the ladder unreachable: an always-running first ru
 almost always yields something, combined with stop-at-first-material, means the deeper lanes
 are never descended at all.
 
-**Dry-backlog deepen ladder — engaged when the floor yields little.** Dig into progressively
-deeper (and more expensive) lanes in this order, forcing the named activities due for this
-run regardless of their cadence, and stopping at the first lane that produces material:
+**Dry-backlog deepen ladder — engaged when the floor yields little.** The trigger condition
+(backlog running dry) is exactly the case where search should widen, not narrow — so on
+engagement, force **all four lanes below, plus `vision-gap`, due for this run regardless of
+their individual cadence.** This deliberately differs from steady-state behavior (cadence governs
+alone, per the schema note above): the "twenty shallow lanes" cost concern that governs steady
+state does not apply here, because this mode only engages on the documented dry-backlog trigger,
+not on every invocation.
 
 | Lane | Force due | Question it answers |
 |---|---|---|
@@ -210,11 +214,11 @@ run regardless of their cadence, and stopping at the first lane that produces ma
 | ③ 지식 (기술 + 도메인 양축) | `research-scan`, `domain-practice` → `appropriate-tech` | 이미 풀린 문제를 자체 발명으로 때우고 있지 않은가, 이 주제 영역의 현재 방법론에 비추어 우리 접근이 타당한가, 그 기술이 우리에게 맞는가 |
 | ④ 시장 | `benchmarking` → `positioning-review` | 우리는 어디에 서 있고, 그 자리가 여전히 맞는가 |
 
-Record in the proposal which lanes were descended and why. Only after lane ④ also comes up
-empty is "이번 주기에는 도출할 항목이 없음" a grounded verdict rather than an unexamined one —
-and even then, the P6 diagnosis is still written. An empty backlog means "use the product,
-inspect what you own, then check the debt, the theory, and the position", never
-"nothing to do".
+Record in the proposal which lanes were forced and what each produced (including "empty").
+Only after all four lanes come up empty is "이번 주기에는 도출할 항목이 없음" a grounded verdict
+rather than an unexamined one — and even then, the P6 diagnosis is still written. An empty
+backlog means "use the product, inspect what you own, then check the debt, the theory, and the
+position", never "nothing to do".
 
 ### P2: Symptom diagnosis (selects the emergent-pool activities to run alongside P1's due set)
 
