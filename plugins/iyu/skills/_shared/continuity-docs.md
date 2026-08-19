@@ -16,7 +16,7 @@ Every artifact below lives **together in one directory**, the *continuity root* 
 |---|---|---|
 | Phase backlog (remaining work) | `<root>/ROADMAP.md` | run-cycle, handoff |
 | Handoff (current + next) | `<root>/HANDOFF.md` | run-cycle, handoff — plus `resume`, which only ever appends to its `## Decided this session` section |
-| Cross-session thread ledger | `<root>/STRANDS.md` | run-cycle (per-cycle update) — handoff (compression, via §3) |
+| Cross-session thread ledger | `<root>/STRANDS.md` | run-cycle, handoff |
 | Completed-work index | `<root>/HISTORY.md` | run-cycle, handoff |
 | Cycle logs | `<root>/cycle-logs/cycle-{NN}.md` | run-cycle |
 | End-of-Run Report | `<root>/cycle-logs/RUN-SUMMARY-{YYYY-MM-DD}.md` | run-cycle |
