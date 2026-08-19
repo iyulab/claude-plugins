@@ -48,6 +48,32 @@ proposal pile grows without any of the documents referring to each other. The sk
 that problem once, for technology candidates (`appropriate-tech`'s recorded `기각`/`보류` verdicts,
 rule 9); P2.5 + P4 extend the same discipline to ordinary items.
 
+## Why the dry-backlog ladder became a full sweep, not a rewrite of the cost concern
+
+The original ladder stopped at the first lane producing material, reasoning that deeper lanes cost
+more and recoup slower. That reasoning is still correct **in steady state** — most invocations are
+cadence-gated and should not touch all twenty activities. It stopped being correct specifically at
+the dry-backlog trigger, because that trigger *is* the signal that the shallow, cheap lanes
+(dogfooding's always-floor, whatever cadence happens to be due) already came back thin — continuing
+to optimize for "cheapest lane that satisfies" at that exact point converts the deepen-signal into a
+minimum-effort exit. The fix is a mode split, not a repeal: dry-backlog forces the full ①–④ +
+`vision-gap` sweep; every other invocation still obeys cadence and the original cost reasoning holds
+unchanged. This is why the fix lives in the ladder's *trigger condition*, not in its per-lane cost
+ordering — the ordering (cheapest first) is still the right order to run the four lanes *in*, once
+running all of them is the decision.
+
+## Why `STRANDS.md` is a new artifact instead of mined from `git log` / cycle-logs each run
+
+`backlog-discover`'s existing symptom heuristics already mine `git log` and cycle-logs for some
+signals (e.g. "장기 방향이 흐릿하다"'s repeated-phase-name check). Detecting a stuck-in-flight or
+quietly-abandoned strand needs the same kind of signal, but cheaply and reliably across many
+sessions — re-deriving "which strand did each of the last N cycles serve, and when did the active
+one change" from raw git/cycle-log text each run gets more expensive and more fragile as project
+history grows, and duplicates work `run-cycle` already does at STEP 5 (it already knows which
+`ROADMAP.md` phase, or which ad-hoc reason, this cycle served). Writing a two-line-per-transition
+ledger once, at the point that already has the answer, is the same "one skill writes, another reads"
+precedent `telemetry-az` already established for `<root>/telemetry/`.
+
 ## Why `allowed-tools` includes unscoped Bash
 
 Matching `run-cycle`: activities span arbitrary project-specific commands (outdated/audit tooling,
