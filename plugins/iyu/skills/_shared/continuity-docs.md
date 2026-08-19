@@ -89,6 +89,10 @@ docs cycle. `STRANDS.md` format:
 - {strand} — {date range}
 ```
 
+Every other reference to these sections, in any file, uses the short prefix shown above without
+the parenthetical (`## 진행 중` / `## 중단됨` / `## 완료·졸업`) — this is the established
+convention, not an inconsistency; only this canonical template carries the full descriptive text.
+
 `HISTORY.md` entry format:
 
 ```
