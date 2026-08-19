@@ -78,6 +78,8 @@ wrote. A divergent root turns both into silent no-ops.
     "issue-community":         { "cadence": "always",      "lastRunUtc": null },
     "dogfooding":              { "cadence": "always",      "lastRunUtc": null, "scenariosRun": [] },
     "stewardship-check":       { "cadence": "sprint",      "lastRunUtc": null },
+    "strand-deepening":         { "cadence": "sprint",      "lastRunUtc": null },
+    "dormant-strand-review":    { "cadence": "sprint",      "lastRunUtc": null },
     "code-audit":              { "cadence": "quarterly",   "lastRunUtc": null },
     "security-compliance":     { "cadence": "quarterly",   "lastRunUtc": null },
     "tooling-development":     { "cadence": "quarterly",   "lastRunUtc": null },
@@ -107,9 +109,13 @@ convention, and it is what lets P2's heuristics be a plain scan instead of a joi
 ```json
 { "runUtc": "...", "symptom": "기능만 쌓이고 제거가 없다", "selected": ["subtraction-session"],
   "itemCount": 7, "business": 3, "techHealth": 3, "userRequest": 1,
-  "swTech": 6, "domain": 1, "lastItemSeq": 7 }
+  "swTech": 6, "domain": 1, "past": 5, "present": 1, "future": 1, "lastItemSeq": 7 }
 ```
 
+- `past` / `present` / `future` — per-run **시간축(temporal-axis)** counts (P4), derived
+  automatically from a static activity→axis mapping (P3's execution table), never hand-tagged.
+  This is what makes a "조사가 과거/현재 축에 편중" skew detectable across runs, the same way
+  `swTech`/`domain` already makes the SW/domain skew detectable.
 - `business` / `techHealth` / `userRequest` — per-run **value axis** counts (P4).
 - `swTech` / `domain` — per-run **inquiry axis** counts (P4). This is what makes the
   "SW 기술 축으로만 조사하고 있다" skew detectable across runs rather than only within one.
