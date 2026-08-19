@@ -113,7 +113,7 @@ convention, and it is what lets P2's heuristics be a plain scan instead of a joi
 ```
 
 - `past` / `present` / `future` — per-run **시간축(temporal-axis)** counts (P4), derived
-  automatically from a static activity→axis mapping (P3's execution table), never hand-tagged.
+  automatically from a static activity→axis mapping (P4), never hand-tagged.
   This is what makes a "조사가 과거/현재 축에 편중" skew detectable across runs, the same way
   `swTech`/`domain` already makes the SW/domain skew detectable.
 - `business` / `techHealth` / `userRequest` — per-run **value axis** counts (P4).
@@ -435,11 +435,11 @@ assumed value.
   `activities.dogfooding.scenariosRun` (trim to the last ~8) so the next run rotates to a
   fresh path.
 - Append **one** `history[]` entry for this run — `{ runUtc, symptom, selected, itemCount,
-  business, techHealth, userRequest, swTech, domain, lastItemSeq }` — and trim to the last 12
-  (matches `telemetry-az`'s `history[]` convention). One entry per run, never parallel arrays
-  needing a join.
+  business, techHealth, userRequest, swTech, domain, past, present, future, lastItemSeq }` — and trim
+  to the last 12 (matches `telemetry-az`'s `history[]` convention). One entry per run, never parallel
+  arrays needing a join.
 - Append one line to `<root>/backlog-discovery/INDEX.md`:
-  `{date} — {N} items ({business}/{techHealth}/{userRequest} · SW{swTech}/도메인{domain}), 지금 {n}건, symptom: {name-or-none}`
+  `{date} — {N} items ({business}/{techHealth}/{userRequest} · SW{swTech}/도메인{domain} · 과거{past}/현재{present}/미래{future}), 지금 {n}건, symptom: {name-or-none}`
   + a link to this run's proposal file. Create `INDEX.md` with a one-line header if it
   doesn't exist yet.
 
