@@ -249,6 +249,7 @@ alternate while 3–7 still starve. `history[]` keeps 12 entries, so a 3-run win
 | 아이디어 자체가 고갈됐다 | Both of the last 2 `history[]` entries have `itemCount` < 2. | `hackathon-exploration`, `cross-domain-borrowing`, `random-walk-reading`, `archive-mining` |
 | 진행 중 흐름이 미완/파편적 | `STRANDS.md`'s `## 진행 중` entry has an accumulated cycle count well past this project's typical phase length (derive "typical" from `HISTORY.md`'s recent completed-phase durations, and cite it) → symptom present. Skip this row (not "no match") if `STRANDS.md` does not exist yet. | `strand-deepening` |
 | 장기 흐름이 방치돼 있다 | `STRANDS.md`'s `## 중단됨` has an entry whose `마지막` cycle is stale well past this skill's own run cadence (i.e. `backlog-discover` has run again since without that strand being touched) → symptom present. Skip this row if `STRANDS.md` does not exist yet or `## 중단됨` is empty. | `dormant-strand-review` |
+| 미래 견인이 부족하다 (조사가 과거/현재 축에 편중) | Sum `past`, `present`, `future` across the last 3 `history[]` entries (or, if `history[]` is empty, this row cannot match yet). `future` is 0, or under a quarter of the three-way total → symptom present. | `vision-gap`, `working-backwards`, `sf-prototyping` |
 
 If no symptom matches, select the **1–2 oldest-untried** items from
 `emergentPool.rotationOrder` starting at `rotationPointer` (wrapping around the array),
@@ -355,6 +356,20 @@ Tag exactly one — forcing the judgment is the point. An all-`SW기술` proposa
 legitimate outcome only if the domain axis was actually examined and produced nothing;
 P6's diagnosis reports the split either way, and a persistent skew is what P2's
 "도메인 이해가 정체돼 있다" symptom detects.
+
+**시간축(temporal axis)** answers "does this run's activity mix pull toward the vision, or only
+tend what already exists" — derived automatically from a **static activity→axis mapping**, never a
+fourth manual tag (unlike value-axis and inquiry-axis, temporal orientation is strongly determined
+by *which activity* produced a finding, not by the finding's content):
+
+| 시간축 | 활동 |
+|---|---|
+| 과거(정리) | `stewardship-check`, `code-audit`, `security-compliance`, `tooling-development`, `sunset-review`, `subtraction-session`, `archive-mining`, `dormant-strand-review`, `strand-deepening` |
+| 현재(위치) | `benchmarking`, `positioning-review`, `usage-analytics`, `telemetry-observability`, `issue-community`, `domain-practice`, `roadmap-decomposition` |
+| 미래(견인) | `vision-gap`, `web-trend`, `research-scan`, `working-backwards`, `sf-prototyping`, `premortem`, `constraint-removal`, `dogfooding`, `appropriate-tech`, `inversion`, `cross-domain-borrowing`, `extreme-persona`, `hackathon-exploration`, `random-walk-reading`, `fresh-eyes-onboarding`, `ai-agent-usability`, `chaos-engineering`, `red-team`, `error-message-audit`, `dependency-horizon-scan` |
+
+Every activity id in the P3 table must appear in exactly one row above — this is a completeness
+requirement, not a suggestion; an activity added to P3 later must also be added here.
 
 ### P5: Philosophy alignment
 
