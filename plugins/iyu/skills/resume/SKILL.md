@@ -65,8 +65,8 @@ Don't just replay `## In flight` / `## Next` as written — apply judgment to wh
   order?" — using the same reasoning as any other objection in this step. This is not new discovery
   (rule 9): the strand is already-known, already-scoped work being reordered, not scoped from
   scratch. An entry that has stayed interrupted far longer than one session is not this skill's
-  concern — that is `/iyu:backlog-discover`'s `dormant-strand-review`, which judges reignite vs.
-  retire with evidence rather than a scheduling nudge.
+  concern — that is `/iyu:backlog-discover`'s `dormant-strand-review`, which judges reignite,
+  shrink-and-resume, or retire with evidence rather than a scheduling nudge.
 - **Reorder** when the recorded priority no longer fits current state (a dependency landed, a blocker
   resolved, an external deadline shifted) — present the proposed order next to the recorded one, with
   the reason.

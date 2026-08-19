@@ -238,7 +238,7 @@ first-match-wins means it would win every run forever, leaving rows 2–7 and th
 rotation pool as dead code. A one-run window is not enough either: rows 1 and 2 would simply
 alternate while 3–7 still starve. `history[]` keeps 12 entries, so a 3-run window is free.
 
-| Symptom | Heuristic (what to check) | Prescription (from playbook §6–10) |
+| Symptom | Heuristic (what to check) | Prescription (from playbook) |
 |---|---|---|
 | 기능만 쌓이고 제거가 없다 | Scan the last 8 `<root>/cycle-logs/cycle-*.md` (if present) plus `ROADMAP.md`'s revision history for any phase/entry describing removal, deprecation, or simplification. Zero found across ≥8 logs (or ≥8 `git log` entries touching `ROADMAP.md` if no cycle-logs exist) → symptom present. | `subtraction-session`, `sunset-review`, `inversion` |
 | 리스크 대비가 부족하다 | `state.json.activities.security-compliance.lastRunUtc` is null or its elapsed time is ≥ 2× its cadence, AND no recent cycle-log Reflection section mentions security/resilience/observability work. | `premortem`, `chaos-engineering`, `red-team` |
@@ -257,8 +257,9 @@ i.e. plain round-robin — this guarantees every pool item eventually runs even 
 diagnosed symptom.
 
 **Prescription target may be individually cadenced.** Several prescriptions are not in
-`emergentPool` — `sunset-review`, `premortem`, `sf-prototyping`, `archive-mining`,
-`research-scan`, `domain-practice`, `benchmarking`, `positioning-review` are tracked
+`emergentPool` — `vision-gap`, `sunset-review`, `premortem`, `sf-prototyping`, `archive-mining`,
+`research-scan`, `domain-practice`, `benchmarking`, `positioning-review`, `strand-deepening`,
+`dormant-strand-review` are tracked
 individually in `state.json.activities` with their own cadence (the same list P1 already
 due-checks). When a diagnosed symptom prescribes one of these, **treat the match as
 forcing it due this run regardless of its own elapsed time** — a diagnosed symptom is a
@@ -321,8 +322,8 @@ never fabricate the missing signal (mindset "no invention").
 | `fresh-eyes-onboarding` | Follow only the README/quickstart as a brand-new user would, noting every friction point without using prior codebase knowledge |
 | `ai-agent-usability` | Follow only the project's documented API/docs (no source-diving) to accomplish a representative task, noting where the docs alone were insufficient |
 | `dependency-horizon-scan` | Check declared dependencies' upstream release/commit cadence and maintainer count (via WebFetch to the package registry / repo) for decay signals |
-| `strand-deepening` | **Adjacent investigation around a specific stuck strand**, not a generic lane. Read the `STRANDS.md` `## 진행 중` entry's strand name, trace what it actually touches in the codebase (the `ROADMAP.md` phase text, related files/APIs via Glob/Grep), and investigate what's adjacent and unaddressed — the surface the stuck strand itself implies but hasn't reached. Cite the strand name and its cumulative cycle count as the evidence for why this ran |
-| `dormant-strand-review` | **Judgment, not discovery** — mirrors `appropriate-tech`'s "never leave a candidate un-judged" discipline. For each stale `STRANDS.md` `## 중단됨` entry: read what it was for (the `ROADMAP.md` phase or ad-hoc reason), check whether the strand that displaced it is itself now resolved or quiet, and rule `재점화` / `축소해서 재개` / `폐기`, each with a one-line reason. A `폐기` verdict is what allows `handoff`'s hygiene pass to later drop the entry — this activity is the only place that verdict gets made |
+| `strand-deepening` | **Guard first — only if actually stuck.** Skip-with-reason unless `STRANDS.md`'s `## 진행 중` entry's cumulative cycle count is already past this project's typical phase length (same test as the P2 row above — derive "typical" from `HISTORY.md` and cite it); a healthy in-flight strand is not a target. When the guard passes: **adjacent investigation around that specific stuck strand**, not a generic lane. Read the entry's strand name, trace what it actually touches in the codebase (the `ROADMAP.md` phase text, related files/APIs via Glob/Grep), and investigate what's adjacent and unaddressed — the surface the stuck strand itself implies but hasn't reached. Cite the strand name and its cumulative cycle count as the evidence for why this ran |
+| `dormant-strand-review` | **Judgment, not discovery** — mirrors `appropriate-tech`'s "never leave a candidate un-judged" discipline. For each stale `STRANDS.md` `## 중단됨` entry: read what it was for (the `ROADMAP.md` phase or ad-hoc reason), check whether the strand that displaced it is itself now resolved or quiet, and rule `재점화` / `축소해서 재개` / `폐기`, each with a one-line reason. A `폐기` verdict only takes effect once a human accepts it at P9 and removes the `STRANDS.md` entry by hand — this activity is the only place the verdict gets made, and P9 is the only place it gets applied; hygiene never infers a retirement from an unreviewed proposal |
 
 ### P4: Tag & de-duplicate
 
@@ -365,8 +366,8 @@ by *which activity* produced a finding, not by the finding's content):
 | 시간축 | 활동 |
 |---|---|
 | 과거(정리) | `stewardship-check`, `code-audit`, `security-compliance`, `tooling-development`, `sunset-review`, `subtraction-session`, `archive-mining`, `dormant-strand-review`, `strand-deepening` |
-| 현재(위치) | `benchmarking`, `positioning-review`, `usage-analytics`, `telemetry-observability`, `issue-community`, `domain-practice`, `roadmap-decomposition` |
-| 미래(견인) | `vision-gap`, `web-trend`, `research-scan`, `working-backwards`, `sf-prototyping`, `premortem`, `constraint-removal`, `dogfooding`, `appropriate-tech`, `inversion`, `cross-domain-borrowing`, `extreme-persona`, `hackathon-exploration`, `random-walk-reading`, `fresh-eyes-onboarding`, `ai-agent-usability`, `chaos-engineering`, `red-team`, `error-message-audit`, `dependency-horizon-scan` |
+| 현재(위치) | `benchmarking`, `positioning-review`, `usage-analytics`, `telemetry-observability`, `issue-community`, `domain-practice`, `roadmap-decomposition`, `dogfooding` |
+| 미래(견인) | `vision-gap`, `web-trend`, `research-scan`, `working-backwards`, `sf-prototyping`, `premortem`, `constraint-removal`, `appropriate-tech`, `inversion`, `cross-domain-borrowing`, `extreme-persona`, `hackathon-exploration`, `random-walk-reading`, `fresh-eyes-onboarding`, `ai-agent-usability`, `chaos-engineering`, `red-team`, `error-message-audit`, `dependency-horizon-scan` |
 
 Every activity id in the P3 table must appear in exactly one row above — this is a completeness
 requirement, not a suggestion; an activity added to P3 later must also be added here.
@@ -396,8 +397,9 @@ tables and constraints. Three outputs, in order:
    placement. Every score cites the signal that justifies it.
 3. **단계 구성** — place items on **지금 / 다음 / 나중** by 가치 × 비용, then apply the
    rubric's overriding constraints: dependency order beats score, 증거 강도 1–2 cannot sit
-   in 지금, irreversible items are marked `Discussion 필요`, and skew on either axis
-   (value or inquiry) is reported rather than silently rebalanced.
+   in 지금, irreversible items are marked `Discussion 필요`, skew on any of the three axes
+   (value, inquiry, or temporal) is reported rather than silently rebalanced, and every
+   horizon is populated or its emptiness is explained (synthesis-rubric.md §③ 제약 6).
 
 **These horizons are an ordering, not a schedule.** No cycle numbers, no dates, no
 durations — the same rule that keeps `run-cycle`'s roadmap a phase backlog applies here,
@@ -449,6 +451,10 @@ This skill's work ends at P8. When a human reviews `proposal-YYYY-MM-DD.md` and 
 specific items to be adopted, add them to `ROADMAP.md`'s phase backlog by hand in that
 follow-up turn, following `run-cycle`'s "phase backlog, not cycle-numbered" format. Do
 not perform this step as part of a `/iyu:backlog-discover` invocation itself.
+
+If a proposal carries a `dormant-strand-review` verdict of `폐기` and the human accepts it, remove
+that `STRANDS.md` `## 중단됨` entry by hand in the same follow-up turn — this is the only path that
+retires a strand (see `continuity-docs.md` §3).
 
 ## Execution rules
 

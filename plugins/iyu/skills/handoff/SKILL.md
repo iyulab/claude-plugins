@@ -73,7 +73,8 @@ say so and name the command that would settle it.
 
 Per [continuity-docs.md](${CLAUDE_SKILL_DIR}/../_shared/continuity-docs.md) §3, in full: migrate
 every completed item out of `ROADMAP.md` (including pre-existing leftovers) into `HISTORY.md`,
-rewrite `HANDOFF.md` to current + next only, keep the `> History:` link.
+rewrite `HANDOFF.md` to current + next only, compress `STRANDS.md` (drop stale `## 완료·졸업`
+entries; leave `## 중단됨` entries alone), keep the `> History:` link.
 
 This is the step that makes the skill worth running repeatedly. The docs converge toward
 remaining-work-only on their own, without anyone scheduling a cleanup.

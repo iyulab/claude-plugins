@@ -114,9 +114,10 @@ Apply whenever continuity docs are written — every `run-cycle` STEP 5, every `
    narrative is dropped, not accumulated.
 4. **Compress `STRANDS.md`.** Drop `## 완료·졸업` entries beyond a small recent window — `HISTORY.md`
    already holds the durable record, this is not a second index of it. Leave `## 중단됨` entries in
-   place until either resumed (moved back to `## 진행 중` by a later `run-cycle`) or explicitly
-   retired by a `backlog-discover` `dormant-strand-review` verdict — hygiene never silently drops an
-   open `## 중단됨` entry on its own.
+   place until either resumed (moved back to `## 진행 중` by a later `run-cycle`) or removed by hand
+   once a human has accepted a `backlog-discover` `dormant-strand-review` `폐기` verdict
+   (`backlog-discover`'s P9) — hygiene itself never reads `backlog-discovery/` proposals and never
+   infers a retirement from an unreviewed one.
 5. **Link line** — keep `> History: [HISTORY.md](HISTORY.md)` at the top of each continuity doc
    (create on first migration) so history stays one hop away.
 6. **Size signal (soft)** — a continuity doc still long (~200+ lines) *after* migration means detail
