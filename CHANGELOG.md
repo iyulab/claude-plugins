@@ -8,6 +8,38 @@ bugs or docs. MAJOR is never bumped automatically.
 > History is reconstructed from git from v1.11.0 onward. Earlier versions live in
 > the git log only.
 
+## [1.36.0] — 2026-08-25
+
+`STRANDS.md` exists to stop a big thread of work from being silently forgotten when a session jumps
+to something else — but only `/iyu:run-cycle` ever wrote its transitions. Most sessions close via
+`/iyu:handoff` instead (usage data: continuity-cleanup requests outnumber `run-cycle` invocations),
+so on the majority path a finished strand was never graduated and a stalled one was never flagged.
+Separately, `STRANDS.md`/`HISTORY.md` had no size ceiling, and `/iyu:backlog-discover` under-filled
+the backlog on both breadth (quarterly/half-yearly lanes rarely fire in steady state) and depth
+(nothing flagged an all-patch-scale run).
+
+### Added
+
+- **`/iyu:handoff` now writes `STRANDS.md` transitions**, the same procedure `/iyu:run-cycle`
+  already applied per cycle — promoted to `_shared/continuity-docs.md` as the single source both
+  skills follow, keyed to a generalized "unit" (a cycle or a closing session) instead of cycle
+  numbers alone.
+- **`STRANDS.md`/`HISTORY.md` archive instead of dropping.** Both keep a live recent window
+  (`STRANDS.md`: 10 완료·졸업 entries; `HISTORY.md`: 30 entries); overflow rolls into numbered
+  `STRANDS-ARCHIVE-{NN}.md` / `HISTORY-ARCHIVE-{NN}.md` files instead of being deleted. `## 진행 중`
+  and `## 중단됨` are never archived.
+- **`/iyu:backlog-discover` coverage floor**: if none of the 15 quarterly/half-yearly-tier
+  activities ran in the last 3 recorded runs, the most-overdue one is forced due this run.
+- **`/iyu:backlog-discover` 규모(scale) skew reporting**: the existing skew-reporting constraint
+  (value/inquiry/temporal axes) gains a fourth check — a run whose future-facing items are all
+  patch-scale (or absent) now says so explicitly, rather than silently passing as complete.
+
+### Changed
+
+- `/iyu:handoff` names `/iyu:backlog-discover` as a bare pointer when `## Next` is empty after its
+  own discovery pass — matching the wording `/iyu:run-cycle` and `/iyu:resume` already use — but
+  never generates options or a recommendation there; that stays `/iyu:resume`'s job.
+
 ## [1.35.0] — 2026-08-19
 
 Usage feedback: `/iyu:backlog-discover` was producing only 1-2 items per run, even on the exact
