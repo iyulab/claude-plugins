@@ -324,31 +324,17 @@ running now, which is exactly right while it is, and wrong the moment the cycle 
 ## Continuity-Doc Hygiene
 
 Apply **[continuity-docs.md](${CLAUDE_SKILL_DIR}/../_shared/continuity-docs.md) §3** in full at
-every STEP 5 — migrate completed work out of `ROADMAP.md` into `HISTORY.md`, rewrite `HANDOFF.md` to
-current + next, keep the `> History:` link, treat a still-long doc as a wrong-layer signal. `handoff`
-runs the same pass; that is why it lives in one file.
+every STEP 5 — migrate completed work out of `ROADMAP.md` into `HISTORY.md` (archiving overflow past
+its live window), rewrite `HANDOFF.md` to current + next, update and compress `STRANDS.md` (§3 step
+4 — archiving overflow past its live window; `## 진행 중`/`## 중단됨` are never archived), keep the
+`> History:` link, treat a still-long doc as a wrong-layer signal. `handoff` runs the identical pass
+— including the `STRANDS.md` transition procedure — which is why it lives in one shared file rather
+than two copies that would drift.
 
-Two things specific to running it inside a cycle: `HISTORY.md` entries carry this run's `(cycle-NN)`
-as their reference, and hygiene **never gates termination** — it is doc upkeep inside STEP 5 and the
-doc-sync floor, not a completion criterion, and it adds nothing to the Stop-hook logic.
-
-**`STRANDS.md` update (every cycle, unconditional).** Per
-[continuity-docs.md](${CLAUDE_SKILL_DIR}/../_shared/continuity-docs.md)'s `STRANDS.md` contract:
-
-1. Name the strand this cycle predominantly served — usually the `ROADMAP.md` phase it advanced, or
-   a short ad-hoc label if it departed from one (e.g. an urgent user request).
-2. If it matches the current `## 진행 중` entry: increment its cumulative cycle count and update
-   `최근` to this cycle.
-3. If it differs from the current `## 진행 중` entry: move that entry to `## 중단됨`, recording this
-   cycle's strand name as the one-line transition reason; start a new `## 진행 중` entry for this
-   cycle's strand (시작 = this cycle).
-4. If this cycle resumes a strand currently listed under `## 중단됨`: move it back to `## 진행 중`,
-   keeping its original 시작 date and adding this cycle to its cumulative count.
-5. If this cycle's `## 진행 중` strand reaches completion (its `ROADMAP.md` phase migrates to
-   `HISTORY.md` this same STEP): move its `STRANDS.md` entry to `## 완료·졸업` as one line with the
-   date range — the same migration `HISTORY.md` just received, recorded in both places.
-
-Create `STRANDS.md` with just the `# STRANDS` header and empty sections if it does not exist yet.
+Two things specific to running it inside a cycle: `HISTORY.md` and `STRANDS.md` entries carry this
+run's `cycle-{NN}` as their unit (`continuity-docs.md §3` step 4 — `handoff` instead records
+`session-{YYYY-MM-DD}`), and hygiene **never gates termination** — it is doc upkeep inside STEP 5 and
+the doc-sync floor, not a completion criterion, and it adds nothing to the Stop-hook logic.
 
 ---
 

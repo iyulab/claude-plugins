@@ -17,7 +17,9 @@ Every artifact below lives **together in one directory**, the *continuity root* 
 | Phase backlog (remaining work) | `<root>/ROADMAP.md` | run-cycle, handoff |
 | Handoff (current + next) | `<root>/HANDOFF.md` | run-cycle, handoff — plus `resume`, which only ever appends to its `## Decided this session` section |
 | Cross-session thread ledger | `<root>/STRANDS.md` | run-cycle, handoff |
+| Thread-ledger archive (cold storage, created lazily) | `<root>/STRANDS-ARCHIVE-{NN}.md` | run-cycle, handoff |
 | Completed-work index | `<root>/HISTORY.md` | run-cycle, handoff |
+| Completed-work archive (cold storage, created lazily) | `<root>/HISTORY-ARCHIVE-{NN}.md` | run-cycle, handoff |
 | Cycle logs | `<root>/cycle-logs/cycle-{NN}.md` | run-cycle |
 | End-of-Run Report | `<root>/cycle-logs/RUN-SUMMARY-{YYYY-MM-DD}.md` | run-cycle |
 | Backlog proposals | `<root>/backlog-discovery/` | backlog-discover |
@@ -70,6 +72,13 @@ grow monotonically until "what's left?" is buried under "what's done".
 | `HISTORY.md` | A pure index, newest first, one compressed entry per completed phase | Detail — cycle logs and git history are the record |
 | `STRANDS.md` | Which dominant strand each cycle served, and interruption/resume transitions | Task detail (cycle logs own that), issues (issues/ owns that), completed-work narrative (HISTORY.md owns that), a session's current-vs-next snapshot (HANDOFF.md owns that — STRANDS.md is the cumulative cross-session record HANDOFF.md deliberately does not keep) |
 
+**`STRANDS.md` and `HISTORY.md` are the two continuity docs with no other structural size ceiling.**
+`HANDOFF.md` is rewritten current+next every time and `ROADMAP.md` only holds what remains — both
+self-bound. `STRANDS.md`'s `## 중단됨` entries persist until a human retires them, and `HISTORY.md`
+is by design a never-pruned index. Both keep a **live window** and roll overflow into numbered
+archive files instead — see §3 step 2 (`HISTORY.md`) and step 4 (`STRANDS.md`). Nothing already
+written to either is ever deleted, only relocated.
+
 A **strand** is identified by the concern it serves (a `ROADMAP.md` phase title, or a short ad-hoc
 label for off-roadmap work like `"사용자 요청: 로그인 버그 긴급 수정"`), not by the *kind* of work a
 cycle did — the same strand can be advanced by a bugfix, a phase push, a discussion/decision, or a
@@ -78,16 +87,20 @@ docs cycle. `STRANDS.md` format:
 ```markdown
 # STRANDS
 > History: [HISTORY.md](HISTORY.md)
+> Archive: [STRANDS-ARCHIVE-01.md](STRANDS-ARCHIVE-01.md)  <!-- omit this line until an archive exists -->
 
 ## 진행 중
-- {strand} — 시작: {date} cycle-{MM}, 최근: {date} cycle-{NN} (누적 {k} cycle)
+- {strand} — 시작: {date} ({unit}), 최근: {date} ({unit}) (누적 {k}회)
 
 ## 중단됨 (복귀 검토 후보)
-- {strand} — 마지막: {date} cycle-{NN} — 전환 사유: "{한 줄: 무엇으로 전환했는지}"
+- {strand} — 마지막: {date} ({unit}) — 전환 사유: "{한 줄: 무엇으로 전환했는지}"
 
-## 완료·졸업 (HISTORY.md 참조, 압축됨)
+## 완료·졸업 (최근 10건 — 이전 이력은 archive 참조)
 - {strand} — {date range}
 ```
+
+`{unit}` is written literally as `cycle-{NN}` (when `run-cycle` writes it) or `session-{YYYY-MM-DD}`
+(when `handoff` writes it) — never a bare number, so provenance survives the merge.
 
 Every other reference to these sections, in any file, uses the short prefix shown above without
 the parenthetical (`## 진행 중` / `## 중단됨` / `## 완료·졸업`) — this is the established
@@ -109,20 +122,58 @@ Apply whenever continuity docs are written — every `run-cycle` STEP 5, every `
    Any already-completed leftover found is migrated too. This is invariant *enforcement*, not an
    event handler, and it is what makes pre-existing bloat converge without a special cleanup pass.
 2. **Append to `HISTORY.md`** in the format above, beside `ROADMAP.md`. Never duplicate detail into
-   it; deep dives start at the index and follow the reference.
+   it; deep dives start at the index and follow the reference. **Live-window cap**: `HISTORY.md`
+   keeps only its most recent 30 entries live (newest first, per the existing format). When an
+   append would push it past 30, move the oldest entries — enough to bring the live file back to
+   30 — into `<root>/HISTORY-ARCHIVE-{NN}.md`, appending them there oldest-first (so the archive
+   itself still reads chronologically). Start `{NN}` at `01`; once `HISTORY-ARCHIVE-{NN}.md` is at
+   or past ~150 lines, the next overflow starts `{NN+1}` instead of appending further. Nothing is
+   deleted — only relocated. Add `> Archive: [HISTORY-ARCHIVE-01.md](HISTORY-ARCHIVE-01.md)` under
+   `HISTORY.md`'s own top-of-file link the first time an archive is created (update the number if it
+   has since rolled past 01).
 3. **Rewrite `HANDOFF.md` to current + next only** (if the project keeps one). Past-session
    narrative is dropped, not accumulated.
-4. **Compress `STRANDS.md`.** Drop `## 완료·졸업` entries beyond a small recent window — `HISTORY.md`
-   already holds the durable record, this is not a second index of it. Leave `## 중단됨` entries in
-   place until either resumed (moved back to `## 진행 중` by a later `run-cycle`) or removed by hand
-   once a human has accepted a `backlog-discover` `dormant-strand-review` `폐기` verdict
-   (`backlog-discover`'s P9) — hygiene itself never reads `backlog-discovery/` proposals and never
-   infers a retirement from an unreviewed one.
+4. **`STRANDS.md` — update, then compress.** This is the one step both `run-cycle` (per completed
+   cycle) and `handoff` (per closing session) apply identically — "this unit" below means whichever
+   produced the update, recorded literally as `cycle-{NN}` or `session-{YYYY-MM-DD}`.
+
+   **Update (transition procedure):**
+
+   a. Identify the strand this unit predominantly served — the `ROADMAP.md` phase advanced, or a
+      short ad-hoc label (e.g. `"사용자 요청: 로그인 버그 긴급 수정"`). If a session genuinely
+      advanced more than one distinct strand substantially, apply steps b–e once per strand rather
+      than picking one.
+   b. If it matches the current `## 진행 중` entry: increment its cumulative count and update
+      `최근` to this unit.
+   c. If it differs from the current `## 진행 중` entry: move that entry to `## 중단됨`, recording
+      this unit's strand name as the one-line transition reason; start a new `## 진행 중` entry for
+      this unit's strand (시작 = this unit).
+   d. If this unit resumes a strand currently listed under `## 중단됨`: move it back to
+      `## 진행 중`, keeping its original 시작 date and adding this unit to its cumulative count.
+   e. If this unit's `## 진행 중` strand reaches completion (its `ROADMAP.md` phase migrates to
+      `HISTORY.md` in this same hygiene pass): move its `STRANDS.md` entry to `## 완료·졸업` as one
+      line with the date range — the same migration `HISTORY.md` just received, recorded in both
+      places. This is what closes the gap a `handoff`-only session used to leave open: a phase
+      finished without ever running `run-cycle` now graduates its strand in the same pass that
+      migrates it to `HISTORY.md`, not never.
+
+   Create `STRANDS.md` with just the `# STRANDS` header and empty sections if it does not exist yet.
+
+   **Compress (archives instead of dropping):** `## 진행 중` and `## 중단됨` are **never archived or
+   dropped** — they are active state, and this document exists specifically so a thread in either
+   section is never silently forgotten. `## 완료·졸업` keeps only its most recent 10 entries live;
+   older ones move to `<root>/STRANDS-ARCHIVE-{NN}.md` (same `01` / ~150-line rollover rule as
+   `HISTORY-ARCHIVE-{NN}.md` above), appended oldest-first. `## 중단됨` entries stay in place until
+   either resumed (step d, above) or removed by hand once a human has accepted a `backlog-discover`
+   `dormant-strand-review` `폐기` verdict (`backlog-discover`'s P9) — hygiene itself never reads
+   `backlog-discovery/` proposals and never infers a retirement from an unreviewed one.
 5. **Link line** — keep `> History: [HISTORY.md](HISTORY.md)` at the top of each continuity doc
    (create on first migration) so history stays one hop away.
 6. **Size signal (soft)** — a continuity doc still long (~200+ lines) *after* migration means detail
    is living at the wrong layer: split phase detail into `<root>/plans/` and leave links. A judgment
-   signal, not a hard rule.
+   signal, not a hard rule. Does not apply to `STRANDS.md`/`HISTORY.md` — steps 2 and 4 already give
+   those two a hard live-window + archive mechanism, since they are the only two continuity docs
+   with no other structural size ceiling (see §2's caveat).
 
 Hygiene is doc upkeep. It never gates termination and never blocks a run.
 

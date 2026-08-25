@@ -220,6 +220,33 @@ rather than an unexamined one — and even then, the P6 diagnosis is still writt
 backlog means "use the product, inspect what you own, then check the debt, the theory, and the
 position", never "nothing to do".
 
+### P1.5: Coverage floor (breadth, independent of the dry-backlog ladder)
+
+Steady-state cadence means most invocations only touch the `always`/`sprint` floor —
+quarterly/half-yearly activities (`web-trend`, `research-scan`, `benchmarking`, `domain-practice`,
+`appropriate-tech`, `positioning-review`, `code-audit`, `security-compliance`,
+`tooling-development`, `roadmap-decomposition`, `sunset-review`, `vision-gap`, `premortem`,
+`sf-prototyping`, `archive-mining`) can go many runs without firing at all. This check exists so
+that never goes on too long, without forcing all of them due every run — that cost concern is still
+correct in steady state; the dry-backlog ladder already forces all of them at once, but only on its
+own much stronger (thin-output) trigger.
+
+Union the `selected` field of the **last 3** `history[]` entries — the same window P2 already uses
+for symptom-recency suppression, reused rather than duplicated. If **none** of the activities listed
+above appear in that union, force the one among them with the oldest `lastRunUtc` due this run
+(`due = true`, added to P1's due set, bypassing its own cadence check — same override mechanism
+`--modes` already uses). If `history[]` has fewer than 3 entries, judge the check only against
+whatever entries actually exist — do not force anything on a project's first or second-ever run,
+where nothing has had the chance to be "missing" yet.
+
+Skip forcing any activity the dry-backlog ladder (above) already forces due this run — for
+`research-scan`, `benchmarking`, `domain-practice`, `appropriate-tech`, `positioning-review`,
+`code-audit`, `tooling-development`, and `vision-gap`, the ladder's own force-due is a strict
+superset of what this rule would add for them. The remaining seven of the fifteen (`web-trend`,
+`security-compliance`, `roadmap-decomposition`, `sunset-review`, `premortem`, `sf-prototyping`,
+`archive-mining`) are untouched by the ladder — this rule still applies to them even on a run where
+the ladder engaged.
+
 ### P2: Symptom diagnosis (selects the emergent-pool activities to run alongside P1's due set)
 
 If `--symptom <name>` was given, use it directly and skip detection. Otherwise, detect

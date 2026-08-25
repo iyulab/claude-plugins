@@ -72,12 +72,17 @@ say so and name the command that would settle it.
 ### 3. Apply the hygiene pass
 
 Per [continuity-docs.md](${CLAUDE_SKILL_DIR}/../_shared/continuity-docs.md) §3, in full: migrate
-every completed item out of `ROADMAP.md` (including pre-existing leftovers) into `HISTORY.md`,
-rewrite `HANDOFF.md` to current + next only, compress `STRANDS.md` (drop stale `## 완료·졸업`
-entries; leave `## 중단됨` entries alone), keep the `> History:` link.
+every completed item out of `ROADMAP.md` (including pre-existing leftovers) into `HISTORY.md`
+(archiving overflow past its live window), rewrite `HANDOFF.md` to current + next only, **update**
+`STRANDS.md` (the same transition procedure `run-cycle` applies per cycle, applied here per this
+closing session — record the unit as `session-{YYYY-MM-DD}`) then compress it (archiving overflow
+past its live window; `## 진행 중`/`## 중단됨` are never archived), keep the `> History:` link.
 
 This is the step that makes the skill worth running repeatedly. The docs converge toward
-remaining-work-only on their own, without anyone scheduling a cleanup.
+remaining-work-only on their own, without anyone scheduling a cleanup. It is also what keeps
+`STRANDS.md` accurate on the majority of sessions, which close via this skill rather than
+`run-cycle` — a session that finishes a phase now graduates its strand in the same pass that
+migrates the phase to `HISTORY.md`, instead of leaving the entry orphaned.
 
 ### 4. Derive the next scope
 
@@ -91,6 +96,13 @@ direction in `ROADMAP.md`. Concrete scope for sessions you cannot yet know about
 
 Step 5 then decides where the *rest* sits — deriving the next item and ordering the remainder are
 different jobs, and skipping the second is how a release ends up scheduled mid-phase.
+
+**`## Next` still empty after this** — carry-forward, mid-session discoveries, and the backlog all
+came up empty. Say so, and name `/iyu:backlog-discover` by name as the pointer — nothing more. Do
+not generate options, a cross-lens read, or a recommendation here; that four-part briefing is
+`resume`'s job (rule 5 already reserves it for `resume`, never `handoff`). This mirrors the identical
+closing line `run-cycle`'s End-of-Run Report and `resume` rule 8 already carry, so all three skills
+point the same way when the backlog runs dry.
 
 ### 5. Re-order what remains
 
@@ -217,3 +229,5 @@ produce later.
 7. **Model-invoked runs announce first.** When this skill starts without an explicit user invocation
    (`/iyu:handoff`), say in one line that a handoff is running and why, *before* touching any file —
    the rewrite is reversible, but a silent one still surprises whoever is reading the conversation.
+8. **Point, don't brief, when `## Next` is empty.** Name `/iyu:backlog-discover`; do not produce
+   options, a cross-lens read, or a recommendation — see step 4. That stays `resume`'s job.
