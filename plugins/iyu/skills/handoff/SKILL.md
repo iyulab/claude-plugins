@@ -100,8 +100,8 @@ different jobs, and skipping the second is how a release ends up scheduled mid-p
 **`## Next` still empty after this** — carry-forward, mid-session discoveries, and the backlog all
 came up empty. Say so, and name `/iyu:backlog-discover` by name as the pointer — nothing more. Do
 not generate options, a cross-lens read, or a recommendation here; that four-part briefing is
-`resume`'s job (rule 5 already reserves it for `resume`, never `handoff`). This mirrors the identical
-closing line `run-cycle`'s End-of-Run Report and `resume` rule 8 already carry, so all three skills
+`resume`'s job (rule 5 already reserves it for `resume`, never `handoff`). This mirrors the closing
+line `run-cycle`'s End-of-Run Report and `resume` rule 8 already carry, so all three skills
 point the same way when the backlog runs dry.
 
 ### 5. Re-order what remains

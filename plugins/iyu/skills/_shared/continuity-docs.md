@@ -70,7 +70,7 @@ grow monotonically until "what's left?" is buried under "what's done".
 | `ROADMAP.md` | Phase-level directions, remaining only. Known unknowns and investigation needs | Completed phases. **Cycle numbers** — it is a backlog, not an itinerary |
 | `HANDOFF.md` | What is in flight and what comes next, anchored to backlog phases | Past-session narrative. Anything already done |
 | `HISTORY.md` | A pure index, newest first, one compressed entry per completed phase | Detail — cycle logs and git history are the record |
-| `STRANDS.md` | Which dominant strand each cycle served, and interruption/resume transitions | Task detail (cycle logs own that), issues (issues/ owns that), completed-work narrative (HISTORY.md owns that), a session's current-vs-next snapshot (HANDOFF.md owns that — STRANDS.md is the cumulative cross-session record HANDOFF.md deliberately does not keep) |
+| `STRANDS.md` | Which dominant strand each cycle or session served, and interruption/resume transitions | Task detail (cycle logs own that), issues (issues/ owns that), completed-work narrative (HISTORY.md owns that), a session's current-vs-next snapshot (HANDOFF.md owns that — STRANDS.md is the cumulative cross-session record HANDOFF.md deliberately does not keep) |
 
 **`STRANDS.md` and `HISTORY.md` are the two continuity docs with no other structural size ceiling.**
 `HANDOFF.md` is rewritten current+next every time and `ROADMAP.md` only holds what remains — both
@@ -123,8 +123,8 @@ Apply whenever continuity docs are written — every `run-cycle` STEP 5, every `
    event handler, and it is what makes pre-existing bloat converge without a special cleanup pass.
 2. **Append to `HISTORY.md`** in the format above, beside `ROADMAP.md`. Never duplicate detail into
    it; deep dives start at the index and follow the reference. **Live-window cap**: `HISTORY.md`
-   keeps only its most recent 30 entries live (newest first, per the existing format). When an
-   append would push it past 30, move the oldest entries — enough to bring the live file back to
+   keeps only its most recent 30 entries live (newest first, per the existing format). Whenever the
+   file holds more than 30 entries, move the oldest entries — enough to bring the live file back to
    30 — into `<root>/HISTORY-ARCHIVE-{NN}.md`, appending them there oldest-first (so the archive
    itself still reads chronologically). Start `{NN}` at `01`; once `HISTORY-ARCHIVE-{NN}.md` is at
    or past ~150 lines, the next overflow starts `{NN+1}` instead of appending further. Nothing is

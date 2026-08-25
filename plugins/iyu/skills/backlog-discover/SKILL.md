@@ -227,9 +227,9 @@ quarterly/half-yearly activities (`web-trend`, `research-scan`, `benchmarking`, 
 `appropriate-tech`, `positioning-review`, `code-audit`, `security-compliance`,
 `tooling-development`, `roadmap-decomposition`, `sunset-review`, `vision-gap`, `premortem`,
 `sf-prototyping`, `archive-mining`) can go many runs without firing at all. This check exists so
-that never goes on too long, without forcing all of them due every run — that cost concern is still
-correct in steady state; the dry-backlog ladder already forces all of them at once, but only on its
-own much stronger (thin-output) trigger.
+that gap never goes on too long, without forcing all fifteen due every run — that cost concern is
+still correct in steady state; the dry-backlog ladder already forces **eight of them** at once, but
+only on its own much stronger (thin-output) trigger.
 
 Union the `selected` field of the **last 3** `history[]` entries — the same window P2 already uses
 for symptom-recency suppression, reused rather than duplicated. If **none** of the activities listed
@@ -274,8 +274,8 @@ alternate while 3–7 still starve. `history[]` keeps 12 entries, so a 3-run win
 | 도메인 이해가 정체돼 있다 (조사가 SW 기술 축에 편중) | Sum `swTech` and `domain` across the last 3 `history[]` entries (or, if `history[]` is empty, grep the last 3 `proposal-*.md` for `탐구 축:` lines). `domain` is 0, or fewer than a quarter of the total → symptom present. The product's subject matter is being treated as settled while only its implementation is re-examined. | `research-scan` (도메인 축 필수), `domain-practice`, `cross-domain-borrowing` |
 | 제품의 자리가 낡았다 (차별화 흐려짐) | `state.json.activities.positioning-review.lastRunUtc` is null or elapsed ≥ 2× its cadence, AND competitor-driven items dominate recent output — grep the last 3 `proposal-*.md` for `출처 활동:` lines and find that `벤치마킹`-sourced items are ≥ half of all items across them. (Chasing feature parity without re-examining where the product stands is exactly the drift this symptom names.) | `positioning-review`, `benchmarking`, `cross-domain-borrowing` |
 | 아이디어 자체가 고갈됐다 | Both of the last 2 `history[]` entries have `itemCount` < 2. | `hackathon-exploration`, `cross-domain-borrowing`, `random-walk-reading`, `archive-mining` |
-| 진행 중 흐름이 미완/파편적 | `STRANDS.md`'s `## 진행 중` entry has an accumulated cycle count well past this project's typical phase length (derive "typical" from `HISTORY.md`'s recent completed-phase durations, and cite it) → symptom present. Skip this row (not "no match") if `STRANDS.md` does not exist yet. | `strand-deepening` |
-| 장기 흐름이 방치돼 있다 | `STRANDS.md`'s `## 중단됨` has an entry whose `마지막` cycle is stale well past this skill's own run cadence (i.e. `backlog-discover` has run again since without that strand being touched) → symptom present. Skip this row if `STRANDS.md` does not exist yet or `## 중단됨` is empty. | `dormant-strand-review` |
+| 진행 중 흐름이 미완/파편적 | `STRANDS.md`'s `## 진행 중` entry has an accumulated count (cycles or sessions) well past this project's typical phase length (derive "typical" from `HISTORY.md`'s recent completed-phase durations, and cite it) → symptom present. Skip this row (not "no match") if `STRANDS.md` does not exist yet. | `strand-deepening` |
+| 장기 흐름이 방치돼 있다 | `STRANDS.md`'s `## 중단됨` has an entry whose `마지막` entry is stale well past this skill's own run cadence (i.e. `backlog-discover` has run again since without that strand being touched) → symptom present. Skip this row if `STRANDS.md` does not exist yet or `## 중단됨` is empty. | `dormant-strand-review` |
 | 미래 견인이 부족하다 (조사가 과거/현재 축에 편중) | Sum `past`, `present`, `future` across the last 3 `history[]` entries (or, if `history[]` is empty, this row cannot match yet). `future` is 0, or under a quarter of the three-way total → symptom present. | `vision-gap`, `working-backwards`, `sf-prototyping` |
 
 If no symptom matches, select the **1–2 oldest-untried** items from
@@ -424,8 +424,8 @@ tables and constraints. Three outputs, in order:
    placement. Every score cites the signal that justifies it.
 3. **단계 구성** — place items on **지금 / 다음 / 나중** by 가치 × 비용, then apply the
    rubric's overriding constraints: dependency order beats score, 증거 강도 1–2 cannot sit
-   in 지금, irreversible items are marked `Discussion 필요`, skew on any of the three axes
-   (value, inquiry, or temporal) is reported rather than silently rebalanced, and every
+   in 지금, irreversible items are marked `Discussion 필요`, skew on any of the four axes
+   (value, inquiry, temporal, or scale) is reported rather than silently rebalanced, and every
    horizon is populated or its emptiness is explained (synthesis-rubric.md §③ 제약 6).
 
 **These horizons are an ordering, not a schedule.** No cycle numbers, no dates, no
