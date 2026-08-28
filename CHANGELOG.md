@@ -8,6 +8,26 @@ bugs or docs. MAJOR is never bumped automatically.
 > History is reconstructed from git from v1.11.0 onward. Earlier versions live in
 > the git log only.
 
+## [1.36.1] — 2026-08-28
+
+`decision-lenses.md`'s "irreducible conflict" escape hatch covered only one reason a recommendation
+can't be formed — the five lenses disagreeing irreducibly. `/iyu:resume`'s decision briefings (and
+`run-cycle`/`ship`, which read the same shared file) had no prescribed response for two other causes:
+the lenses having nothing to read against because the missing fact lives outside the repo, or because
+the project itself has never established a convention or stated identity for this kind of call —
+both risked a recommendation that was really a fabricated preference stated with confidence.
+
+### Fixed
+
+- **`decision-lenses.md`** now names three distinct no-recommendation causes — value conflict
+  (unchanged), missing external information, missing internal anchor — each with its own prescribed
+  response instead of one generic "say so". `resume`/`run-cycle` point at a knowledge or convention
+  gap; they never fill it themselves (no `WebSearch`, and filling it would cross `resume`'s
+  known-work-only boundary).
+- **`decision-briefing.md`**'s recommendation part now names which of the three causes applies
+  instead of a bare "lenses conflict, say so"; its resource-blocked entry shape now requires the
+  *why* behind the blocker and the *concrete* unblocking step, not just their names.
+
 ## [1.36.0] — 2026-08-25
 
 `STRANDS.md` exists to stop a big thread of work from being silently forgotten when a session jumps
