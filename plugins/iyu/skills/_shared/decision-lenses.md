@@ -30,15 +30,19 @@ now and costs later reads well on one and badly on the other; say that, rather t
 
 ---
 
-## Irreducible conflict is a signal, not a tie to break
+## When a recommendation can't be formed
 
-When no option is defensible across the five — every candidate is clean on some lenses and
-indefensible on others, and no reframing dissolves it — that conflict is **itself** an escalation
-signal. Do not force a pick to keep moving.
+Sometimes the five lenses don't produce a clean pick. The right response depends on *why* — these
+are three different failures, not one, and treating them the same either forces a pick nobody can
+defend or stalls on research nobody asked for.
 
-- In `run-cycle`, this is the one exception to *in dubio, pro autonomy*: treat it as L2.
-- In `resume`, say so explicitly in the recommendation slot — "no option is defensible across the
-  lenses; the conflict is X vs Y" — rather than manufacturing a preference.
+| Cause | What it looks like | What to do instead of guessing |
+|---|---|---|
+| **(a) Value conflict** | Every candidate is clean on some lenses and indefensible on others, and no reframing dissolves it — an *irreducible* trade-off, not an ordinary disagreement. | Say so explicitly: "no option is defensible across the lenses; the conflict is X vs Y." In `run-cycle`, this is the one exception to *in dubio, pro autonomy* — treat it as L2. In `resume`, name the conflict in the recommendation slot rather than manufacturing a preference. |
+| **(b) Missing external information** | 정석/표준 have nothing to read against — an ecosystem convention, a domain fact, or a property of a dependency isn't known and isn't in this repo. | Name precisely what's unknown and what would settle it (a search query, a doc to check, a spike). Offer it as a next step the human can direct — `resume`/`run-cycle` point at the gap, they don't fill it themselves (neither carries `WebSearch`, and filling it would cross `resume` rule 9's known-work-only boundary). A skill whose own scope already covers research (e.g. `backlog-discover`) is a name to offer, not an instruction to invoke. |
+| **(c) Missing internal anchor** | 표준/철학 have nothing *of this project's own* to read against — no existing convention in the repo for this kind of decision, no stated identity/scope in CLAUDE.md that bears on it. Common in early 0.X.X projects that haven't yet accumulated precedent. | Say so before attempting a recommendation: "이 판단을 위한 기준이 아직 없다." Treat establishing that criterion — a convention, a stated project stance — as the thing to settle *first*, and surface it as what's actually being asked, rather than picking an option that would silently become the precedent by default. |
 
-A lens disagreement is ordinary and expected; most decisions have one. It is only *irreducible* when
-the trade-off cannot be stated as "give up A to get B" and lived with.
+A lens disagreement is ordinary and expected; most decisions have one. (a) is only irreducible when
+the trade-off cannot be stated as "give up A to get B" and lived with. (b) and (c) are not
+disagreements at all — the lenses have nothing to compare yet, and forcing a pick manufactures a
+precedent nobody actually decided on.

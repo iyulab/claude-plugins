@@ -24,9 +24,10 @@ difference this file exists to enforce.
 ## 1. Two entry shapes — do not force one on both
 
 - **Resource-blocked** (a missing credential, an access grant, an unavailable dependency) →
-  **blocker · what was already tried · what would unblock it.** No options, no recommendation:
-  there is nothing to choose, only something to supply. An options table here is filler, and filler
-  teaches the reader to skim the section.
+  **blocker (what's missing, and why it stops the work) · what was already tried · what would
+  unblock it (the concrete credential/grant/step to obtain it, not just its name).** No options, no
+  recommendation: there is nothing to choose, only something to supply. An options table here is
+  filler, and filler teaches the reader to skim the section.
 - **Decision-class** (irreversible, or genuinely the human's to make) → the four parts below.
 
 ---
@@ -46,8 +47,10 @@ difference this file exists to enforce.
 4. **The recommendation — one named option, its reason, and what it locks in.** One or two
    sentences. **What it locks in** is the part that is easy to omit and hardest to recover from: the
    migration, the published version, the API consumers will depend on. That irreversibility is what
-   the human is actually being asked about. If the lenses conflict irreducibly (no option is
-   defensible across them), say so instead of manufacturing a preference.
+   the human is actually being asked about. **If a confident recommendation can't be formed, name
+   which cause in [decision-lenses.md's "When a recommendation can't be formed"
+   table](./decision-lenses.md#when-a-recommendation-cant-be-formed) applies, and respond the way
+   that row prescribes** — do not manufacture a preference to fill the slot.
 
 ---
 
