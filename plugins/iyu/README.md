@@ -111,8 +111,11 @@ read by `/iyu:resume` step 4, `run-cycle`'s End-of-Run Report, and `ship` step 0
 differs: `resume` and `run-cycle` write a document section, `ship` puts the options and the
 recommendation **into the question it asks** and waits for the answer.
 
-It deliberately does **not** commit and does **not** implement: the handoff describes a state, and
-changing that state while writing it makes the description wrong.
+It deliberately does **not** implement: the handoff describes a state, and changing that state while
+writing it makes the description wrong. It does, however, commit — everything it can confidently
+attribute (this session's work, pre-existing uncommitted leftovers, and its own doc edits) toward a
+clean `git status`, never pushing and never guessing at anything ambiguous (that gets reported instead,
+under "State of play").
 
 Shares [`_shared/continuity-docs.md`](./skills/_shared/continuity-docs.md) with `/iyu:run-cycle` —
 where the docs live, what belongs in each, the hygiene pass, and how next scope is derived are

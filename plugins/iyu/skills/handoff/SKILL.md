@@ -1,6 +1,6 @@
 ---
 name: handoff
-description: Closes out a work session — records where things stand, migrates completed work out of the continuity docs into the history index, derives and stages the next scope, and flags (not briefs) the decisions waiting on a human for `/iyu:resume` to brief when the next session opens. Produces the document a fresh session (or another person) resumes from, so nothing depends on the current conversation surviving.
+description: Closes out a work session — records where things stand, migrates completed work out of the continuity docs into the history index, derives and stages the next scope, flags (not briefs) the decisions waiting on a human for `/iyu:resume` to brief when the next session opens, and commits everything it can confidently attribute (this session's work, pre-existing uncommitted leftovers, and its own doc edits) toward a clean `git status` — never pushing, and reporting rather than guessing at anything ambiguous. Produces the document a fresh session (or another person) resumes from, so nothing depends on the current conversation surviving.
 when_to_use: User-invoked with "세션 종료를 위한 정리", "HANDOFF/ROADMAP 업데이트", "다음 작업범위 제안", "로드맵 최신화", "wrap up and hand off". Model-invoked (announce before running, per Rule 7) only on a concrete signal that the session is actually ending — the user is closing out or the context window is nearly exhausted — or when HANDOFF.md/ROADMAP.md are visibly stale against what git log shows happened. Not for mid-task pauses, and never as a substitute for asking what to do next.
 argument-hint: "[focus or scope note]"
 allowed-tools: Read, Glob, Grep, Write, Edit, TodoWrite, Bash
@@ -197,8 +197,8 @@ second resource-blocked.}
 {Reversible self-made decisions: decision · trade-off · to correct. Or "None".}
 
 ## State of play
-{Build/test/lint status with the actual output, or explicitly "unverified". Branch, uncommitted
-work, anything a fresh clone would not reveal.}
+{Build/test/lint status with the actual output, or explicitly "unverified". Branch, the **post-commit**
+`git status` (see ## Commit below) — "clean", or the specific files still uncommitted and why.}
 ```
 
 Plus: `ROADMAP.md` with completed work removed (hygiene pass) **and its remaining phases in the
@@ -209,14 +209,42 @@ the person reading now. Carry the flagged decisions into the response too, exact
 not improvise options or a recommendation in chat that step 6 deliberately left for `/iyu:resume` to
 produce later.
 
+## Commit
+
+Run this after the docs above are in their final form — it commits them too. The goal is `git status`
+clean when the skill finishes, and that includes work this skill did not create: pre-existing
+uncommitted changes already sitting in the tree when the session started (leftover from an earlier
+session that never got committed) are in scope, not just this session's own edits.
+
+1. **Survey everything, not just what this session touched.** `git status` / `git diff --stat` —
+   include hunks that predate this session's first tool call.
+2. **Group into logical units and commit what you can confidently attribute.** Follow the project's
+   own message convention (recent `git log`); use its commit skill if one is available instead of
+   hand-rolling the message. Don't commit file-by-file, and don't fold unrelated units into one
+   commit — same anti-fragmentation bar `run-cycle` applies at its own commit boundary. This includes
+   the handoff's own edits (`HANDOFF.md`, `ROADMAP.md`, `HISTORY.md`, `STRANDS.md`, any `issues/`
+   drafts written this session) as their own logical commit, typically last since it describes
+   everything before it.
+3. **Do not guess at the unclear.** A change you cannot confidently attribute — unfinished work,
+   an ambiguous partial edit, something you can't tell is safe to bundle or is even meant to be
+   committed — is not committed. Leave it as-is and report it by name (file, what's ambiguous, what
+   would resolve it) in "State of play" instead of folding it into a commit or a message that guesses
+   at intent. A wrong guess here is worse than an honest "left uncommitted, because —".
+4. **Never push, never open a PR.** Commit only. Whether the tree ends up clean or not, push and PR
+   creation stay the human's call (global git policy) — this skill's cleanliness goal is about local
+   history, not what leaves the machine.
+5. **The report carries the real result.** "State of play" states the actual post-commit `git status`,
+   not an aspiration — if something is still uncommitted, that is itself a finding to hand to whoever
+   reads the handoff next.
+
 ## Rules
 
 1. **Remaining work only.** Completed work belongs in `HISTORY.md`. Every run enforces this, not
    just runs where something was completed.
 2. **Evidence over assertion.** Test/build claims carry their output or are marked unverified.
-3. **Do not commit.** Writing the handoff is not a checkpoint to commit — the human decides when to
-   commit, and often wants the handoff diff visible while deciding. Report what is uncommitted
-   instead.
+3. **Commit toward a clean tree, but never guess.** See ## Commit — every logical unit you can
+   confidently attribute (this session's work, pre-existing uncommitted leftovers, and the handoff's
+   own doc edits) gets committed; anything ambiguous is left alone and reported instead. Never push.
 4. **Do not implement.** If step 2 surfaces a defect, record it — fixing it starts a new session's
    work and leaves the handoff describing a state that no longer exists.
 5. **Flag, don't brief — but only where a decision exists.** A decision-class entry leaves as one
