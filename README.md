@@ -39,7 +39,7 @@ How that differs from the mainstream:
 
 > **Versioning** — two independent version numbers exist by design: `marketplace.json → version` tracks the **marketplace registry** (structure of this catalog), while each plugin's `plugin.json → version` tracks that **plugin** itself. They advance separately. Per-plugin `keywords`, `homepage`, and `license` are sourced from `plugin.json` and mirrored into the marketplace entry — the marketplace's own `metadata` object only recognizes `pluginRoot`, so per-plugin fields belong on the entry, not there. See [CHANGELOG.md](./CHANGELOG.md) for the iyu plugin history.
 
-### iyu (v1.36.1)
+### iyu (v1.37.0)
 
 **Productivity toolkit for open-source library maintainers — adaptive iterative development, session continuity, issue triage, telemetry and backlog discovery**
 

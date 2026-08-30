@@ -8,6 +8,25 @@ bugs or docs. MAJOR is never bumped automatically.
 > History is reconstructed from git from v1.11.0 onward. Earlier versions live in
 > the git log only.
 
+## [1.37.0] — 2026-08-31
+
+`/iyu:handoff` used to describe the session's end state without changing it — rule 3 explicitly
+forbade committing, on the theory that the human should decide when a commit happens and might want
+the handoff diff visible while deciding. In practice this left the working tree dirty at the end of
+nearly every session: this session's own edits, whatever the handoff itself just wrote (`HANDOFF.md`,
+`ROADMAP.md`, `HISTORY.md`, `STRANDS.md`), and any pre-existing uncommitted leftovers from a session
+that never got that far, all sat uncommitted with no record of why.
+
+### Changed
+
+- **`/iyu:handoff`** now commits toward a clean `git status` as its last step, after the continuity
+  docs are in their final form. In scope: this session's work, pre-existing uncommitted changes that
+  predate the session, and the handoff's own doc edits, grouped into logical commits per the
+  project's own message convention. Out of scope, unconditionally: pushing, and opening a PR — those
+  stay the human's call regardless of how clean the tree ends up. A change the skill cannot
+  confidently attribute (unfinished work, an ambiguous partial edit) is left uncommitted and named in
+  "State of play" instead of guessed at.
+
 ## [1.36.1] — 2026-08-28
 
 `decision-lenses.md`'s "irreducible conflict" escape hatch covered only one reason a recommendation
