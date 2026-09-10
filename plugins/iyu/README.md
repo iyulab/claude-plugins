@@ -2,7 +2,7 @@
 
 [![Claude Code Plugin](https://img.shields.io/badge/Claude%20Code-Plugin-blueviolet?logo=anthropic&logoColor=white)](https://code.claude.com/docs/en/plugins)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-1.38.0-blue.svg)](./.claude-plugin/plugin.json)
+[![Version](https://img.shields.io/badge/version-1.39.0-blue.svg)](./.claude-plugin/plugin.json)
 
 Productivity toolkit for open-source library maintainers and developers.
 
@@ -52,6 +52,13 @@ plan → execute → verify → reflect → derive-next loop — the unit that i
 or after it — is the cycle.
 
 Each cycle: Scope → Research → Implement → Test → Evaluate → Carry-Forward.
+
+**Early termination is audited, not self-declared.** A run may stop before `N` when the frontier is
+genuinely exhausted — but that claim is checked: the Stop hook opens `ROADMAP.md` and blocks the stop
+if the backlog plainly still holds unparked phase work, naming those phases back into the run. A token
+the same agent writes and reads is not verification, so the check reads a file the run is not writing.
+Blocked items and operational blockers record *the step and where the value lives* (an env var name, a
+config key) and never the value itself — these logs get committed.
 
 **Just-in-time scoping** — `N` is a ceiling, not a target. Only the current cycle is scoped concretely; everything beyond it stays a phase-level direction in the backlog. Each cycle's outcome decides the *next* cycle's scope, so the run behaves like genuine multi-turn work rather than one upfront N-cycle plan executed sequentially. Work too large for a cycle (or deserving its own) is promoted to the next cycle instead of being pre-assigned.
 

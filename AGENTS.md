@@ -66,7 +66,7 @@ Two traps worth restating, both hit this plugin before:
 
 ## Current Plugins
 
-### iyu (v1.38.0)
+### iyu (v1.39.0)
 
 Productivity toolkit for open-source maintainers. **Design principle**: teach Claude what is
 *different* about a project, not how to develop software — skills supply decision frameworks, Claude
@@ -80,7 +80,7 @@ the user-facing description. Read the skill file before changing a skill.
 |---|---|---|
 | `mindset` | Auto-activating "critical but constructive" maintenance philosophy | — |
 | `issue-triage` | Auto-activating decision matrices for issue/PR triage discussions | — |
-| `/iyu:run-cycle [N]` | Adaptive cycles: re-plan → design → execute → verify → reflect → derive-next, `N` a ceiling | capable **employee** |
+| `/iyu:run-cycle [N]` | Adaptive cycles: re-plan → design → execute → verify → reflect → derive-next, `N` a ceiling; early termination is audited against the backlog, not self-declared | capable **employee** |
 | `/iyu:handoff` | Session closeout: continuity docs, next scope, re-ordering, decisions *flagged* (not briefed) | capable **team lead** |
 | `/iyu:resume` | Session opener: reads what handoff left, synthesizes/reprioritizes against current state, *briefs* flagged and derived decisions — researching, bounded, to reach a recommendation rather than reporting the gap — records the pick immediately (applying a confirmed reorder to `## Next`), then stops short of execution | capable **employee opening the session** |
 | `/iyu:ship` | Bump → commit → push → watch CI → publish, each stage stoppable | — |
@@ -105,7 +105,9 @@ The four canonical philosophy dimensions live only in
 1. **The Stop hook is the only enforcement surface, and it matches literal tokens.**
    `HUMAN-NEEDED:` · `BLOCKED-ITEM:` · `FRONTIER-OPEN:` · `FRONTIER-EXHAUSTED:` are strings the hook
    greps for. Rewording one silently disables the check it gates. The hook has no session context —
-   anything it needs (budget, start index) must be written into the cycle log header.
+   anything it needs (budget, start index) must be written into the cycle log header. It also opens
+   `<root>/ROADMAP.md` on the exhaustion path, to audit `FRONTIER-EXHAUSTED:` as a *claim* rather than
+   accept it as a fact — a token the same agent both writes and reads is not verification.
 2. **The roadmap is a phase backlog.** No cycle numbers, dates, or durations anywhere — in
    `run-cycle`'s roadmap or `backlog-discover`'s horizons. Concrete scope exists for one cycle only.
 3. **Continuity docs hold remaining work only.** Completed work belongs in `HISTORY.md`.

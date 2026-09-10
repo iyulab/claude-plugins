@@ -28,6 +28,16 @@ difference this file exists to enforce.
   unblock it (the concrete credential/grant/step to obtain it, not just its name).** No options, no
   recommendation: there is nothing to choose, only something to supply. An options table here is
   filler, and filler teaches the reader to skim the section.
+
+  **"Concrete" means the step, never the secret.** Name what to obtain and where it lives — the
+  environment variable, the config key, the grant to request, the machine-local doc that records the
+  address. Never write the operational value itself: no host IPs or hostnames, connection strings,
+  credentials, tokens, or API keys. This is not a public-repo rule that a private repo can relax —
+  these entries are written into files that get committed, and a value is far harder to remove from
+  history than to leave out in the first place. Nothing is lost by it: the diagnostic content is the
+  *failure*, not the address. `production DB (<env: APP_DB_HOST>) unreachable — 1433 timeout, DNS
+  resolves` carries every bit of the debugging value that the literal address would, and travels
+  safely.
 - **Decision-class** (irreversible, or genuinely the human's to make) → the four parts below.
 
 ---
