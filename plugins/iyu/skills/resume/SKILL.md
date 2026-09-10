@@ -168,9 +168,12 @@ both sources — a handoff decision answered, and a step-3 reorder/prerequisite/
 this now, not at the next `/iyu:handoff` — that is the entire reason this step exists separately from
 the briefing itself.
 
-**A confirmed reorder is also applied to `## Next` itself, in the same edit.** Rewrite that section
+**A reorder is also applied to `## Next` itself, in the same edit — whether the human confirmed it
+or step 4 self-decided it.** Rewrite that section
 into the agreed order (keeping the 코드/비코드 split), and mark the entry in
-`## Decided this session` as already applied. Recording the decision without applying it leaves
+`## Decided this session` as already applied. A self-decided reorder is the common case, not the
+exception — leaving *those* recorded-but-unapplied would reopen the window this step exists to close.
+Recording the decision without applying it leaves
 `HANDOFF.md` asserting an order the same file has just been told is wrong — and
 [continuity-docs.md §2](${CLAUDE_SKILL_DIR}/../_shared/continuity-docs.md) makes `## Next` the
 authoritative statement of what comes next, which is what `/iyu:run-cycle` Preparation reads as its

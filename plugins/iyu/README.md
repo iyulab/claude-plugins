@@ -167,8 +167,9 @@ answered decision.
 **It is the only skill in this plugin whose entire point is to pause and wait — and then stop.** Every
 decision-class entry gets an answer before the session-opening work is called done — and the instant
 one lands, it is written into `HANDOFF.md`'s "Decided this session" section immediately, not left for
-the next `/iyu:handoff` to reconstruct from a git diff that might not even show it. **A confirmed
-reorder is also applied to `HANDOFF.md`'s own "Next" section right then** — leaving it recorded but
+the next `/iyu:handoff` to reconstruct from a git diff that might not even show it. **A reorder — confirmed
+by you or self-decided as reversible — is also applied to `HANDOFF.md`'s own "Next" section right
+then** — leaving it recorded but
 unapplied would let a later session start from an order the same file has already been told is wrong,
 since "Next" is what `/iyu:run-cycle` reads as its opening scope. Phase-level order in `ROADMAP.md`
 stays the next handoff's to apply. That immediate write-back is what
