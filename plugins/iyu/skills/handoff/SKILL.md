@@ -63,7 +63,9 @@ The conversation may already be compacted, and it is not the record. Read the ac
 - The existing `## Decided this session` entries in `HANDOFF.md`, if `/iyu:resume` already recorded
   one earlier in this same session — carry these forward as **fact**, not something to re-derive; a
   decision `/iyu:resume` wrote back the instant it was made may leave no distinguishing git diff to
-  reconstruct it from
+  reconstruct it from. **An entry marked already applied is applied to `## Next` only** — a confirmed
+  reorder still has to be carried into `ROADMAP.md`'s phase order here (step 5), but do not re-apply
+  it to `## Next`, which already holds it
 
 **Unobserved data stays "unknown".** A handoff asserting a test passed, when no one ran it, is worse
 than one saying "unverified" — the next session builds on it. If something matters and is unknown,

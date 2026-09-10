@@ -47,10 +47,14 @@ difference this file exists to enforce.
 4. **The recommendation — one named option, its reason, and what it locks in.** One or two
    sentences. **What it locks in** is the part that is easy to omit and hardest to recover from: the
    migration, the published version, the API consumers will depend on. That irreversibility is what
-   the human is actually being asked about. **If a confident recommendation can't be formed, name
-   which cause in [decision-lenses.md's "When a recommendation can't be formed"
-   table](./decision-lenses.md#when-a-recommendation-cant-be-formed) applies, and respond the way
-   that row prescribes** — do not manufacture a preference to fill the slot.
+   the human is actually being asked about. **This slot is filled in every briefing but one.** A
+   recommendation that doesn't form on the first pass is a signal to go and get what's missing:
+   [decision-lenses.md's "When a recommendation can't be formed"
+   table](./decision-lenses.md#when-a-recommendation-cant-be-formed) says whether (b) external
+   information or (c) an internal anchor is absent, and how to settle each — both bounded, both
+   ending in a recommendation. The slot is left unfilled **only for (a), an irreducible value
+   conflict**, and only once (b) and (c) are ruled out. Never manufacture a preference to fill it —
+   and never report "cannot recommend" without saying what you did to try.
 
 ---
 

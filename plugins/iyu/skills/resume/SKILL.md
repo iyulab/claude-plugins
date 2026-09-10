@@ -3,7 +3,7 @@ name: resume
 description: Opens a work session — reads the continuity docs and recent state, synthesizes where things actually stand, proposes a re-prioritized next scope with any derived prerequisites or objections, and briefs the decisions `/iyu:handoff` flagged with grounded options and a recommendation. Records what gets decided immediately, then stops — execution is a separate, explicit step.
 when_to_use: User-invoked with "세션 시작", "다음 작업 확인", "핸드오프 확인하고 시작", "resume this session". Model-invoked (announce before running, per rule 6) when a fresh session's first message states no explicit task and the continuity root already has a `HANDOFF.md` — the same self-invoke bar `/iyu:handoff` uses, since this skill proposes and decides but never implements. Not for mid-session re-checks (read `HANDOFF.md` directly for that), and not a substitute for `/iyu:run-cycle` — resume always stops short of execution; run-cycle is the separate, explicit step that starts it.
 argument-hint: "[focus or scope note]"
-allowed-tools: Read, Glob, Grep, Edit, TodoWrite, Bash
+allowed-tools: Read, Glob, Grep, Edit, TodoWrite, Bash, WebSearch, WebFetch
 ---
 
 # Session Resume
@@ -106,10 +106,11 @@ For each entry in `## Waiting on you`, and each step-3 proposal that rises to de
   Time has passed since it was parked. Still blocked → present as-is. Resolved → say so and drop it.
 - **Decision-class** (a one-line flag, unbriefed) — brief it now, in full, per
   [decision-briefing.md §2](${CLAUDE_SKILL_DIR}/../_shared/decision-briefing.md): the decision in one
-  line, **at least two grounded options** (feasibility and cost from what you just read in step 2, not
-  invented), the **cross-lens read**
+  line, **at least two grounded options** (feasibility and cost from what you just read in step 2, or
+  from the grounding pass below — never invented), the **cross-lens read**
   ([decision-lenses.md](${CLAUDE_SKILL_DIR}/../_shared/decision-lenses.md), only the lenses that
   separate the leading options), and a **named recommendation** with what it locks in.
+  **The recommendation is not optional — run the grounding pass below before ever leaving it empty.**
   **Judge reversibility by the step-3 split.** A code decision reverses through the ordinary channel
   (git revert / edit again) — most read L1 once a recommendation exists. A non-code decision is
   reversible only if undoing it costs nothing beyond editing a doc; anything the central policy
@@ -122,6 +123,33 @@ For each entry in `## Waiting on you`, and each step-3 proposal that rises to de
   action>**, the same shape `run-cycle`'s End-of-Run Report part 3 uses for its Decisions Ledger. This
   is confirm-not-approval: say it, record it (step 5), and move on — do not wait on a reply the way a
   decision-class entry does (rule 3 is unaffected, only 다른점 있는지 gets a look).
+
+**Grounding pass — settle the unknown instead of reporting it.** A briefing whose recommendation slot
+reads "cannot recommend" hands the investigation back to the person with the least context on it,
+which is the one thing `decision-briefing.md` exists to prevent. So when a recommendation does not
+form on the first pass, close the gap before writing the briefing:
+
+- **Name the one unknown that separates the leading options.** Not everything unknown about the
+  decision — the single thing whose answer would move the pick. If nothing would, there is no gap and
+  the recommendation was already available.
+- **Settle it, bounded (~5 min per decision-class entry)** — the same bound `run-cycle` puts on its
+  self-unblock check, and for the same reason: an unbounded check is how a session-opener turns into
+  a research session. Read the file, the test, the dependents, the dependency's actual source; run
+  the cheap command rather than naming it; `WebSearch`/`WebFetch` an ecosystem convention or a
+  library's real behavior; read
+  [philosophy-alignment-guide.md](${CLAUDE_SKILL_DIR}/../mindset/references/philosophy-alignment-guide.md)
+  plus CLAUDE.md/README when what's missing is the project's own criterion.
+- **Then recommend on what you found** — and when the missing piece was the project's *criterion*
+  (cause (c)), recommend the criterion itself alongside the option it implies. See
+  [decision-lenses.md](${CLAUDE_SKILL_DIR}/../_shared/decision-lenses.md)'s cause table: (b) and (c)
+  end in a recommendation, and **(a) — an irreducible value conflict — is the only case that does
+  not**, reachable only once (b) and (c) are ruled out.
+- **If the bounded search came back empty, say what you searched**, not only what is still unknown.
+  That is a finding; "unknown" alone is not.
+
+This does not widen the skill (rule 9). Grounding a decision that is *already on the table* is
+judgment over known work — the same category as step 3's reordering. Scoping work nobody has
+identified yet is still `/iyu:backlog-discover`'s job.
 
 Nothing flagged and no step-3 proposal rose to decision-class → say "None" and move straight to
 confirming In flight / Next. Do not manufacture a decision to fill the section.
@@ -138,9 +166,21 @@ The moment an answer lands (or a self-made choice was surfaced), write it into
 shape `/iyu:handoff` uses: decision · trade-off · **to correct: <the reverse action>**. This covers
 both sources — a handoff decision answered, and a step-3 reorder/prerequisite/objection confirmed. Do
 this now, not at the next `/iyu:handoff` — that is the entire reason this step exists separately from
-the briefing itself. When `/iyu:handoff` next runs, it reads this entry as an inherited fact (its step
-2) — including a confirmed reorder, which is how `/iyu:handoff` applies it to `ROADMAP.md`'s actual
-order; this skill never writes `ROADMAP.md` directly (rule 1).
+the briefing itself.
+
+**A confirmed reorder is also applied to `## Next` itself, in the same edit.** Rewrite that section
+into the agreed order (keeping the 코드/비코드 split), and mark the entry in
+`## Decided this session` as already applied. Recording the decision without applying it leaves
+`HANDOFF.md` asserting an order the same file has just been told is wrong — and
+[continuity-docs.md §2](${CLAUDE_SKILL_DIR}/../_shared/continuity-docs.md) makes `## Next` the
+authoritative statement of what comes next, which is what `/iyu:run-cycle` Preparation reads as its
+opening scope. A decision recorded only in prose is one a later session can start without ever
+seeing.
+
+**`ROADMAP.md` is still not this skill's to write (rule 1).** Phase-level order stays
+`/iyu:handoff`'s: when it next runs it reads `## Decided this session` as an inherited fact (its step
+2) and carries the reorder into `ROADMAP.md`. An entry marked applied means applied *to `## Next`* —
+`/iyu:handoff` still has to apply it to `ROADMAP.md`, and should not re-apply it to `## Next`.
 
 ### 6. Stop — hand off, don't execute
 
@@ -154,21 +194,24 @@ skill never supplies it on its own.
 
 ## Rules
 
-1. **Read plus one kind of write only.** This skill never migrates `ROADMAP.md` → `HISTORY.md`, never
-   rewrites `ROADMAP.md`'s order directly. The only file write is appending to `HANDOFF.md`'s
-   `## Decided this session` section — a confirmed reorder is recorded there (step 5), not applied to
-   `ROADMAP.md` here; the next `/iyu:handoff` is what carries it into `ROADMAP.md`'s actual order.
-2. **Ground options and proposals in what step 2 actually read.** An unknown cost stays "unknown",
-   named with the command that would settle it — same discipline as `/iyu:handoff` step 2. A step-3
-   reorder or prerequisite needs a stated reason grounded in step 2's read, not a hunch.
+1. **`HANDOFF.md` is the only file this skill writes.** It never migrates `ROADMAP.md` →
+   `HISTORY.md`, never touches `ROADMAP.md` at all, and never runs `/iyu:handoff`'s hygiene pass.
+   Inside `HANDOFF.md` it writes exactly two things (step 5): the `## Decided this session` entry,
+   and — when a reorder was confirmed — the `## Next` order that entry decides. Phase-level order in
+   `ROADMAP.md` stays `/iyu:handoff`'s to apply.
+2. **Ground options and proposals in what was actually read or run.** A step-3 reorder or
+   prerequisite needs a stated reason grounded in step 2's read, not a hunch. An unknown that
+   *separates the leading options* is **settled by step 4's grounding pass**, not reported as
+   unknown — run the command instead of naming it. Only an unknown that survives that bounded pass
+   stays "unknown", and it is reported together with what was searched.
 3. **Silence is not consent.** A decision-class entry waits for an answer; do not proceed on the
    recommendation without one.
 4. **"None" is a complete outcome.** If nothing was flagged and step 3 raised no proposal, say so — it
    is the good result, not a gap to fill.
 5. **Never starts the work itself.** Step 6 ends the skill at a settled, confirmed scope —
    implementation begins only on a separate explicit instruction or `/iyu:run-cycle`, never
-   automatically once decisions are answered. Reading to ground a proposal or an option is not
-   starting the work; nothing past step 6 is this skill's job.
+   automatically once decisions are answered. Reading, running a cheap command, or searching to
+   ground a proposal or an option is not starting the work; nothing past step 6 is this skill's job.
 6. **Model-invoked runs announce first.** Same as `/iyu:handoff` rule 7 — say in one line that a
    resume is running and why, before touching any file.
 7. **Code vs non-code splits both presentation and the reversibility read.** Step 3 shows In
@@ -181,5 +224,8 @@ skill never supplies it on its own.
    line keeps toward the same skill.
 9. **Synthesis is judgment over known work, not discovery of new work.** Step 3's reordering,
    prerequisite-derivation, and objections operate on what the continuity docs and current repo state
-   already contain. Scoping work nobody has identified yet stays `/iyu:backlog-discover`'s job (rule
-   8's pointer) — resume recommends it, it does not attempt it.
+   already contain. **The boundary is what the work is aimed at, not whether reading or searching
+   happens** — step 4's grounding pass may read files, run cheap commands, and search the web to
+   settle a decision *already on the table*, and that is still judgment over known work. Scoping work
+   nobody has identified yet stays `/iyu:backlog-discover`'s job (rule 8's pointer) — resume
+   recommends it, it does not attempt it.
