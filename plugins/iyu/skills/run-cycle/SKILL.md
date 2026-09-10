@@ -11,21 +11,22 @@ hooks:
           timeout: 180
           prompt: |
             Decide block/allow from durable on-disk state — the cycle logs ARE the state. Read them with your tools; do not rely on conversation memory, on the hook input alone, or on re-deriving the plan.
-            Hook input (JSON): $ARGUMENTS — use its `cwd` as the search root. It does NOT carry the run's cycle budget; step 1 reads that from the logs.
-            0. Resolve the log directory from disk — do NOT assume a literal path. Glob `**/cycle-logs/cycle-*.md` (skip `node_modules`, `.git`, build output). Exactly one `cycle-logs/` (commonly `claudedocs/cycle-logs/`) — use it. Several (an umbrella repo tracking several submodules) — take the one holding the most recently modified `cycle-*.md`; that is the run writing now. Every path below is relative to that ONE directory; mixing in a sibling submodule's logs corrupts the count in step 1. **No match at all** — the run has not written cycle 1 yet: treat cycles completed as 0, treat the latest/previous log as absent in steps 2–2b, and continue to step 3 (with no log there is no frontier token, so step 3 blocks — a run that stopped before its first log is never a valid stop). Do NOT allow merely because no directory resolved.
-            1. List `cycle-*.md` in the resolved directory and read the **highest-indexed** one's header (`Budget:` / `Start:` / `Status:`). Every log this skill writes carries them from the moment its cycle starts, and they are the only place the hook can learn this run's budget — the hook input carries no invocation arguments. **Cycles completed = logs whose index is >= `Start:` AND whose `Status:` is `complete`** — not the raw file count, and never counting the in-progress log of the cycle running now. One state is NOT budget exhaustion: the newest log has **no `Budget:`/`Start:` header at all**. Such a log predates this scheme, so it belongs to an earlier run and this run has written nothing yet — treat cycles completed as 0 and continue to step 3 (which blocks, since there is no frontier token for this run). Do NOT extend that to a headered, `complete` log at its own budget ceiling: from the hook's side that is indistinguishable from this run finishing cleanly, and blocking there would produce a run that can never end. The narrow window it leaves — a stop between Preparation's start and the stub write, in a repo whose previous run also filled its budget — fails toward allowing, which the user resolves by invoking again; the reverse failure they cannot escape.
-            2. Read the latest cycle log. Distinguish TWO kinds of human blocker, they behave oppositely:
-               - Run-fatal `HUMAN-NEEDED:` — a constitution conflict / structural invalidation that poisons ALL remaining work. This ends the run.
-               - Item-level `BLOCKED-ITEM:` in the Blocked-on-Human ledger — one scope needs a credential or user-only decision, but other work is independent. This PARKS one scope; it does NOT end the run.
-               Then note whether any UNBLOCKED autonomous work remains: an unblocked Next-Cycle Scope, an autonomous-eligible Emergent Next Capability, unstarted phase-backlog work not sitting in the ledger, unresolved actionable defects, or an actionable value-ladder signal.
-            2a. Frontier token — search the latest log for these markers as literal strings (same way you search for `HUMAN-NEEDED:` / `BLOCKED-ITEM:`; they live in the Emergent Next Capability line, position within it is irrelevant). Exactly one must be present:
+            Hook input (JSON): $ARGUMENTS — use its `cwd` as the search root. It carries no invocation arguments, so step 1 reads this run's budget from the logs.
+            0. Resolve the log directory from disk — never assume a literal path. Glob `**/cycle-logs/cycle-*.md` (skip `node_modules`, `.git`, build output). One match → use it. Several (an umbrella repo) → the one holding the most recently modified `cycle-*.md`. Every path below is relative to that ONE directory; mixing in a sibling submodule's logs corrupts step 1. **No match at all** → cycles completed = 0, treat both logs as absent in steps 2–2b, and continue to step 3, which blocks: with no log there is no frontier token, and a run that stopped before its first log is never a valid stop. Never allow merely because nothing resolved.
+            1. Read the **highest-indexed** `cycle-*.md`'s header (`Budget:` / `Start:` / `Status:`). **Cycles completed = logs whose index is >= `Start:` AND whose `Status:` is `complete`** — not the raw file count, and never the in-progress log of the cycle running now. If the newest log has **no `Budget:`/`Start:` header at all**, it predates this scheme and this run has written nothing: completed = 0, continue to step 3. Do NOT extend that to a headered `complete` log sitting at its own ceiling — from here that is indistinguishable from a clean finish, and blocking there yields a run that can never end.
+            2. Read the latest log. Two kinds of human blocker, opposite behaviour:
+               - `HUMAN-NEEDED:` — run-fatal (a constitution conflict or structural invalidation poisoning ALL remaining work). Ends the run.
+               - `BLOCKED-ITEM:` in the Blocked-on-Human ledger — one scope needs a credential or a user-only decision, but other work is independent. Parks one scope; never ends the run.
+               Then note whether any UNBLOCKED autonomous work remains: an unblocked Next-Cycle Scope, an autonomous-eligible Emergent Next Capability, unstarted phase-backlog work not in the ledger, unresolved actionable defects, or an actionable value-ladder signal.
+            2a. Frontier token — search the latest log for these literal strings. Exactly one must be present:
                - `FRONTIER-OPEN:` — a follow-on capability was derived; work remains.
                - `FRONTIER-EXHAUSTED:` — derivation ran across all three lenses and produced no autonomous-eligible candidate. Only this token permits the early-exhaustion allow path.
                NEITHER token present = derivation was skipped, which is never a valid reason to stop.
-            2b. Ledger continuity check — also read the PREVIOUS cycle log. Both ledgers (Blocked-on-Human, Decisions) are carry-forward state: if the previous log carried an entry and the latest log neither carries it forward nor records its resolution, that entry was silently dropped. A dropped ledger entry makes the latest log an unreliable basis for terminating, so treat it as a log defect.
-            3. Respond BLOCK if ALL hold: completed < total budget; no run-fatal `HUMAN-NEEDED:` was emitted; AND ( at least one UNBLOCKED autonomous candidate remains — any of the items in step 2 — OR neither frontier token from step 2a is present, i.e. emergent derivation was skipped — OR step 2b found a dropped ledger entry, in which case the block is to reconstruct it from the previous log ). An item-level `BLOCKED-ITEM:` / Blocked-on-Human entry is NEVER by itself a reason to allow stopping while other unblocked work exists — park it and keep going.
-            4. Respond ALLOW if: completed >= total budget; OR a run-fatal `HUMAN-NEEDED:` was emitted; OR every remaining candidate is either done or parked in the Blocked-on-Human ledger (NO unblocked autonomous work remains anywhere) AND the latest log carries `FRONTIER-EXHAUSTED:` AND the value ladder exhausted ("lifecycle verified"). Before responding ALLOW on ANY of these paths, confirm a `RUN-SUMMARY-*.md` exists in the resolved directory covering this run — the End-of-Run Report is required on every termination path. If it is missing, respond BLOCK with "generate the End-of-Run Report first"; that block is satisfied by writing the report.
-            Guard: never BLOCK for MORE WORK once completed >= total budget — that is the hard ceiling. The single permitted block at or past the ceiling is the missing End-of-Run Report (step 4), which one turn of writing resolves. The healthy terminal state is "all remaining work is human-blocked or exhausted", NOT "the first human blocker was hit".
+            2b. Ledger continuity — read the PREVIOUS log too. Both ledgers (Blocked-on-Human, Decisions) are carry-forward state: an entry the previous log carried that the latest neither carries forward nor records as resolved was silently dropped. Treat that as a log defect.
+            3. Respond BLOCK if ALL hold: completed < budget; no run-fatal `HUMAN-NEEDED:` was emitted; AND ( at least one UNBLOCKED candidate from step 2 remains — OR neither step-2a token is present — OR step 2b found a dropped entry, in which case the block is to reconstruct it from the previous log ). A `BLOCKED-ITEM:` is NEVER by itself a reason to allow stopping while unblocked work exists — park it and keep going.
+            4. Respond ALLOW if: completed >= budget; OR a run-fatal `HUMAN-NEEDED:` was emitted; OR every remaining candidate is done or parked in the ledger (no unblocked autonomous work anywhere) AND the latest log carries `FRONTIER-EXHAUSTED:` AND the value ladder is exhausted. Before ALLOW on ANY path, confirm a `RUN-SUMMARY-*.md` covering this run exists in the resolved directory; if it is missing, respond BLOCK with the report instruction below.
+            Guard: never BLOCK for MORE WORK once completed >= budget — that is the hard ceiling. The one permitted block at or past it is the missing report, which one turn of writing resolves. The healthy terminal state is "all remaining work is human-blocked or exhausted", NOT "the first human blocker was hit".
+            Reason text — assume the run's context was compacted and the skill body truncated, so this reason is the only place a lost contract can be restated. Say what to do next AND spell out verbatim any format the block turns on. A missing frontier token blocks with the literal shapes `FRONTIER-OPEN: <candidate> [autonomous|discussion]` and `FRONTIER-EXHAUSTED: <why, across all three lenses>`, plus where they go (the latest cycle log's Emergent Next Capability line). A missing report blocks with its path `<resolved cycle-logs dir>/RUN-SUMMARY-{YYYY-MM-DD}.md` and its three parts: progress with STEP 3 evidence · deferred L2 decisions, briefed · self-made L1 decisions, each with how to reverse it.
             Output contract — respond with JSON and nothing else: ALLOW is `{"ok": true, "reason": "<one line>"}`; BLOCK is `{"ok": false, "reason": "<what to do next — this text becomes the run's next instruction>"}`. "BLOCK"/"ALLOW" above name the two decisions; `ok` is how you report them.
 ---
 
@@ -50,6 +51,50 @@ Why — the failure modes behind both, the L0–L3 rationale, and the unscoped-`
 depend on remembering earlier cycles from conversation. Every cycle reconstructs its state from
 on-disk artifacts (previous `cycle-*.md`, `ROADMAP.md`, git log). Write logs richly enough that a
 fresh context could resume from them with zero conversational history.
+
+**Compaction truncates these instructions too, not only the conversation.** Auto-compaction
+re-attaches just the **first 5,000 tokens** of a skill, and this body is longer than that — so on a
+long run the later sections are gone from context while the run is still going. Three things make
+that survivable, and each is load-bearing rather than incidental:
+
+- **The per-cycle loop is front-loaded; run-level procedure lives in `references/`** and is named at
+  the point it is needed. A pointer costs a line and survives; the procedure it points at can be
+  re-read on demand. When a section here reads as a summary with a link, **follow the link** rather
+  than reconstructing the procedure from memory.
+- **The previous cycle log is a worked example of the current one.** STEP 0 reads it anyway; it
+  carries the section shape and the literal `FRONTIER-…` marker this run is expected to write.
+- **The Stop hook is unaffected** — it runs with its own prompt and reads the logs directly, so its
+  BLOCK reason restates whatever contract the block is about. Treat that text as authoritative.
+
+## The cycle, at a glance
+
+This block is the loop in miniature, placed here on purpose: it is inside the surviving window, so a
+compacted run still holds the whole sequence and can follow the links below for detail it has lost.
+
+| Step | Weight | What it must produce |
+|---|---|---|
+| **0 Re-plan** | always, light (~5 min) | This cycle's scope — **exactly one cycle**, never a cycle-numbered table. Open the log stub first; re-check the Blocked-on-Human ledger, absorb any reverted decision, inherited defects first |
+| **1 Design** | conditional | Skipped for isolated pattern-following change; otherwise survey the codebase, research, pick an approach with a one-line rationale |
+| **2 Execute** | always | The scope, incrementally. Inherited defects before new work. Root cause, not symptom |
+| **3 Verify** | always | Acceptance criteria stated *before* checking them; test/lint/build output as **evidence, not assertion**; drive the real surface when user-facing; fix and re-run failures in-cycle |
+| **4 Reflect** | always, mandatory | Six dimensions, judged from outside. Defects fixed here; structural improvements become proposals; orphans removed |
+| **5 Derive Next** | always, mandatory | Carry-Forward · both ledgers carried forward · **exactly one frontier token** · Roadmap Revisions · hygiene pass · Next-Cycle Scope for **one** cycle. Then flip the log's `Status:` to `complete` |
+
+**The literals a cycle writes** — the Stop hook greps for them as strings, so they are written
+verbatim or not at all. Exactly one frontier token per log, in the Emergent Next Capability line:
+
+```
+FRONTIER-OPEN: <candidate> [autonomous|discussion]
+FRONTIER-EXHAUSTED: <why, across all three lenses>
+```
+
+Plus, when they apply: `HUMAN-NEEDED: <reason>` (run-fatal only — ends the run) and
+`BLOCKED-ITEM: <scope> — <reason + what was tried + what would unblock it>` (parks one scope, never
+ends the run).
+
+**At the end of the run**, not of a cycle: the End-of-Run Report, then the commit — both
+unconditional on every termination path, procedure in
+[references/run-level-procedures.md](${CLAUDE_SKILL_DIR}/references/run-level-procedures.md).
 
 ## Continuity root — where that durable state lives
 
@@ -381,28 +426,21 @@ Status: {in-progress | complete}
 
 ---
 
-## Surplus-Cycle Value Ladder
+## Surplus-Cycle Value Ladder (summary — procedure in references)
 
-When primary roadmap work finishes and cycles remain, a passionate maintainer does not down tools — they harden, document, and accelerate. Most agentic loops terminate the moment the task compiles; this skill instead treats the **remaining cycle budget as an investment fund for the full software lifecycle**.
+When primary roadmap work finishes and cycles remain, a passionate maintainer does not down tools —
+they harden, document, and accelerate. The remaining budget is an **investment fund for the full
+software lifecycle**, climbed in order: ① main loop → ② 내공/durable value → ③ 방어선/stability →
+④ 가속기/efficiency. Within each track, act only where the project shows a concrete gap; do not
+invent work. Additive and low-risk → do it this cycle through STEP 2→4 and log it as `[ladder:②/③/④]`;
+invasive or opinionated → propose it in Derive-Next. A defect found in any surplus track drops the
+surplus work and returns to track ①. Track ②'s documentation rung is the always-applicable floor.
 
-This is the project-specific judgment a generic harness cannot supply, and it is our distinctive contribution — so it stays inside the minimal-intervention boundary: surplus cycles never exceed the requested budget `N`, never preempt defect resolution, and follow the same STEP 1→4 discipline (including "structural changes are proposals, not silent edits").
+**Rungs, signals, and the execution guard in full:
+[references/run-level-procedures.md](${CLAUDE_SKILL_DIR}/references/run-level-procedures.md).**
+Termination is governed by rule 9(d), not by this ladder.
 
-**Climb in order. Within each track, act only where the project shows a concrete gap (a signal) — do not invent work.**
-
-| Track | Rungs (in order) | Signal that justifies a rung |
-|-------|------------------|------------------------------|
-| **① Main loop** *(always first)* | plan → execute → verify → cleanup | Open roadmap items, inherited Carry-Forward, **or an autonomous-eligible Emergent Next Capability (STEP 5)** remain |
-| **② 내공 / Durable value** | research/learning capture → structural refactoring → documentation & asset-ization | Undocumented surface, drifted docs, repeated patterns begging extraction, lessons worth recording |
-| **③ 방어선 / Stability** | test/coverage & monitoring gaps → security & compliance → error-handling & resilience | Untested critical path, missing input validation, unhandled failure mode, no observability hook |
-| **④ 가속기 / Efficiency** | CI/DevOps/platform → DX improvements | Manual repetitive steps, slow/flaky pipeline, awkward local setup |
-
-**Execution guard (keeps minimal-intervention intact):**
-- **Additive & low-risk → do it** this cycle (doc-sync, filling a test gap, adding validation, a small CI fix). Run it through STEP 2→4 and log it as a `[ladder:②/③/④]` cycle.
-- **Invasive or opinionated → propose in Derive-Next**, do not perform (large refactors, dependency swaps, new infra, security architecture). Human decides.
-- **Regression back-flow** — if any surplus track surfaces a defect or regression, drop the surplus work and return to the main loop (track ①, STEP 2). Defects always outrank surplus value; resume climbing only once the regression is resolved.
-- Track ② rung "documentation" is the floor: even when nothing else applies, a stale-doc sweep (README, `docs/`, CLAUDE.md, CHANGELOG, examples) plus the continuity-doc lean check (Continuity-Doc Hygiene) is always in-scope surplus work.
-
-**Terminate early only when** the ladder surfaces no *unblocked* signal the remaining budget can act on, on top of the conditions in **rule 9(d)** — which is the normative home for the termination test; do not restate it here. Log which rungs were climbed and which were proposed.
+---
 
 ## Execution Rules
 
@@ -420,55 +458,6 @@ This is the project-specific judgment a generic harness cannot supply, and it is
 10. **Continuity chain**: Always read the previous cycle's Carry-Forward, Next-Cycle Scope, and Roadmap Revisions before STEP 0. The previous cycle's Next-Cycle Scope is this cycle's starting scope.
 11. **Latent work priority**: The best cycles surface structural improvements nobody thought to ask about — propose them in Derive-Next with rationale. Do not fold them silently into scope.
 12. **Cost discipline**: STEP 0 is bounded (~5 min). If drift check seems to require deep analysis, that is a RE-PLAN signal — handle it explicitly rather than letting STEP 0 bloat.
-
-## End-of-Run Report
-
-At run end — on **every** termination path (budget reached, HARD STOP, or early exhaustion) — synthesize one **report to the human** before the final commit. This is the "delegate reports back to their manager" moment: what got done, what was decided autonomously and can still be corrected, and what was escalated because it was not the delegate's to decide. Write it to `<root>/cycle-logs/RUN-SUMMARY-{YYYY-MM-DD}.md` (a run-level artifact, distinct from per-cycle logs — beside them so the Stop hook finds it in the directory it already resolved) **and** surface the same three parts in the final chat response. It is unconditional — a run has no mode in which the report is skipped.
-
-Three parts — draw them straight from the ledgers the cycles already maintained; this is a report, not a re-derivation:
-
-1. **Progress / achievements** — what shipped this run, with STEP 3 evidence (test counts, build/lint result). Assertions are not evidence (rule 7.5).
-2. **Deferred decisions (L2 — escalated, awaiting you)** — the Pending Human Decisions plus the full Blocked-on-Human ledger. Present them per **[decision-briefing.md](${CLAUDE_SKILL_DIR}/../_shared/decision-briefing.md)**: a *resource-blocked* entry keeps the short blocked · what-was-tried · what-would-unblock form (§1), while a *decision-class* entry is **briefed** (§2) — the decision in one line, ≥2 observed options (one usually "defer"), the cross-lens read of how the leading ones differ, and a named recommendation with **what it locks in**. These are the decisions the run did not make because they were irreversible or yours alone; handing them over as bare questions puts the analysis back on the person furthest from the work. This is a *report-time* synthesis of ledgers that already exist — the per-cycle `BLOCKED-ITEM:` entry format is unchanged (§3), since those entries govern termination and must stay cheap to write. Nothing to defer is a valid and good outcome: write "None" rather than promoting an L1 decision to fill the section.
-3. **Self-made decisions (L1 — done, reversible, confirm or correct)** — the Decisions Ledger: each `provisional` decision with its trade-off and a one-line **"to correct: <the reverse action>"**. The human confirms (→ `confirmed`) or reverts (→ `reverted`, picked up by next run's STEP 0). Presenting these — not hiding them — is what makes proceed-first-correct-later safe.
-
-One closing line, **only when the run ended on `FRONTIER-EXHAUSTED:` with budget still unspent**: the run stopped because the backlog is dry, not because the budget ran out — recommend running `/iyu:backlog-discover` to refill it before the next run. This is a pointer for the human, not an invocation: the two skills stay independent (`run-cycle` only consumes `ROADMAP.md`, `backlog-discover` only feeds it), and nothing here merges anything.
-
-If a `RUN-SUMMARY-{date}.md` already exists (a resumed or same-day run), append a new run block rather than overwriting. `TREND.md`-style indexing is out of scope — one file per day is enough.
-
-## Commit
-
-Before the single end-of-run commit, run a **lightweight release-readiness check**. It *verifies and packages* — it never performs a release.
-
-**Checklist** (items the project lacks are N/A — skip them, do not invent them):
-
-1. **Version consistency** — if any version-bearing file changed this run, confirm all agree (e.g. `plugin.json`, `marketplace.json`, README badges, package manifest, intended tag). A mismatch is a defect: fix it before committing.
-2. **Changelog** — if the project keeps a CHANGELOG / release notes, confirm this run's changes are recorded. A missing entry is additive/low-risk: add it now.
-3. **Docs** — confirm the doc-sync floor (ladder ②) ran and reported consistent, and that continuity docs are lean (no completed items left in `ROADMAP.md`/`HANDOFF.md`; completed work indexed in `HISTORY.md`); do not re-run the sweep here.
-4. **Evidence** — package the actual STEP 3 verification output (test counts, build result, lint status). Assertions are not evidence (rule 7.5); if you cannot show the output, it is not verified.
-
-Record the outcome as a `## Release Readiness` block in the final cycle log:
-
-```markdown
-## Release Readiness
-- Version: {all version files agree at X.Y.Z, or "n/a"}
-- Changelog: {entry present for this run, or "n/a"}
-- Docs: {doc-sync verified consistent; continuity docs lean}
-- Evidence: {e.g. `npm test` 142 passed; build ok; lint clean}
-- Tag/publish: deferred to human/CI (not performed)
-```
-
-Then:
-
-- Generate the **End-of-Run Report** (above) first — it is the run's report-to-human and must exist before the code is committed
-- **Commit boundary — default once per run, split only when the single diff stops being reviewable.** One commit after all cycles complete (or on HARD STOP / early termination) is the default, and it is the right default: the governing policy is anti-fragmentation (bundle into logical units; do not let commit count balloon). But a long run collapses many verified states into one unreviewable diff with **no rollback boundary between cycles** — a regression introduced in cycle K and caught in K+3 has no commit edge to revert to. So when the run is long enough that a reader could not review the diff in one pass, split on **verified-cycle boundaries** (each cycle's passing STEP 3 is already a clean point), grouping inseparable cycles together. Never split below a verified cycle, and never commit an unverified state
-- Commit with `git` directly, following the project's message convention. If the session has a
-  commit skill available (`/commit` ships in some plugin sets, not in Claude Code itself), use it
-  instead of hand-rolling the message
-- **Do NOT perform the release** — no tagging, publishing, or pushing. A run ends at a commit; taking
-  the work out is a separate, human-initiated decision (`/iyu:ship`, or the project's own path)
-  because pushing spends CI budget and publishing cannot be undone. If the run left the project at a
-  point worth releasing, say so in the End-of-Run Report and stop there
-- **NEVER bump MAJOR version**
 
 ## Start
 

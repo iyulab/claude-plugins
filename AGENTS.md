@@ -66,7 +66,7 @@ Two traps worth restating, both hit this plugin before:
 
 ## Current Plugins
 
-### iyu (v1.37.0)
+### iyu (v1.38.0)
 
 Productivity toolkit for open-source maintainers. **Design principle**: teach Claude what is
 *different* about a project, not how to develop software — skills supply decision frameworks, Claude
@@ -82,7 +82,7 @@ the user-facing description. Read the skill file before changing a skill.
 | `issue-triage` | Auto-activating decision matrices for issue/PR triage discussions | — |
 | `/iyu:run-cycle [N]` | Adaptive cycles: re-plan → design → execute → verify → reflect → derive-next, `N` a ceiling | capable **employee** |
 | `/iyu:handoff` | Session closeout: continuity docs, next scope, re-ordering, decisions *flagged* (not briefed) | capable **team lead** |
-| `/iyu:resume` | Session opener: reads what handoff left, synthesizes/reprioritizes against current state, *briefs* flagged and derived decisions, records the pick immediately, then stops short of execution | capable **employee opening the session** |
+| `/iyu:resume` | Session opener: reads what handoff left, synthesizes/reprioritizes against current state, *briefs* flagged and derived decisions — researching, bounded, to reach a recommendation rather than reporting the gap — records the pick immediately (applying a confirmed reorder to `## Next`), then stops short of execution | capable **employee opening the session** |
 | `/iyu:ship` | Bump → commit → push → watch CI → publish, each stage stoppable | — |
 | `/iyu:backlog-discover` | Research playbook → diagnosis, ranking, staged proposal (never auto-merged) | capable **owner-manager** |
 | `/iyu:telemetry-az` | App Insights triage: defect issues + report-only usage trends | capable **analyst** |
@@ -95,7 +95,7 @@ copies of a rule become four rules the moment one is edited:
 | `continuity-docs.md` | root resolution · what belongs in each doc · hygiene pass · next-scope derivation | run-cycle, handoff, resume, backlog-discover, telemetry-az |
 | `release-cadence.md` | three stages/three costs · the placement test · cadence declaration · reorder-don't-explain | run-cycle, handoff, ship |
 | `decision-briefing.md` | the two entry shapes · the four parts of a briefing · the guards | run-cycle, resume, ship |
-| `decision-lenses.md` | the five co-equal lenses (근본/정석/표준/세련/철학) | run-cycle (self-decide), resume (brief) |
+| `decision-lenses.md` | the five co-equal lenses (근본/정석/표준/세련/철학) · what is *not* a lens (scope size) · the three no-recommendation causes, two of which trigger bounded research instead | run-cycle (self-decide), resume (brief) |
 
 The four canonical philosophy dimensions live only in
 `skills/mindset/references/philosophy-alignment-guide.md`.
@@ -112,9 +112,17 @@ The four canonical philosophy dimensions live only in
 4. **Autonomy bias is in-dubio-pro-autonomy.** L1 (reversible) is self-decided and recorded; only
    irreversible-or-human-only work escalates. A new rule that makes escalating easier or more
    attractive inverts this — check any decision-facing change against it.
-5. **Keep `SKILL.md` under 500 lines, and move rationale to `references/`.** The line tip exists
-   because a loaded skill's body is a recurring token cost; instruction stays inline, explanation
-   moves out.
+5. **Measure a `SKILL.md` in tokens, not lines, and move rationale to `references/`.** The official
+   500-line tip is a proxy for a token cost, and a proxy is gameable — `run-cycle` once passed it at
+   476 lines while carrying 54KB on ~115-character lines. Two real ceilings sit behind it: a loaded
+   body is a recurring cost on every turn, and **auto-compaction re-attaches only the first 5,000
+   tokens of each skill** (~18,500 characters), with 25,000 shared across all re-attached skills. So
+   a body past that line loses its tail exactly when a long run needs it. Instruction stays inline,
+   explanation moves out — and **what a skill needs on every iteration goes before what it needs once
+   per run**, with the rest reachable through a link named early enough to survive the cut.
+6. **The Stop hook's BLOCK reason is the one instruction channel compaction cannot truncate.** It
+   runs with its own prompt and reads the logs, so a block restates the literal contract it turns on
+   (invariant 1's tokens, the report's path and parts). Keep it that way when editing the hook.
 
 ## Adding a New Plugin
 
