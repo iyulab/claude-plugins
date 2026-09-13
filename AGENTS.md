@@ -105,8 +105,8 @@ The four canonical philosophy dimensions live only in
 1. **The Stop hook is the only enforcement surface, and it matches literal tokens.**
    `HUMAN-NEEDED:` · `BLOCKED-ITEM:` · `FRONTIER-OPEN:` · `FRONTIER-EXHAUSTED:` are strings the hook
    greps for. Rewording one silently disables the check it gates. The hook has no session context —
-   anything it needs (budget, start index) must be written into the cycle log header. It also opens
-   `<root>/ROADMAP.md` on the exhaustion path, to audit `FRONTIER-EXHAUSTED:` as a *claim* rather than
+   anything it needs (budget, start index, the report's `Run:` line) must be written into a header. It
+   also opens `<logs dir>/../ROADMAP.md` on the exhaustion path, to audit `FRONTIER-EXHAUSTED:` as a *claim* rather than
    accept it as a fact — a token the same agent both writes and reads is not verification.
 2. **The roadmap is a phase backlog.** No cycle numbers, dates, or durations anywhere — in
    `run-cycle`'s roadmap or `backlog-discover`'s horizons. Concrete scope exists for one cycle only.

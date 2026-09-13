@@ -38,7 +38,13 @@ This is the project-specific judgment a generic harness cannot supply, and it is
 
 At run end — on **every** termination path (budget reached, HARD STOP, or early exhaustion) — synthesize one **report to the human** before the final commit. This is the "delegate reports back to their manager" moment: what got done, what was decided autonomously and can still be corrected, and what was escalated because it was not the delegate's to decide. Write it to `<root>/cycle-logs/RUN-SUMMARY-{YYYY-MM-DD}.md` (a run-level artifact, distinct from per-cycle logs — beside them so the Stop hook finds it in the directory it already resolved) **and** surface the same three parts in the final chat response. It is unconditional — a run has no mode in which the report is skipped. `{YYYY-MM-DD}` is the day the run **ends** — the day the report is written. A run that crosses midnight is dated by its last day, not its first; the hook does not judge the report by its filename date but by whether its content covers this run's cycles, so an earlier-dated file is never a reason to rename or duplicate it.
 
-Three parts — draw them straight from the ledgers the cycles already maintained; this is a report, not a re-derivation:
+Each run block opens with one header line the Stop hook keys on — the hook has no session context (invariant: anything it needs is written into a header, as the cycle logs do with `Budget:`/`Start:`):
+
+```
+Run: cycles {Start}–{last completed} · ended {YYYY-MM-DD}
+```
+
+Three parts follow — draw them straight from the ledgers the cycles already maintained; this is a report, not a re-derivation:
 
 1. **Progress / achievements** — what shipped this run, with STEP 3 evidence (test counts, build/lint result). Assertions are not evidence (rule 7.5).
 2. **Deferred decisions (L2 — escalated, awaiting you)** — the Pending Human Decisions plus the full Blocked-on-Human ledger. Present them per **[decision-briefing.md](../../_shared/decision-briefing.md)**: a *resource-blocked* entry keeps the short blocked · what-was-tried · what-would-unblock form (§1), while a *decision-class* entry is **briefed** (§2) — the decision in one line, ≥2 observed options (one usually "defer"), the cross-lens read of how the leading ones differ, and a named recommendation with **what it locks in**. These are the decisions the run did not make because they were irreversible or yours alone; handing them over as bare questions puts the analysis back on the person furthest from the work. This is a *report-time* synthesis of ledgers that already exist — the per-cycle `BLOCKED-ITEM:` entry format is unchanged (§3), since those entries govern termination and must stay cheap to write. Nothing to defer is a valid and good outcome: write "None" rather than promoting an L1 decision to fill the section.
