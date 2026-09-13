@@ -66,7 +66,7 @@ Two traps worth restating, both hit this plugin before:
 
 ## Current Plugins
 
-### iyu (v1.39.0)
+### iyu (v1.39.1)
 
 Productivity toolkit for open-source maintainers. **Design principle**: teach Claude what is
 *different* about a project, not how to develop software — skills supply decision frameworks, Claude
@@ -125,6 +125,13 @@ The four canonical philosophy dimensions live only in
 6. **The Stop hook's BLOCK reason is the one instruction channel compaction cannot truncate.** It
    runs with its own prompt and reads the logs, so a block restates the literal contract it turns on
    (invariant 1's tokens, the report's path and parts). Keep it that way when editing the hook.
+7. **Every path in the hook prompt is named relative to exactly one anchor — `<logs dir>`, the
+   `cycle-logs/` directory holding the `cycle-*.md` files.** The hook is an LLM reading a prompt, not
+   a script: the first release whose prompt introduced a second directory ("the continuity root is
+   the parent of `cycle-logs/`") was the first to block a finished run for a report that sat exactly
+   where the artifact table puts it, demanding a copy in the parent. Its parent is spelled
+   `<logs dir>/..`, never given a name of its own, and a block reason carries the resolved absolute
+   path, not a placeholder.
 
 ## Adding a New Plugin
 

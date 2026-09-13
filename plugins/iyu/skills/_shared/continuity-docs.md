@@ -21,7 +21,7 @@ Every artifact below lives **together in one directory**, the *continuity root* 
 | Completed-work index | `<root>/HISTORY.md` | run-cycle, handoff |
 | Completed-work archive (cold storage, created lazily) | `<root>/HISTORY-ARCHIVE-{NN}.md` | run-cycle, handoff |
 | Cycle logs | `<root>/cycle-logs/cycle-{NN}.md` | run-cycle |
-| End-of-Run Report | `<root>/cycle-logs/RUN-SUMMARY-{YYYY-MM-DD}.md` | run-cycle |
+| End-of-Run Report | `<root>/cycle-logs/RUN-SUMMARY-{YYYY-MM-DD}.md` — dated by the day the run ends | run-cycle |
 | Backlog proposals | `<root>/backlog-discovery/` | backlog-discover |
 | Telemetry reports | `<root>/telemetry/` | telemetry-az |
 | Issue drafts | `<root>/issues/` | any |
