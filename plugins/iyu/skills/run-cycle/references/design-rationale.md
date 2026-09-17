@@ -85,3 +85,29 @@ must never depend on remembering earlier cycles from conversation alone. Reconst
 on-disk artifacts makes the run survive compaction transparently. This is the minimal-intervention
 stance: do not rebuild context machinery the harness already owns — just keep durable state complete
 enough to survive it.
+
+## Why `Agent` is pre-approved rather than gated behind a prompt
+
+`mindset`'s Rule 1 (Minimal Intervention) is explicit: use the harness's native subagents, don't
+fence them off — a custom layer that blocks a native feature accrues debt every release the harness
+adds to that feature and this skill does not. Leaving `Agent` out of `allowed-tools` would do exactly
+that in practice: not by making delegation impossible, but by making every attempt stall on a mid-cycle
+permission prompt, which is itself a rule-1 (Execution Rules) violation — "no interruptions within a
+cycle." So `Agent` sits alongside the other execution tools, pre-approved on the same terms.
+
+`allowed-tools` lists both `Agent` and `Task` for the same tool: Claude Code renamed the subagent
+tool `Task` → `Agent` in v2.1.63 (2026-02-28), and while the old name still resolves as a
+backward-compat alias on current versions, a pre-rename install only recognizes `Task`. Listing both
+costs nothing (an unmatched name is simply inert) and keeps the pre-approval effective across
+versions this marketplace-distributed skill actually runs on, instead of silently losing it on
+whichever name that install does not recognize.
+
+Delegation itself stays optional, not mandatory, because it trades one cost for another: a subagent
+needs its own context primed with the scope before it can act, so it only pays off when its own raw
+output — a wide codebase read, a verbose test run, an external research pass — would otherwise sit in
+this run's context without ever needing to survive there. That is precisely the condition "the logs
+are the memory" already established above: this context was never the durable record, so shrinking it
+by delegating the disposable parts costs nothing the design did not already assume. STEP 0 and STEP 5
+are excluded because they are the opposite case — re-planning and derivation reason over the judgment
+this run has accumulated so far, which a freshly spawned subagent does not have and would have to be
+re-taught, defeating the point.

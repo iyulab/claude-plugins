@@ -3,7 +3,7 @@ name: run-cycle
 description: Executes adaptive iterative development cycles — each cycle is a self-contained plan/execute/verify/reflect loop that reshapes the roadmap and derives emergent follow-on scope from its own output
 argument-hint: "[total_cycles]"
 disable-model-invocation: true
-allowed-tools: Read, Glob, Grep, Write, Edit, TodoWrite, WebFetch, WebSearch, Bash
+allowed-tools: Read, Glob, Grep, Write, Edit, TodoWrite, WebFetch, WebSearch, Bash, Agent, Task
 hooks:
   Stop:
     - hooks:
@@ -66,6 +66,12 @@ that survivable, and each is load-bearing rather than incidental:
   carries the section shape and the literal `FRONTIER-…` marker this run is expected to write.
 - **The Stop hook is unaffected** — it runs with its own prompt and reads the logs directly, so its
   BLOCK reason restates whatever contract the block is about. Treat that text as authoritative.
+
+**Delegating to subagents keeps this fit, and is never fenced off.** A step whose raw tool output
+would only sit in this context without needing to persist (STEP 1 survey/research, a STEP 3 run) is
+a candidate for the `Agent` tool — dispatch it, keep only the distilled result. Optional per step,
+not a mandate; STEP 0/5 don't delegate (they need this run's accumulated judgment). Why:
+[design-rationale.md](${CLAUDE_SKILL_DIR}/references/design-rationale.md).
 
 ## The cycle, at a glance
 
@@ -286,7 +292,9 @@ Every decision a cycle faces sits at one of four levels, keyed on **stakes × re
 2. **External research** — WebSearch for best practices, library docs, known pitfalls. Do not guess.
 3. **Approach decision** — if multiple viable approaches exist, compare trade-offs and pick one with a 1-line rationale
 
-Record findings briefly in the cycle log. Do not pad this step when skip conditions hold.
+Record findings briefly in the cycle log. Do not pad this step when skip conditions hold. Wide or
+noisy 1/2 (many files, several searches) is a candidate for the `Agent` tool — dispatch it, keep only
+the distilled finding (see "Delegating to subagents" above).
 
 ### STEP 2: Execute
 
@@ -307,6 +315,8 @@ Implement the scope. Progress incrementally. **Inherited defects are fixed first
 - **Evidence, not assertion** — completion is proven by actual command output (test/build results), never by claiming it works. The top failure mode of long-running agents is marking work complete without verifying it. If you cannot show the passing evidence, it is not done.
 - On failure: **fix and re-run immediately** within this cycle — do not defer
 - If a failure exposes a trigger-class issue (HARD STOP / RE-PLAN), loop back to STEP 0 rather than forcing progress
+- A verbose suite is a candidate for the `Agent` tool too — have it run and report pass/fail plus
+  enough failure detail to fix, rather than letting the raw output sit in this context
 
 ### STEP 4: Reflect & Evaluate (always, mandatory)
 
