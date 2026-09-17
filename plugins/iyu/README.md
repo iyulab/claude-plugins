@@ -2,7 +2,7 @@
 
 [![Claude Code Plugin](https://img.shields.io/badge/Claude%20Code-Plugin-blueviolet?logo=anthropic&logoColor=white)](https://code.claude.com/docs/en/plugins)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-1.39.1-blue.svg)](./.claude-plugin/plugin.json)
+[![Version](https://img.shields.io/badge/version-1.40.0-blue.svg)](./.claude-plugin/plugin.json)
 
 Productivity toolkit for open-source library maintainers and developers.
 
@@ -63,6 +63,12 @@ config key) and never the value itself — these logs get committed.
 **Just-in-time scoping** — `N` is a ceiling, not a target. Only the current cycle is scoped concretely; everything beyond it stays a phase-level direction in the backlog. Each cycle's outcome decides the *next* cycle's scope, so the run behaves like genuine multi-turn work rather than one upfront N-cycle plan executed sequentially. Work too large for a cycle (or deserving its own) is promoted to the next cycle instead of being pre-assigned.
 
 **Emergent scope derivation** — not everything can be specified upfront; a capability, once built, implies follow-on work that only becomes concrete after it exists (single-file upload → "validate it", "accept multiple files", "handle the empty/oversized case"). Each cycle's STEP 5 actively derives this from three lenses — **user** (what would they now expect or hit?), **developer/maintainer** (does it fit the philosophy; what's left brittle?), **operator** (what does production now require?) — then runs every candidate through a **derivation gate**: pattern-following completion within the project's declared role is taken as autonomous next scope; anything opening a new product direction, paradigm, dependency, or real trade-off is routed to a human-decision proposal, never self-decided. The verdict is written as a **token** the Stop hook reads literally — `FRONTIER-OPEN:` or `FRONTIER-EXHAUSTED:` — and the run can stop early only on the latter; neither token present means derivation was skipped, which is never a valid reason to stop. This is what prevents the "it only did the initial plan and quit" failure mode.
+
+**Delegates to subagents, never fences them off** — a step whose raw tool output doesn't need to
+persist in this run's context (STEP 1's codebase survey/research, a STEP 3 verification run) is a
+candidate for Claude Code's native `Agent`/`Task` tool: dispatch it, keep only the distilled result
+in the log. Optional per step; STEP 0 and STEP 5 stay in-thread since replanning and derivation need
+this run's accumulated judgment, which a fresh subagent context does not have.
 
 Cycles maintain continuity — unresolved issues and pending decisions automatically propagate through the cycle chain.
 

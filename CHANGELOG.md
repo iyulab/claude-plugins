@@ -8,6 +8,24 @@ bugs or docs. MAJOR is never bumped automatically.
 > History is reconstructed from git from v1.11.0 onward. Earlier versions live in
 > the git log only.
 
+## [1.40.0] — 2026-09-17
+
+`/iyu:run-cycle` never listed `Agent`/`Task` in its `allowed-tools`, so every attempt to delegate a
+step to a subagent stalled on a mid-cycle permission prompt — a native Claude Code feature the skill
+effectively fenced off, and a direct hit on rule 1 ("no interruptions within a cycle").
+
+### Added
+
+- **`/iyu:run-cycle`** now pre-approves the `Agent`/`Task` tool (both names, for compatibility across
+  the Claude Code versions this skill runs on — the tool was renamed `Task` → `Agent` in v2.1.63) and
+  documents where delegation actually pays off: a step whose raw tool output doesn't need to persist
+  in this run's context — STEP 1's codebase survey/research, a STEP 3 verification run — is a
+  candidate; STEP 0 and STEP 5 stay in-thread since they need this run's accumulated judgment.
+  Delegation is optional per step, not a default.
+
+> Note: 1.38.0, 1.39.0, and 1.39.1 shipped without changelog entries — git log is the record for
+> that gap; not backfilled here.
+
 ## [1.37.0] — 2026-08-31
 
 `/iyu:handoff` used to describe the session's end state without changing it — rule 3 explicitly
