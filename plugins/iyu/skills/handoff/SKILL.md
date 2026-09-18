@@ -103,7 +103,7 @@ different jobs, and skipping the second is how a release ends up scheduled mid-p
 came up empty. Say so, and name `/iyu:backlog-discover` by name as the pointer — nothing more. Do
 not generate options, a cross-lens read, or a recommendation here; that four-part briefing is
 `resume`'s job (rule 5 already reserves it for `resume`, never `handoff`). This mirrors the closing
-line `run-cycle`'s End-of-Run Report and `resume` rule 8 already carry, so all three skills
+line `run-cycle`'s End-of-Run Report and `resume` rule 9 already carry, so all three skills
 point the same way when the backlog runs dry.
 
 ### 5. Re-order what remains
@@ -155,7 +155,13 @@ entry shapes — but stop at naming, not briefing:
 - **Decision-class** entries get **one line only**: the decision, phrased so it can be answered.
   **Do not generate options, a cross-lens read, or a recommendation here** — that analysis is
   `/iyu:resume`'s job, done fresh against the repo as it stands when someone is actually about to act
-  on it, rather than produced now and left to stale until then.
+  on it, rather than produced now and left to stale until then. The flag is a placeholder for
+  `/iyu:resume` to brief **and decide** — it is not a question addressed to the owner, so do not
+  phrase it as one ("A or B?"); name what is being chosen.
+- **An owner-gated act** (push, publish/release, GitHub issue registration, a major-version bump)
+  whose underlying choice is already settled is **resource-blocked, not decision-class** — the owner
+  is the resource: blocker = the gate · tried = the decision (pointer to it) · unblocks = approval to
+  run the act. Do not re-flag the settled choice.
 - **Recommendable + reversible → not here at all.** If you can already see the answer and it's
   reversible, that is not a pending decision — decide it, proceed, and record it under **Decided
   along the way** instead. The one-line-flag format makes it cheap to escalate; that is exactly why
@@ -185,10 +191,10 @@ emergent candidate. Anchored to a ROADMAP phase. One session's worth.}
 
 ## Waiting on you
 {"None" — the right answer whenever everything left can be carried autonomously — or entries in the
-two shapes below: the first decision-class (flagged, not briefed — `/iyu:resume` briefs it), the
+two shapes below: the first decision-class (flagged, not briefed — `/iyu:resume` briefs and decides it), the
 second resource-blocked.}
 
-### {HD-01} {the decision, in one line — that is all; `/iyu:resume` briefs this next}
+### {HD-01} {the decision, in one line — that is all; `/iyu:resume` briefs and decides this next}
 
 ### {HD-02} {what is blocked}
 - **Blocker**: {the missing credential / access / dependency}

@@ -4,8 +4,9 @@
 for two different purposes, and the lenses are the same in both:
 
 - `run-cycle` rule 2.5 — to **self-decide** a reversible (L1) choice and proceed without asking.
-- `resume` step 4 — to **brief** an irreversible or human-only (L2) choice that `handoff` flagged: the
-  options, how each reads across the lenses, and which one is recommended.
+- `resume` step 4 — to **brief and decide** a choice that `handoff` flagged or step 3 raised: the
+  options, how each reads across the lenses, and the recommendation that becomes the provisional
+  decision (only a gated act behind it waits on the owner).
 
 Same vocabulary, opposite outcomes. Which purpose applies is decided *before* this file is opened,
 by reversibility — not by how interesting the decision is.
@@ -39,19 +40,26 @@ contract to protect yet, and the same change only costs more the longer it waits
 
 ## When a recommendation can't be formed
 
-Sometimes the five lenses don't produce a clean pick. The right response depends on *why* — and two
-of the three causes below are **not reasons to withhold a recommendation**. They are reasons to go
-and get what is missing, then recommend. Only (a) is a genuine no-recommendation outcome, and it is
-reachable only once (b) and (c) have been ruled out.
+Sometimes the five lenses don't produce a clean pick, or produce one that looks wrong. The right
+response depends on *why* — and **none of the four causes below is a reason to hand the owner an
+open "A or B?"**. (b) and (c) are reasons to go and get what is missing, then recommend. (a) and (d)
+are reasons to ask the owner for a **criterion** instead of a decision — reachable only once (b) and
+(c) have been ruled out.
 
 | Cause | What it looks like | What to do |
 |---|---|---|
-| **(a) Value conflict** — *the only no-recommendation outcome* | Every candidate is clean on some lenses and indefensible on others, and no reframing dissolves it — an *irreducible* trade-off, not an ordinary disagreement. | Say so explicitly: "no option is defensible across the lenses; the conflict is X vs Y." In `run-cycle`, this is the one exception to *in dubio, pro autonomy* — treat it as L2. In `resume`, name the conflict in the recommendation slot rather than manufacturing a preference. **Only after (b) and (c) are ruled out** — an unresearched decision is not a value conflict, it is an unresearched decision. |
+| **(a) Value conflict** — *ask for the criterion* | Every candidate is clean on some lenses and indefensible on others, and no reframing dissolves it — an *irreducible* trade-off, not an ordinary disagreement. | Say so explicitly: "no option is defensible across the lenses; the conflict is X vs Y." In `run-cycle`, this is the one exception to *in dubio, pro autonomy* — treat it as L2. In `resume`, make it a **criterion request**: name the conflict, propose which side should govern this class of decision and why, decide under that proposal, and ask the owner to confirm the criterion — not to pick the option. **Only after (b) and (c) are ruled out** — an unresearched decision is not a value conflict, it is an unresearched decision. |
 | **(b) Missing external information** — *research, then recommend* | 정석/표준 have nothing to read against — an ecosystem convention, a domain fact, or a property of a dependency isn't known and isn't in this repo. | **Go and settle it.** Name the unknown precisely, then close it: `WebSearch`/`WebFetch` for an ecosystem convention or a library's actual behavior, the file/test/dependent itself for anything in-repo. **Bounded the way `run-cycle` bounds its self-unblock check (~5 min per decision)** and aimed at the *one* unknown that separates the leading options — not a survey. Then recommend on what you found. Report a gap only when the bounded search came back empty, and say what you searched, not just what you still don't know. |
 | **(c) Missing internal anchor** — *derive the anchor, recommend it* | 표준/철학 have nothing *of this project's own* to read against — no existing convention for this kind of decision, no stated identity/scope in CLAUDE.md that bears on it. Common in early 0.X.X projects that haven't yet accumulated precedent. | **Propose the anchor.** Read what the project does have — the four dimensions in [philosophy-alignment-guide.md](../mindset/references/philosophy-alignment-guide.md), README, the nearest analogous code — derive a candidate criterion from it, and recommend *that together with* the option it implies: "이 판단의 기준을 X로 세울 것을 권장하고, 그 기준에서는 Y가 옳다." Naming the absence and stopping is not an answer: in a 0.X.X project "선례가 없으니 보류" is the deferral antipattern, and the option taken by default becomes the precedent anyway — just undecided. |
+| **(d) Defective criterion** — *point out the defect, propose the fix* | An anchor exists, but here it is ambiguous (two readings, two answers), or following it faithfully lands somewhere common sense says is wrong. | **The criterion is the finding, not the decision.** Name the criterion and the exact point it breaks ("X를 그대로 적용하면 Y가 되는데, Z 때문에 상식에 반함"), propose the revision or the missing clause, and decide under the revised criterion. What goes to the owner is the criterion to confirm. A pick that silently follows a broken criterion is worse than no pick — it teaches the owner to distrust every recommendation. **Only after (b) and (c) are ruled out**, same as (a). |
 
 A lens disagreement is ordinary and expected; most decisions have one. (a) is only irreducible when
-the trade-off cannot be stated as "give up A to get B" and lived with. **(b) and (c) are not
+the trade-off cannot be stated as "give up A to get B" and lived with.
+
+**An owner override feeds back here.** When the owner picks against a recommendation, the
+recommendation's criterion was either wrong for this project or this case is an exception. Ask
+which; a confirmed revision becomes the project's anchor for the next decision of the same class —
+that is how (c) and (d) stop recurring. **(b) and (c) are not
 disagreements — and they are not verdicts either.** They say the lenses have nothing to compare
 *yet*. The work they ask for is small and bounded; skipping it and reporting "cannot recommend"
 hands the investigation back to the person with the least context on it, which is the one thing

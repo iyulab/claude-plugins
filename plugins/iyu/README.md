@@ -2,7 +2,7 @@
 
 [![Claude Code Plugin](https://img.shields.io/badge/Claude%20Code-Plugin-blueviolet?logo=anthropic&logoColor=white)](https://code.claude.com/docs/en/plugins)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-1.40.0-blue.svg)](./.claude-plugin/plugin.json)
+[![Version](https://img.shields.io/badge/version-1.41.0-blue.svg)](./.claude-plugin/plugin.json)
 
 Productivity toolkit for open-source library maintainers and developers.
 
@@ -146,7 +146,7 @@ for the two self-decide/brief purposes described below.
 Open a session from the files `/iyu:handoff` left, instead of re-deriving the same ground twice.
 
 ```bash
-/iyu:resume              # confirm state + brief every flagged decision
+/iyu:resume              # confirm state + settle every flagged decision
 /iyu:resume "decisions"  # narrow to just the decisions
 ```
 
@@ -158,37 +158,42 @@ different jobs, not double work. It applies judgment to what it read, not just r
 missing, and object to anything that no longer looks reasonable — presented as proposals, split into
 코드 작업 / 비코드 작업 (flagging staleness if the tree has moved since the last handoff; an empty
 "Next" gets a pointer to `/iyu:backlog-discover`, not an invocation — synthesis reorders known work, it
-doesn't discover unscoped work). It then **briefs** every decision-class item, whether flagged by
-`/iyu:handoff` or raised by its own synthesis: grounded options, the cross-lens read
-(근본/정석/표준/세련/철학), and a named recommendation with what it locks in.
+doesn't discover unscoped work). It then **settles** every decision-class item, whether flagged by
+`/iyu:handoff` or raised by its own synthesis, the way a capable employee would: grounded options,
+the cross-lens read (근본/정석/표준/세련/철학), trade-offs, and a named recommendation with what it
+locks in — and **that recommendation is the decision**. It is recorded `provisional` in
+`HANDOFF.md`'s "Decided this session" at once, with a one-line "to correct", and presented as
+"decided X — tell me if that's wrong", never as "A or B?".
 
 **The recommendation is not optional.** When one doesn't form on the first pass, that is a signal to
 go and get what's missing rather than to hand the question back: a bounded pass (~5 min per entry)
 reads the file, runs the cheap command instead of naming it, searches the web for an ecosystem
 convention or a library's real behavior, and — when what's absent is the project's own criterion —
-derives that criterion and recommends *it* alongside the option it implies. Only an irreducible value
-conflict leaves the slot empty, and only once the other two causes are ruled out. "How little it
-changes" is never a reason to prefer an option; an option that wins only on smallness is scored as
-technical debt, not elegance. That code/non-code split
-also drives the reversibility read: a code decision defaults toward self-decide once a recommendation
-exists, while a non-code decision touching something central policy already gates on a human (push, a
-GitHub issue registration, a major-version bump, publish) stays briefed regardless of confidence. A
-self-decided entry doesn't disappear — it's surfaced alongside the briefing (decision · trade-off · to
-correct) for a quick "anything different?" look, confirm-not-approval, and recorded the same as an
-answered decision.
+derives that criterion and recommends *it* alongside the option it implies. "How little it changes"
+is never a reason to prefer an option; an option that wins only on smallness is scored as technical
+debt, not elegance.
 
-**It is the only skill in this plugin whose entire point is to pause and wait — and then stop.** Every
-decision-class entry gets an answer before the session-opening work is called done — and the instant
-one lands, it is written into `HANDOFF.md`'s "Decided this session" section immediately, not left for
-the next `/iyu:handoff` to reconstruct from a git diff that might not even show it. **A reorder — confirmed
-by you or self-decided as reversible — is also applied to `HANDOFF.md`'s own "Next" section right
-then** — leaving it recorded but
-unapplied would let a later session start from an order the same file has already been told is wrong,
-since "Next" is what `/iyu:run-cycle` reads as its opening scope. Phase-level order in `ROADMAP.md`
-stays the next handoff's to apply. That immediate write-back is what
-keeps a decision from being lost if the session ends, or compacts, before the next handoff runs. Once
-the scope is settled, `/iyu:resume` stops — it never proceeds into implementation on its own; starting
-the work is a separate, explicit instruction or `/iyu:run-cycle`.
+**What reaches you is a resource or a criterion, never a pick.** Deciding is separated from acting:
+an act the central policy gates on a human (push, publish/release, GitHub issue registration, a
+major-version bump) never runs on silence, but the decision behind it is still made — only the act
+waits, listed as a blocker whose missing resource is your approval. And when a decision won't settle
+even after research — the lenses conflict irreducibly, or a criterion is ambiguous or, followed
+faithfully, contradicts common sense — you are asked for the **criterion**, not the option: which
+rule is at fault, the proposed fix, and the decision under it. After resume, "Waiting on you" holds
+only external blockers, owner-gated acts, and criterion requests.
+
+**Overrides tune the criteria.** If you pick something other than the recommendation, resume applies
+your pick and then asks which criterion weighed differently — revise it, or treat this as a one-off?
+A confirmed revision is recorded and queued as a 비코드 "Next" item to persist it into the project's
+`CLAUDE.md`/`AGENTS.md`, so the next recommendation of the same kind already reflects it.
+
+Everything is written back immediately, not left for the next `/iyu:handoff` to reconstruct. **A
+reorder is also applied to `HANDOFF.md`'s own "Next" section right then** — "Next" is what
+`/iyu:run-cycle` reads as its opening scope, so a recorded-but-unapplied reorder would let a later
+session start from an order the file has already been told is wrong. Phase-level order in
+`ROADMAP.md` stays the next handoff's to apply. Once the scope is settled, `/iyu:resume` stops — it
+never proceeds into implementation on its own; starting the work is a separate, explicit instruction
+or `/iyu:run-cycle`.
 
 Like `/iyu:handoff`, this is safe to self-invoke on a narrow signal (a fresh session with no stated
 task and an existing `HANDOFF.md`) — it proposes and decides but never implements.

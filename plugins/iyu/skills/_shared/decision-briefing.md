@@ -5,7 +5,7 @@ reaches the person who owns it. Three consumers read it:
 
 | Consumer | Where the briefing lands |
 |---|---|
-| `resume` step 4 | the **"Waiting on you"** section of `HANDOFF.md`, briefed at the moment someone is about to act on it |
+| `resume` step 4 | the **"Decided this session"** section of `HANDOFF.md` — briefed *and decided* at the moment someone is about to act on it; only blockers and criterion requests stay in "Waiting on you" |
 | `run-cycle` End-of-Run Report part 2 | the **deferred-decisions (L2)** section of `RUN-SUMMARY-{date}.md` |
 | `ship` step 0 | the **question itself** — asked interactively, and the run waits for the answer |
 
@@ -17,11 +17,13 @@ per-cycle `BLOCKED-ITEM:` ledger entry and its End-of-Run Report synthesis (§3)
 
 A question hands the whole investigation back to the person with the *least* context on the work
 that produced it. A briefing hands over the analysis and asks only for the judgment. That is the
-difference this file exists to enforce.
+difference this file exists to enforce — and where the consumer has an autonomy path (`resume`,
+`run-cycle`), it goes one step further: the briefing carries a decision already made, and what the
+owner supplies is a correction, not a choice (§3).
 
 ---
 
-## 1. Two entry shapes — do not force one on both
+## 1. Three entry shapes — do not force one on another
 
 - **Resource-blocked** (a missing credential, an access grant, an unavailable dependency) →
   **blocker (what's missing, and why it stops the work) · what was already tried · what would
@@ -38,7 +40,19 @@ difference this file exists to enforce.
   *failure*, not the address. `production DB (<env: APP_DB_HOST>) unreachable — 1433 timeout, DNS
   resolves` carries every bit of the debugging value that the literal address would, and travels
   safely.
-- **Decision-class** (irreversible, or genuinely the human's to make) → the four parts below.
+
+  **The owner can be the resource.** When a decision is settled but carrying it out needs an act the
+  central policy gates on a human (push, publish/release, GitHub issue registration, a major-version
+  bump) or that is irreversible outside the repo, the entry is resource-blocked, not decision-class:
+  blocker = the gate · tried = the decision already settled (pointer to where it is recorded) ·
+  unblocks = approval to run that act. The decision is not re-asked.
+- **Decision-class** (a real choice with trade-offs) → the four parts below. In `resume`/`run-cycle`
+  the recommendation is recorded as the provisional decision; only its gated act, if any, waits.
+- **Criterion request** (the decision will not settle because the *criterion* conflicts, is
+  ambiguous, or contradicts common sense — [decision-lenses.md](./decision-lenses.md) causes (a)/(d))
+  → the four parts, with the recommendation slot holding **the criterion at fault · the proposed
+  revision · the decision under the revision**. What the owner confirms is the criterion, not an
+  option.
 
 ---
 
@@ -62,17 +76,27 @@ difference this file exists to enforce.
    [decision-lenses.md's "When a recommendation can't be formed"
    table](./decision-lenses.md#when-a-recommendation-cant-be-formed) says whether (b) external
    information or (c) an internal anchor is absent, and how to settle each — both bounded, both
-   ending in a recommendation. The slot is left unfilled **only for (a), an irreducible value
-   conflict**, and only once (b) and (c) are ruled out. Never manufacture a preference to fill it —
+   ending in a recommendation. Where
+   (a) an irreducible value conflict or (d) a defective criterion remains once (b) and (c) are ruled
+   out, the slot still does not go empty: it holds a proposed criterion and the pick under it (§1's
+   criterion request). Never manufacture a preference without naming the criterion that produced it —
    and never report "cannot recommend" without saying what you did to try.
 
 ---
 
 ## 3. Guards
 
-**Silence is not consent.** Never write "proceeding on the recommendation unless you object" for an
-irreversible decision. The entry waits. (`ship` step 0 is the interactive case: ask, then wait — do
-not treat a recommendation as pre-approval for the stage that cannot be undone.)
+**Silence is not consent — for an act.** Never run a gated or irreversible *act* (push, publish,
+issue registration, major bump) on "proceeding unless you object". The act waits for an explicit
+yes. The *decision* behind it does not wait: in `resume`/`run-cycle` it is recorded `provisional`
+with its to-correct line, so an unanswered entry blocks the act and nothing else. (`ship` step 0 is
+the interactive case: the stage itself is the act — ask, then wait.)
+
+**The owner is asked for resources and criteria, never for a pick** — *applies where the consumer
+has an autonomy path.* A briefing that ends "A or B?" is the shape this file forbids. If the owner
+then overrides a recommendation, that is a signal about the criteria, not only about the case: ask
+whether the criterion behind the recommendation should be revised or this was a one-off, and record
+the answer.
 
 **A recommendation does not make an entry human-only** — *applies where the consumer has an autonomy
 path* (`resume`, `run-cycle`). If you can recommend an option **and** the choice is reversible, that
