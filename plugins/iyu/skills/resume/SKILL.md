@@ -16,7 +16,8 @@ surface what it's missing, and question what looks wrong — then hand back a se
 Starting the work is a separate act this skill never takes on its own.
 
 Why it is shaped this way — split from `/iyu:handoff`, pre-deciding instead of asking, asking for
-criteria instead of decisions — is in [references/rationale.md](references/rationale.md).
+criteria instead of decisions — is in
+[references/rationale.md](${CLAUDE_SKILL_DIR}/references/rationale.md).
 
 ## Scope
 
@@ -54,17 +55,18 @@ Don't just replay `## In flight` / `## Next` as written — apply judgment to wh
   over silently defeats the point of resuming from it.
 - **Surface a recent interruption.** If `STRANDS.md`'s `## 중단됨` has an entry interrupted within
   roughly the last session (freshest `마지막` entry relative to `HANDOFF.md`'s own last-updated
-  date), mention it as an objection-style flag — "want to resume `{strand}` now, or keep the current
-  order?" — using the same reasoning as any other objection in this step. This is not new discovery
+  date), treat it as an objection: judge whether to resume `{strand}` now or keep the current order,
+  and carry that call into step 4 as a decision ("`{strand}` 재개를 X 앞에 둠 — 이유 …, to correct:
+  …"), never as a question back to the owner. This is not new discovery
   (rule 9): the strand is already-known, already-scoped work being reordered, not scoped from
   scratch. An entry that has stayed interrupted far longer than one session is not this skill's
   concern — that is `/iyu:backlog-discover`'s `dormant-strand-review`, which judges reignite,
   shrink-and-resume, or retire with evidence rather than a scheduling nudge.
 - **Reorder** when the recorded priority no longer fits current state (a dependency landed, a blocker
-  resolved, an external deadline shifted) — present the proposed order next to the recorded one, with
-  the reason.
+  resolved, an external deadline shifted) — show the new order next to the recorded one, with the
+  reason (step 4 decides it).
 - **Derive prerequisites** the plan is missing — a step it silently assumes is already done, a
-  dependency it doesn't name. Add these as proposed insertions, not silent edits.
+  dependency it doesn't name. Add these as visible insertions, not silent edits.
 - **Object** to anything in `## Next` that no longer looks reasonable given current state — say why,
   and what you'd do instead.
 
@@ -75,8 +77,8 @@ actually needed, recommend it, don't attempt it here.
 **Split each list into 코드 작업 / 비코드 작업.** Code work is anything that changes what ships
 (source, tests, config, build). Non-code work is everything else the continuity docs track — docs, an
 issue draft, a roadmap edit, a release or external-communication step. The presentation split is what
-carries the real payload to step 4 — that's where it's read to judge reversibility — so a bucket with
-nothing in it just reads "None" rather than being dropped.
+carries the real payload to step 4 — that's where it's read to spot owner-gated acts, which live in
+the non-code bucket — so a bucket with nothing in it just reads "None" rather than being dropped.
 
 **`## Next` empty → say so and recommend `/iyu:backlog-discover`.** Same closing move `run-cycle`'s
 End-of-Run Report makes when a run ends on `FRONTIER-EXHAUSTED:` with budget left: an empty backlog
@@ -133,15 +135,11 @@ on the first pass, close the gap before writing anything:
 - **Name the one unknown that separates the leading options.** Not everything unknown about the
   decision — the single thing whose answer would move the pick. If nothing would, there is no gap and
   the recommendation was already available.
-- **Settle it, bounded (~5 min per decision-class entry)** — the same bound `run-cycle` puts on its
-  self-unblock check: an unbounded check is how a session-opener turns into a research session. Read
-  the file, the test, the dependents, the dependency's actual source; run the cheap command rather
-  than naming it; `WebSearch`/`WebFetch` an ecosystem convention or a library's real behavior; read
-  [philosophy-alignment-guide.md](${CLAUDE_SKILL_DIR}/../mindset/references/philosophy-alignment-guide.md)
-  plus CLAUDE.md/README when what's missing is the project's own criterion.
-- **Then decide on what you found** — for cause (c), an absent criterion, recommend the criterion
-  itself alongside the option it implies. Only (a) and (d) become criterion requests, and only once
-  (b) and (c) are ruled out.
+- **Settle it, bounded (~5 min per entry)**, per decision-lenses.md's cause table — (b) read the
+  file/test/dependent or `WebSearch`/`WebFetch` the convention; (c) derive the missing criterion
+  from CLAUDE.md/README and philosophy-alignment-guide.md and recommend it with the option it
+  implies. Run the cheap command rather than naming it. Only (a) and (d) become criterion requests,
+  and only once (b) and (c) are ruled out.
 - **If the bounded search came back empty, say what you searched**, not only what is still unknown.
 
 This does not widen the skill (rule 9). Grounding a decision that is *already on the table* is
@@ -174,7 +172,9 @@ scope — so a decision recorded only in prose is one a later session can start 
 `## Decided this session` as an inherited fact and carries a reorder into `ROADMAP.md`; an entry
 marked applied means applied *to `## Next`* only.
 
-**Feedback is how the criteria get corrected — handle it, don't just transcribe it.**
+**Feedback is how the criteria get corrected — handle it, don't just transcribe it.** This applies
+when an answer arrives later in the same conversation, after step 6 has presented and stopped —
+resume does not wait for it.
 
 - **Owner confirms or says nothing** → the provisional decision stands. Silence does not block a
   decision (it was already made); it never authorizes a gated act (rule 3).
@@ -186,8 +186,8 @@ marked applied means applied *to `## Next`* only.
 - **A criterion gets confirmed** (from that question, or an answered criterion request) → record it
   in `## Decided this session` as a criterion entry, re-derive any pending decision under it (update
   the entry if the pick changes), and insert a 비코드 `## Next` item to persist it where the
-  criterion lives — the project's `CLAUDE.md`/`AGENTS.md`, or, for a plugin-level lens, an issue
-  draft against this plugin. This skill does not write those files itself (rule 1).
+  criterion lives — the project's `CLAUDE.md`/`AGENTS.md`, or, for a plugin-level lens, a
+  note in this plugin's own backlog. This skill does not write those files itself (rule 1).
 - **One-off exception** → record it as such in the entry, so a later session does not read it as
   precedent.
 
@@ -198,7 +198,8 @@ Waiting on you holds only blockers and criterion requests, the session-opening w
 skill does not proceed into implementation from here.** Present the settled scope — what's in flight,
 what's next in the (possibly reordered) sequence, what got decided (each with its to-correct line),
 and what still needs the owner — and stop. Starting the work is a separate, explicit act: the human
-instructs it directly, or `/iyu:run-cycle` is invoked. A settled scope is not that instruction.
+instructs it directly, or `/iyu:run-cycle` is invoked. A settled scope is not that instruction. If
+the owner answers with feedback instead, handle it per step 5's feedback rules, then stop again.
 
 ## Rules
 

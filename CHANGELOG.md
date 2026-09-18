@@ -8,6 +8,32 @@ bugs or docs. MAJOR is never bumped automatically.
 > History is reconstructed from git from v1.11.0 onward. Earlier versions live in
 > the git log only.
 
+## [1.41.0] — 2026-09-18
+
+`/iyu:resume` briefed decisions well but still handed them up as "which option?" and waited — the
+behavior a capable employee opening the day avoids. It now decides, and asks the owner only for what
+it genuinely cannot supply.
+
+### Changed
+
+- **`/iyu:resume` pre-decides.** A recommendation becomes the provisional decision, recorded in
+  `## Decided this session` at once with its "to correct" line and presented for correction, not for
+  an answer. Deciding is separated from acting: an act the central policy gates on a human (push,
+  publish/release, GitHub issue registration, major bump) still never runs on silence, but only the
+  act waits — as a resource-blocked entry whose missing resource is the owner's approval.
+- **Criterion requests replace open questions.** When a decision won't settle after bounded research
+  — an irreducible lens conflict, or a criterion that is ambiguous or contradicts common sense (new
+  cause (d) in `decision-lenses.md`) — the owner is asked to confirm a proposed criterion, and resume
+  decides under it meanwhile. After resume, "Waiting on you" holds only external blockers,
+  owner-gated acts, and criterion requests.
+- **Overrides tune the criteria.** When the owner picks against the recommendation, resume applies
+  the pick and asks which criterion should be revised (or whether it was a one-off); a confirmed
+  revision is queued as a non-code `## Next` item to persist it.
+- `decision-briefing.md` gains a third entry shape (criterion request) and narrows "silence is not
+  consent" to acts; `handoff` flags decisions for resume to decide and carries unanswered criterion
+  requests over; `run-cycle`'s End-of-Run report states its recommendations as provisional decisions.
+  Resume's rationale moved to `resume/references/rationale.md`.
+
 ## [1.40.0] — 2026-09-17
 
 `/iyu:run-cycle` never listed `Agent`/`Task` in its `allowed-tools`, so every attempt to delegate a

@@ -162,6 +162,9 @@ entry shapes — but stop at naming, not briefing:
   whose underlying choice is already settled is **resource-blocked, not decision-class** — the owner
   is the resource: blocker = the gate · tried = the decision (pointer to it) · unblocks = approval to
   run the act. Do not re-flag the settled choice.
+- **An unanswered criterion request** left by `/iyu:resume` (the criterion at fault · proposed
+  revision · decision taken under it) carries over as-is. It is not a decision to re-flag, and
+  dropping it loses the one question the owner still owes.
 - **Recommendable + reversible → not here at all.** If you can already see the answer and it's
   reversible, that is not a pending decision — decide it, proceed, and record it under **Decided
   along the way** instead. The one-line-flag format makes it cheap to escalate; that is exactly why
