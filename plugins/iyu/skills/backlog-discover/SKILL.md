@@ -54,7 +54,7 @@ wrote. A divergent root turns both into silent no-ops.
 ```
 <root>/backlog-discovery/
 ├── state.json                    # per-activity cadence tracking + emergent rotation pointer
-├── proposal-YYYY-MM-DD.md        # this run's discovery proposal (review target — see references/proposal-template.md)
+├── proposal-YYYY-MM-DD[-k].md    # this run's discovery proposal (review target — see references/proposal-template.md); -k from the 2nd same-day run
 └── INDEX.md                      # thin timeline index, one line per run (mirrors telemetry-az's TREND.md)
 <root>/issues/
 └── ISSUE-<target>-<timestamp>-<slug>.md   # incidental defects found during discovery — global issue-draft convention, unchanged
@@ -179,8 +179,8 @@ alternate while 3–7 still starve. `history[]` keeps 12 entries, so a 3-run win
 | 리스크 대비가 부족하다 | `state.json.activities.security-compliance.lastRunUtc` is null or its elapsed time is ≥ 2× its cadence, AND no recent cycle-log Reflection section mentions security/resilience/observability work. | `premortem`, `chaos-engineering`, `red-team` |
 | 온보딩/DX 불만이 감지된다 | Glob `<root>/issues/**` (open + `closed/`) and grep for onboarding/setup/confusing-error language; ≥2 matches → symptom present. | `error-message-audit`, `fresh-eyes-onboarding`, `ai-agent-usability` |
 | 장기 방향이 흐릿하다 | `state.json.activities.vision-gap.lastRunUtc` elapsed ≥ 1.5× its cadence (severely overdue), OR — reading `ROADMAP.md`'s own revision history / `git log` over the date range spanned by the last 3 `INDEX.md` entries — the same phase names recur across that window without resolution. (`INDEX.md` itself only records run dates/counts/symptoms, not phase names; it just bounds which window of `ROADMAP.md` history to inspect.) | `working-backwards`, `sf-prototyping`, `constraint-removal` |
-| 도메인 이해가 정체돼 있다 (조사가 SW 기술 축에 편중) | Sum `swTech` and `domain` across the last 3 `history[]` entries (or, if `history[]` is empty, grep the last 3 `proposal-*.md` for `탐구 축:` lines). `domain` is 0, or fewer than a quarter of the total → symptom present. The product's subject matter is being treated as settled while only its implementation is re-examined. | `research-scan` (도메인 축 필수), `domain-practice`, `cross-domain-borrowing` |
-| 제품의 자리가 낡았다 (차별화 흐려짐) | `state.json.activities.positioning-review.lastRunUtc` is null or elapsed ≥ 2× its cadence, AND competitor-driven items dominate recent output — grep the last 3 `proposal-*.md` for `출처 활동:` lines and find that `벤치마킹`-sourced items are ≥ half of all items across them. (Chasing feature parity without re-examining where the product stands is exactly the drift this symptom names.) | `positioning-review`, `benchmarking`, `cross-domain-borrowing` |
+| 도메인 이해가 정체돼 있다 (조사가 SW 기술 축에 편중) | Sum `swTech` and `domain` across the last 3 `history[]` entries (or, if `history[]` is empty, grep the last 3 proposals linked from `INDEX.md` for `탐구 축:` lines). `domain` is 0, or fewer than a quarter of the total → symptom present. The product's subject matter is being treated as settled while only its implementation is re-examined. | `research-scan` (도메인 축 필수), `domain-practice`, `cross-domain-borrowing` |
+| 제품의 자리가 낡았다 (차별화 흐려짐) | `state.json.activities.positioning-review.lastRunUtc` is null or elapsed ≥ 2× its cadence, AND competitor-driven items dominate recent output — grep the last 3 proposals linked from `INDEX.md` for `출처 활동:` lines and find that `벤치마킹`-sourced items are ≥ half of all items across them. (Chasing feature parity without re-examining where the product stands is exactly the drift this symptom names.) | `positioning-review`, `benchmarking`, `cross-domain-borrowing` |
 | 아이디어 자체가 고갈됐다 | Both of the last 2 `history[]` entries have `itemCount` < 2. | `hackathon-exploration`, `cross-domain-borrowing`, `random-walk-reading`, `archive-mining` |
 | 진행 중 흐름이 미완/파편적 | `STRANDS.md`'s `## 진행 중` entry has an accumulated count (cycles or sessions) well past this project's typical phase length (derive "typical" from `HISTORY.md`'s recent completed-phase durations, and cite it) → symptom present. Skip this row (not "no match") if `STRANDS.md` does not exist yet. | `strand-deepening` |
 | 장기 흐름이 방치돼 있다 | `STRANDS.md`'s `## 중단됨` has an entry whose `마지막` entry is stale well past this skill's own run cadence (i.e. `backlog-discover` has run again since without that strand being touched) → symptom present. Skip this row if `STRANDS.md` does not exist yet or `## 중단됨` is empty. | `dormant-strand-review` |
@@ -208,7 +208,9 @@ feeds P8's `history[]` entry, next run's recency suppression, and the "아이디
 
 ### P2.5: Load prior proposals (dedupe basis)
 
-Read the **two most recent** `<root>/backlog-discovery/proposal-*.md` and extract every
+Read the **two most recent** `<root>/backlog-discovery/proposal-*.md` — the last two linked from
+`INDEX.md` (by modification time if there is no `INDEX.md` yet), never the last two by filename
+(see `continuity-docs.md` §1 on same-date files) — and extract every
 item's `id` + title + the gap it named. This list is the run's **known-items set**, and P4
 checks each new finding against it.
 
@@ -268,7 +270,10 @@ For every discovered item, record: a **stable id**, source activity id, **value 
 a **phase-level** scope description (never cycle-numbered — consistent with `run-cycle`'s
 roadmap-is-a-phase-backlog rule).
 
-**Item id**: `BD-{YYYYMMDD}-{nn}`, `nn` restarting at 01 each run. The id is what makes an
+**Item id**: `BD-{YYYYMMDD}-{nn}`, `nn` unique within the date: it continues from the
+`lastItemSeq` of the newest `history[]` entry whose `runUtc` falls on the same UTC date, or starts
+at 01 when there is none. A same-day re-run is an intended use (the `always` lanes), and a restarted
+`nn` would re-issue the first run's ids. The id is what makes an
 item referable across proposals; without one, "is this the same gap we found last time?" has
 no mechanical answer.
 
@@ -346,7 +351,9 @@ If discovery produced no items at all (all four deepen-ladder lanes came up empt
 
 ### P7: Proposal document
 
-Write `<root>/backlog-discovery/proposal-YYYY-MM-DD.md` using
+Write `<root>/backlog-discovery/proposal-YYYY-MM-DD.md` — or, when that file already exists, the
+next unused `proposal-YYYY-MM-DD-{k}.md` (k ≥ 2), never overwriting an earlier run's proposal
+([continuity-docs.md](${CLAUDE_SKILL_DIR}/../_shared/continuity-docs.md) §1) — using
 [proposal-template.md](${CLAUDE_SKILL_DIR}/references/proposal-template.md). This is the **terminal output**
 of this skill — `ROADMAP.md` is never written here. List skipped activities explicitly
 with their skip reason (never silent).
@@ -382,7 +389,7 @@ assumed value.
 
 ### P9: Merge — explicitly NOT part of this skill's automated flow
 
-This skill's work ends at P8. When a human reviews `proposal-YYYY-MM-DD.md` and asks for
+This skill's work ends at P8. When a human reviews this run's proposal file and asks for
 specific items to be adopted, add them to `ROADMAP.md`'s phase backlog by hand in that
 follow-up turn, following `run-cycle`'s "phase backlog, not cycle-numbered" format. Do
 not perform this step as part of a `/iyu:backlog-discover` invocation itself.

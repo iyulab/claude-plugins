@@ -22,23 +22,46 @@ Every artifact below lives **together in one directory**, the *continuity root* 
 | Completed-work archive (cold storage, created lazily) | `<root>/HISTORY-ARCHIVE-{NN}.md` | run-cycle, handoff |
 | Cycle logs | `<root>/cycle-logs/cycle-{NN}.md` | run-cycle |
 | End-of-Run Report | `<root>/cycle-logs/RUN-SUMMARY-{YYYY-MM-DD}.md` — dated by the day the run ends | run-cycle |
-| Backlog proposals | `<root>/backlog-discovery/` | backlog-discover |
-| Telemetry reports | `<root>/telemetry/` | telemetry-az |
+| Backlog proposals | `<root>/backlog-discovery/proposal-{YYYY-MM-DD}.md` + `state.json`, `INDEX.md` | backlog-discover |
+| Telemetry reports | `<root>/telemetry/report-{YYYY-MM-DD}.md` + `config.json`, `TREND.md` | telemetry-az |
 | Issue drafts | `<root>/issues/` | any |
+
+**A dated artifact written a second time on the same date never overwrites the first.** Each run
+of `backlog-discover` and `telemetry-az` gets its own file: the first run of the day takes the plain
+name, later ones take a suffix — `proposal-2026-09-23-2.md`, then `-3`, the next unused number. The
+file's thin index (`INDEX.md`, `TREND.md`) links each run's own file, and "the most recent N" is
+read from that index's line order, **never from sorting filenames**: `…-23-2.md` sorts *before*
+`…-23.md` (`-` < `.`). The one exception is the End-of-Run Report, which appends a new run block to
+the same day's file — it is read whole by a human and by the Stop hook's `Run:` line, not per run
+through an index.
 
 **Resolve `<root>` once, at the start, by looking at the repo — never by assuming a literal path.**
 A hardcoded path silently creates a *second* roadmap beside the one the project already keeps.
 
-Glob once for `cycle-logs/`, `backlog-discovery/`, `telemetry/`, `ROADMAP.md`, and `HANDOFF.md`
-(skip `node_modules`, `.git`, build output), then take the **first rule that matches** — the order
-matters:
+Glob once for the **marker files** below, plus `ROADMAP.md` and `HANDOFF.md` (skip `node_modules`,
+`.git`, build output), then take the **first rule that matches** — the order matters:
 
-1. **A `cycle-logs/`, `backlog-discovery/`, or `telemetry/` directory exists** (in that precedence)
-   → `<root>` is its **parent**. These are written only by this plugin's skills, so they are the
-   most reliable anchor; `cycle-logs/` leads because only a previous run of `run-cycle` writes it.
+| Anchor directory | Counts only if it holds one of |
+|---|---|
+| `cycle-logs/` | `cycle-*.md`, `RUN-SUMMARY-*.md` |
+| `backlog-discovery/` | `state.json`, `INDEX.md`, `proposal-*.md` |
+| `telemetry/` | `config.json`, `TREND.md`, `report-*.md` |
+
+1. **An anchor directory holding its marker files exists** (in that precedence) → `<root>` is its
+   **parent**. The files, not the directory name, are what this plugin's skills alone write:
+   `telemetry/` in particular is a common source package name, and a directory that merely shares
+   the name is not an anchor — glob the file patterns, not the directories, and it never matches.
+   `cycle-logs/` leads because only a previous run of `run-cycle` writes it.
 2. **Otherwise a `ROADMAP.md` / `HANDOFF.md` exists** → `<root>` is the directory holding it. The
    repo has already chosen its convention; **use it in place**, never create a parallel one beside it.
 3. **Nothing exists** → create the default **`claudedocs/`**.
+
+**Conflict guard.** When rule 1 picks a parent that holds no `ROADMAP.md` / `HANDOFF.md` while one
+exists elsewhere in the repo — anywhere but an ancestor of that parent (an umbrella layout) or
+inside the anchor directory itself (the legacy layout below), neither of which is a conflict — do not follow rule 1 silently: report both candidates and use the one the
+continuity docs already sit in unless the owner says otherwise. Either a marker-bearing directory is
+still a false positive, or the project is already split; both need a human to see it, and writing
+into either one quietly deepens the split.
 
 **Every skill checks the identical list in the identical order.** An unequal list is how a project
 that has so far run only one skill resolves one root there and a different one elsewhere — which is

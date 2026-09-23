@@ -8,6 +8,23 @@ bugs or docs. MAJOR is never bumped automatically.
 > History is reconstructed from git from v1.11.0 onward. Earlier versions live in
 > the git log only.
 
+## [1.41.1] — 2026-09-24
+
+### Fixed
+
+- **Continuity root no longer anchors on a directory that merely shares a name.** Rule 1 of
+  `continuity-docs.md` §1 matched `cycle-logs/`, `backlog-discovery/`, and `telemetry/` by name, so a
+  source package called `telemetry/` became the root and the next skill would have written a second
+  `ROADMAP.md` inside it. An anchor now counts only when it holds the files its skill writes
+  (`cycle-*.md`, `state.json`/`INDEX.md`/`proposal-*.md`, `config.json`/`TREND.md`/`report-*.md`).
+  A new conflict guard reports, instead of silently following, a rule-1 pick whose parent has no
+  continuity docs while they exist elsewhere.
+- **Same-day re-runs no longer overwrite the earlier run's output.** `backlog-discover` and
+  `telemetry-az` write `…-YYYY-MM-DD-{k}.md` from the second run of a date on; "most recent" is read
+  from `INDEX.md`/`TREND.md` order, not from filename sort (a `-2` file sorts before the plain one).
+  `backlog-discover` item ids continue `nn` from the same date's `lastItemSeq` instead of restarting
+  at 01, so ids stay unique within the date.
+
 ## [1.41.0] — 2026-09-18
 
 `/iyu:resume` briefed decisions well but still handed them up as "which option?" and waited — the

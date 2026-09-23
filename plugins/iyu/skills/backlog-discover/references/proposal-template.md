@@ -1,6 +1,7 @@
 # Proposal document template
 
-Fill this structure and write it to `<root>/backlog-discovery/proposal-YYYY-MM-DD.md` in the
+Fill this structure and write it to `<root>/backlog-discovery/proposal-YYYY-MM-DD.md` (or
+`proposal-YYYY-MM-DD-{k}.md` for a later same-day run — SKILL.md P7) in the
 consumer repo — `<root>` being the docs root resolved in SKILL.md's "File layout" section
 (default `claudedocs/`). This document is the **terminal output** of a
 `/iyu:backlog-discover` run — `ROADMAP.md` is never touched by this skill; a human

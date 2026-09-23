@@ -66,7 +66,8 @@ convention, and it is what lets P2's heuristics be a plain scan instead of a joi
 - `swTech` / `domain` — per-run **inquiry axis** counts (P4). This is what makes the
   "SW 기술 축으로만 조사하고 있다" skew detectable across runs rather than only within one.
 - `symptom` / `selected` — P2's diagnosis, read back by P2 itself for its suppression window.
-- `lastItemSeq` — the highest item sequence number issued this run (item IDs, P4).
+- `lastItemSeq` — the highest item sequence number issued this run (item IDs, P4). A later run on
+  the same UTC date continues from it, so `nn` stays unique within the date.
 
 `dogfooding.scenariosRun` is a rolling list (last ~8) of short slugs naming the
 end-to-end scenarios already exercised, so each active-dogfooding run picks a *fresh*

@@ -60,7 +60,7 @@ against a directory that is merely elsewhere.
 ├── config.json          # resource identity + thresholds + custom KQL
 ├── .last-run.json       # watermark: lastRunUtc + history[] (trend state, both purposes)
 ├── TREND.md             # thin timeline index: one line per run, links to each report
-└── report-YYYY-MM-DD.md # full ledger of findings per run (leads with Trend section)
+└── report-YYYY-MM-DD[-k].md # full ledger of findings per run (leads with Trend section); -k from the 2nd same-day run
 <root>/issues/
 └── ISSUE-<target>-<ts>-<slug>.md   # threshold-crossing findings only
 ```
@@ -353,7 +353,9 @@ Create an issue file **only** for findings at or above `config.thresholds.issueM
 
 ### P6: Report
 
-Write `<root>/telemetry/report-YYYY-MM-DD.md` using
+Write `<root>/telemetry/report-YYYY-MM-DD.md` — or, when that file already exists, the next unused
+`report-YYYY-MM-DD-{k}.md` (k ≥ 2), never overwriting an earlier run's report
+([continuity-docs.md](${CLAUDE_SKILL_DIR}/../_shared/continuity-docs.md) §1) — using
 [report-template.md](${CLAUDE_SKILL_DIR}/references/report-template.md). The report **leads with a Trend section**
 (both purposes, run-over-run) and then carries the full ledger:
 
