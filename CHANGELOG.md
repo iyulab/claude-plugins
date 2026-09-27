@@ -8,7 +8,7 @@ bugs or docs. MAJOR is never bumped automatically.
 > History is reconstructed from git from v1.11.0 onward. Earlier versions live in
 > the git log only.
 
-## [Unreleased]
+## [1.42.0] — 2026-09-27
 
 ### Added
 
