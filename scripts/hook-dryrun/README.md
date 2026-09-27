@@ -9,7 +9,9 @@ pwsh scripts/hook-dryrun/Invoke-HookDryRun.ps1                 # every fixture, 
 pwsh scripts/hook-dryrun/Invoke-HookDryRun.ps1 -Fixture d-* -Repeat 5
 ```
 
-Requires the `claude` CLI on `PATH`, signed in. Each run costs one short model session.
+Requires the `claude` CLI on `PATH`, signed in. Each run costs one short model session. Runs execute
+concurrently (`-ThrottleLimit`, default 6 — the full suite takes about two minutes instead of about
+twenty-five run one at a time); `-ThrottleLimit 1` runs them sequentially.
 
 ## How it works
 

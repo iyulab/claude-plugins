@@ -23,6 +23,9 @@
 
   The model defaults to haiku because agent hooks without a `model` field run on "a fast model".
 
+  Runs (fixture x repeat) execute concurrently, -ThrottleLimit at a time (default 6); each has its own
+  temp tree, so they share nothing. -ThrottleLimit 1 runs them one after another.
+
 .EXAMPLE
   pwsh scripts/hook-dryrun/Invoke-HookDryRun.ps1
   pwsh scripts/hook-dryrun/Invoke-HookDryRun.ps1 -Fixture e-* -Repeat 5
@@ -32,6 +35,7 @@ param(
     [string]$Fixture = '*',
     [int]$Repeat = 3,
     [string]$Model = 'haiku',
+    [int]$ThrottleLimit = 6,
     [string]$SkillPath = (Join-Path $PSScriptRoot '../../plugins/iyu/skills/run-cycle/SKILL.md')
 )
 
@@ -86,59 +90,74 @@ function Get-Verdict([string]$raw) {
     try { return ($m[$m.Count - 1].Value | ConvertFrom-Json) } catch { return $null }
 }
 
+function Invoke-HookRun($fxPath, $expect, [string]$prompt, [string]$model) {
+    $root = Join-Path ([IO.Path]::GetTempPath()) ("hook-dryrun-" + [guid]::NewGuid().ToString('N').Substring(0, 8))
+    New-FixtureTree (Join-Path $fxPath 'tree') $root
+    if ($expect.touch) {
+        foreach ($p in $expect.touch.PSObject.Properties) {
+            $rel = $p.Name -replace '_cycle-logs_', 'cycle-logs'
+            (Get-Item -LiteralPath (Join-Path $root $rel)).LastWriteTime = (Get-Date).AddMinutes([int]$p.Value)
+        }
+    }
+    $before = Get-TreeHashes $root
+    $hookInput = [ordered]@{
+        session_id = 'dryrun'; transcript_path = ''; cwd = $root; hook_event_name = 'Stop'
+        stop_hook_active = $false; last_assistant_message = 'Cycle work for this turn is done.'
+    } | ConvertTo-Json -Compress
+    $p = $prompt.Replace('$ARGUMENTS', $hookInput)
+
+    Push-Location $root
+    try {
+        $raw = $p | claude -p --model $model --setting-sources '' --tools 'Read,Glob,Grep,Write,Edit' `
+            --permission-mode acceptEdits --no-session-persistence --output-format stream-json --verbose 2>&1 | Out-String
+    } finally { Pop-Location }
+
+    $v = Get-Verdict $raw
+    $problems = @()
+    if ($null -eq $v) { $problems += 'no JSON verdict in output' }
+    else {
+        if ([bool]$v.ok -ne [bool]$expect.ok) { $problems += "ok=$($v.ok), expected $($expect.ok)" }
+        $reason = ([string]$v.reason) -replace '\\', '/'
+        $rootFwd = $root -replace '\\', '/'
+        foreach ($s in @($expect.reasonContains)) { if ($s -and $reason -notlike "*$s*") { $problems += "reason lacks '$s'" } }
+        foreach ($s in @($expect.reasonNotContains)) { if ($s -and $reason -like "*$s*") { $problems += "reason contains '$s'" } }
+        if ($expect.reasonContainsFixtureRoot -and $reason -notlike "*$rootFwd*" -and $reason -notlike "*$($rootFwd.TrimEnd('/') -replace '^([A-Za-z]):', '/$1')*") {
+            $problems += 'reason does not carry the resolved absolute path'
+        }
+    }
+    $after = Get-TreeHashes $root
+    $changed = @($before.Keys | Where-Object { $after[$_] -ne $before[$_] }) + @($after.Keys | Where-Object { -not $before.ContainsKey($_) })
+    if ($changed) { $problems += "hook modified files: $($changed -join ', ')" }
+
+    $trace = "$root.trace.jsonl"
+    if ($problems) { Set-Content -LiteralPath $trace -Value $raw -Encoding utf8 }  # beside the tree, not in it
+    else { Remove-Item -LiteralPath $root -Recurse -Force }
+    [pscustomobject]@{ Problems = $problems; Reason = $v.reason; Root = $root; Trace = $trace }
+}
+
 $prompt = Get-HookPrompt (Resolve-Path $SkillPath)
 $fixtures = Get-ChildItem -LiteralPath (Join-Path $PSScriptRoot 'fixtures') -Directory | Where-Object Name -like $Fixture
 if (-not $fixtures) { throw "No fixture matches '$Fixture'." }
 
+$jobs = foreach ($fx in $fixtures) {
+    $expect = Get-Content -LiteralPath (Join-Path $fx.FullName 'expect.json') -Raw -Encoding utf8 | ConvertFrom-Json
+    for ($r = 1; $r -le $Repeat; $r++) { [pscustomobject]@{ Name = $fx.Name; Path = $fx.FullName; Expect = $expect; Run = $r } }
+}
+# Parallel runspaces do not inherit this script's functions; hand them over as source.
+$lib = @('New-FixtureTree', 'Get-TreeHashes', 'Get-Verdict', 'Invoke-HookRun' |
+    ForEach-Object { "function $_ {`n$((Get-Item "function:$_").Definition)`n}" }) -join "`n"
+$results = $jobs | ForEach-Object -ThrottleLimit $ThrottleLimit -Parallel {
+    $ErrorActionPreference = 'Stop'
+    . ([scriptblock]::Create($using:lib))
+    $res = Invoke-HookRun $_.Path $_.Expect $using:prompt $using:Model
+    $res | Add-Member -NotePropertyName Name -NotePropertyValue $_.Name -PassThru |
+        Add-Member -NotePropertyName Run -NotePropertyValue $_.Run -PassThru
+}
+
 $failed = 0
 foreach ($fx in $fixtures) {
-    $expect = Get-Content -LiteralPath (Join-Path $fx.FullName 'expect.json') -Raw -Encoding utf8 | ConvertFrom-Json
-    $runs = @()
-    for ($r = 1; $r -le $Repeat; $r++) {
-        $root = Join-Path ([IO.Path]::GetTempPath()) ("hook-dryrun-" + [guid]::NewGuid().ToString('N').Substring(0, 8))
-        New-FixtureTree (Join-Path $fx.FullName 'tree') $root
-        if ($expect.touch) {
-            foreach ($p in $expect.touch.PSObject.Properties) {
-                $rel = $p.Name -replace '_cycle-logs_', 'cycle-logs'
-                (Get-Item -LiteralPath (Join-Path $root $rel)).LastWriteTime = (Get-Date).AddMinutes([int]$p.Value)
-            }
-        }
-        $before = Get-TreeHashes $root
-        $hookInput = [ordered]@{
-            session_id = 'dryrun'; transcript_path = ''; cwd = $root; hook_event_name = 'Stop'
-            stop_hook_active = $false; last_assistant_message = 'Cycle work for this turn is done.'
-        } | ConvertTo-Json -Compress
-        $p = $prompt.Replace('$ARGUMENTS', $hookInput)
-
-        Push-Location $root
-        try {
-            $raw = $p | claude -p --model $Model --setting-sources '' --tools 'Read,Glob,Grep,Write,Edit' `
-                --permission-mode acceptEdits --no-session-persistence --output-format stream-json --verbose 2>&1 | Out-String
-        } finally { Pop-Location }
-
-        $v = Get-Verdict $raw
-        $problems = @()
-        if ($null -eq $v) { $problems += 'no JSON verdict in output' }
-        else {
-            if ([bool]$v.ok -ne [bool]$expect.ok) { $problems += "ok=$($v.ok), expected $($expect.ok)" }
-            $reason = ([string]$v.reason) -replace '\\', '/'
-            $rootFwd = $root -replace '\\', '/'
-            foreach ($s in @($expect.reasonContains)) { if ($s -and $reason -notlike "*$s*") { $problems += "reason lacks '$s'" } }
-            foreach ($s in @($expect.reasonNotContains)) { if ($s -and $reason -like "*$s*") { $problems += "reason contains '$s'" } }
-            if ($expect.reasonContainsFixtureRoot -and $reason -notlike "*$rootFwd*" -and $reason -notlike "*$($rootFwd.TrimEnd('/') -replace '^([A-Za-z]):', '/$1')*") {
-                $problems += 'reason does not carry the resolved absolute path'
-            }
-        }
-        $after = Get-TreeHashes $root
-        $changed = @($before.Keys | Where-Object { $after[$_] -ne $before[$_] }) + @($after.Keys | Where-Object { -not $before.ContainsKey($_) })
-        if ($changed) { $problems += "hook modified files: $($changed -join ', ')" }
-
-        $trace = "$root.trace.jsonl"
-        $runs += [pscustomobject]@{ Run = $r; Ok = $v.ok; Problems = $problems; Reason = $v.reason; Root = $root; Trace = $trace }
-        if ($problems) { Set-Content -LiteralPath $trace -Value $raw -Encoding utf8 }  # beside the tree, not in it
-        else { Remove-Item -LiteralPath $root -Recurse -Force }
-    }
-    $bad = @($runs | Where-Object { $_.Problems })
+    $expect = ($jobs | Where-Object Name -eq $fx.Name | Select-Object -First 1).Expect
+    $bad = @($results | Where-Object { $_.Name -eq $fx.Name -and $_.Problems } | Sort-Object Run)
     $status = if ($bad) { 'FAIL'; $failed++ } else { 'PASS' }
     Write-Host ("[{0}] {1}  ({2}/{3} runs clean) — {4}" -f $status, $fx.Name, ($Repeat - $bad.Count), $Repeat, $expect.why)
     foreach ($b in $bad) {
