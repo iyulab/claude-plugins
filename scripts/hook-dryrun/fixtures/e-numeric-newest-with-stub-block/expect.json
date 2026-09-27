@@ -1,0 +1,13 @@
+{
+  "ok": false,
+  "why": "newest log is cycle-240 (numeric, stub included); run started at 239, 1 of 10 done, FRONTIER-OPEN -> keep working. Must not reach back to cycle-111 or its report",
+  "reasonNotContains": [
+    "cycle-111",
+    "2026-09-07",
+    "RUN-SUMMARY"
+  ],
+  "touch": {
+    "claudedocs/_cycle-logs_/cycle-111.md": 10,
+    "claudedocs/_cycle-logs_/cycle-99.md": 5
+  }
+}

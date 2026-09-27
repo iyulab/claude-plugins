@@ -1,0 +1,4 @@
+{
+  "ok": true,
+  "why": "report without a Run: line predates the header and is accepted (fail toward allow)"
+}

@@ -1,0 +1,13 @@
+{
+  "ok": false,
+  "why": "budget reached but no report; reason must give the report under the absolute cycle-logs path (one string, or directory then file name), never the parent",
+  "reasonContains": [
+    "/claudedocs/cycle-logs",
+    "RUN-SUMMARY-",
+    "Run: cycles"
+  ],
+  "reasonNotContains": [
+    "/claudedocs/RUN-SUMMARY-"
+  ],
+  "reasonContainsFixtureRoot": true
+}
