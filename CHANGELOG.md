@@ -25,6 +25,14 @@ bugs or docs. MAJOR is never bumped automatically.
 
 ### Changed
 
+- **`/iyu:run-cycle` ends every run by invoking `/iyu:handoff`.** After the End-of-Run Report and the
+  commit, the run hands off itself, so the everyday loop is `run-cycle → /clear → resume → run-cycle`
+  with no manual step. The report's deferred decisions become flagged entries in `HANDOFF.md`, and
+  its self-made ones become "Decided this session" entries.
+- **`/iyu:handoff` is a checkpoint, not only a closeout.** It can run mid-session — before `/clear`, a
+  topic switch, or when the context is getting long — and says exactly where half-done work stopped.
+  Every handoff ends by pointing at `/clear` → `/iyu:resume`. `STRANDS.md` counts each unit once, so
+  repeated handoffs on the same day and a handoff that closes a run do not inflate a strand's count.
 - **`version` and every other per-plugin field live only in `plugin.json`.** The marketplace entry
   carried copies; the official docs say not to set `version` in both, and an entry's display fields
   silently override the manifest's (the entry's `homepage` already differed). `plugin.json` gains

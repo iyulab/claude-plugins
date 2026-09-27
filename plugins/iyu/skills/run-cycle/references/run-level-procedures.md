@@ -89,3 +89,16 @@ Then:
   point worth releasing, say so in the End-of-Run Report and stop there
 - **NEVER bump MAJOR version**
 
+## Handoff
+
+After the commit, invoke **`/iyu:handoff`** with the `Skill` tool — on every termination path, the
+same as the report and the commit. The run's cycles kept the continuity docs current one cycle at a
+time; the handoff turns the run's end state into the `HANDOFF.md` a fresh context resumes from: the
+report's deferred (L2) decisions become flagged "Waiting on you" entries, its self-made (L1)
+decisions become "Decided this session" entries, release items are placed, and the doc edits are
+committed. It is the last thing the run does — the owner can clear the context and continue with
+`/iyu:resume`.
+
+Do not restate the handoff's procedure here or carry out a partial version of it: the skill is the
+single definition, and invoking it is what keeps a run's close identical to any other session's.
+

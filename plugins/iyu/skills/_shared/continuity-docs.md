@@ -170,6 +170,11 @@ Apply whenever continuity docs are written — every `run-cycle` STEP 5, every `
    leave the ledger as is; an edit anchored on the wrong occurrence is how entries end up inside a
    quote.
 
+   **Count each unit once.** If the matching entry's `최근` already names this unit, it is current —
+   change nothing. That covers a second `handoff` on the same day (`session-{date}` again) and a
+   `handoff` that closes a `run-cycle` run: that run's cycles already recorded themselves as
+   `cycle-{NN}` units, so the closing handoff records no unit of its own.
+
    **Update (transition procedure):**
 
    a. Identify the strand this unit predominantly served — the `ROADMAP.md` phase advanced, or a

@@ -83,6 +83,8 @@ Cycles maintain continuity — unresolved issues and pending decisions automatic
 
 When primary work finishes early and cycles remain, run-cycle does not stop idle. It climbs a **Surplus-Cycle Value Ladder** — investing the remaining budget across the full software lifecycle: **① main loop → ② durable value** (research → refactoring → docs/assets) **→ ③ stability** (tests/monitoring → security/compliance → resilience) **→ ④ efficiency** (DevOps → DX). It acts only where the project shows a concrete signal; additive/low-risk work is done in-cycle, invasive/opinionated work is proposed for human decision. Doc-sync is the always-applicable floor of this ladder.
 
+A run ends with the End-of-Run Report, a commit, and then **`/iyu:handoff`**, which it invokes itself — so the everyday loop is `run-cycle → /clear → resume → run-cycle` without a manual handoff in between.
+
 Before committing, run-cycle runs a **lightweight release-readiness check** — version consistency across version-bearing files, CHANGELOG coverage, doc-sync, and an evidence block of the actual test/build/lint output. It verifies and packages only; tagging, publishing, and pushing stay with the human / CI. The commit itself defaults to **one per run** (bundling beats fragmenting), splitting on **verified-cycle boundaries** only when a long run's single diff would no longer be reviewable in one pass — each cycle's passing STEP 3 is already a clean rollback point.
 
 Cycle accounting is relative to where the run started: Preparation derives the starting index from the existing logs and records it (with the budget) in every cycle log header, and only logs from that index onward count toward the budget — so a repo carrying logs from earlier runs can't read as already over budget and stop before doing any work. The Stop hook reads those headers, since it gets no invocation arguments of its own. It is a read-only
@@ -99,7 +101,10 @@ invoking `/iyu:run-cycle` again resumes the run from its logs.
 
 ### /iyu:handoff
 
-Close out a session so the next one can resume from files alone.
+Checkpoint a session so the next one — or this one after `/clear` — can resume from files alone.
+Closing a session is the main use, but it works just as well mid-session: before clearing the
+context, before switching focus, or when the conversation is getting long. `/iyu:run-cycle` runs it
+as the last step of every run, so a run always ends with a `HANDOFF.md` ready for `/iyu:resume`.
 
 ```bash
 /iyu:handoff              # cover the whole session

@@ -82,7 +82,7 @@ the user-facing description. Read the skill file before changing a skill.
 | `mindset` | Auto-activating "critical but constructive" maintenance philosophy | — |
 | `issue-triage` | Auto-activating decision matrices for issue/PR triage discussions | — |
 | `/iyu:run-cycle [N]` | Adaptive cycles: re-plan → design → execute → verify → reflect → derive-next, `N` a ceiling; early termination is audited against the backlog, not self-declared | capable **employee** |
-| `/iyu:handoff` | Session closeout: continuity docs, next scope, re-ordering, decisions *flagged* (not briefed) | capable **team lead** |
+| `/iyu:handoff` | Session checkpoint — at close (main use), mid-session before `/clear`, and as `run-cycle`'s last step: continuity docs, next scope, re-ordering, decisions *flagged* (not briefed) | capable **team lead** |
 | `/iyu:resume` | Session opener: reads what handoff left, synthesizes/reprioritizes against current state, *briefs and pre-decides* flagged and derived decisions — researching, bounded, to reach a recommendation that becomes the provisional decision — records it immediately (applying a reorder to `## Next`), leaves the owner only blockers, owner-gated acts, and criterion requests, turns an override into a criterion question, then stops short of execution | capable **employee opening the session** |
 | `/iyu:ship` | Bump → commit → push → watch CI → publish, each stage stoppable | — |
 | `/iyu:backlog-discover` | Research playbook → diagnosis, ranking, staged proposal (never auto-merged) | capable **owner-manager** |

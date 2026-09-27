@@ -62,14 +62,18 @@ someone else.
 that is where the loop actually closes: `handoff` flags a decision at close, `resume` briefs and
 settles it at the next open.
 
-You do not need all of it. **Start with two:**
+You do not need all of it. **The everyday loop is three commands and a `/clear`:**
 
 ```bash
-/iyu:run-cycle 10     # work through the backlog, verifying as it goes
-/iyu:handoff          # when you stop — write down where things stand and what's next
+/iyu:run-cycle 10     # work through the backlog; the run ends by running /iyu:handoff itself
+/clear                # HANDOFF.md now holds everything the next stretch needs
+/iyu:resume           # read it back, settle what was flagged, then run-cycle again
 ```
 
-That pair alone gives you the core benefit: work that resumes cleanly tomorrow. Add the others when
+`/iyu:handoff` also runs on its own — at the end of a session that was not a cycle run, or in the
+middle of one, whenever you want to checkpoint before clearing the context or switching focus.
+
+That loop alone gives you the core benefit: work that resumes cleanly after every reset. Add the others when
 you feel the specific need.
 
 | Reach for | What it does | When |

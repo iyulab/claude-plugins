@@ -3,7 +3,7 @@ name: run-cycle
 description: Executes adaptive iterative development cycles — each cycle is a self-contained plan/execute/verify/reflect loop that reshapes the roadmap and derives emergent follow-on scope from its own output
 argument-hint: "[total_cycles]"
 disable-model-invocation: true
-allowed-tools: Read, Glob, Grep, Write, Edit, TodoWrite, WebFetch, WebSearch, Bash, Agent, Task
+allowed-tools: Read, Glob, Grep, Write, Edit, TodoWrite, WebFetch, WebSearch, Bash, Agent, Task, Skill
 hooks:
   Stop:
     - hooks:
@@ -101,9 +101,11 @@ Plus, when they apply: `HUMAN-NEEDED: <reason>` (run-fatal only — ends the run
 `BLOCKED-ITEM: <scope> — <reason + what was tried + what would unblock it>` (parks one scope, never
 ends the run).
 
-**At the end of the run**, not of a cycle: the End-of-Run Report, then the commit — both
-unconditional on every termination path, procedure in
-[references/run-level-procedures.md](${CLAUDE_SKILL_DIR}/references/run-level-procedures.md).
+**At the end of the run**, not of a cycle: the End-of-Run Report, then the commit, then
+**`/iyu:handoff`** (invoke it with the `Skill` tool) — all three unconditional on every termination
+path, procedure in
+[references/run-level-procedures.md](${CLAUDE_SKILL_DIR}/references/run-level-procedures.md). The
+handoff leaves `HANDOFF.md` ready for `/clear` → `/iyu:resume`, so the next run starts from files.
 
 **Do not end the turn between cycles** — go from one cycle's STEP 5 straight into the next cycle's
 STEP 0. Ending the turn is a stop the Stop hook has to reverse, and Claude Code overrides the next

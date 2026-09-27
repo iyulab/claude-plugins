@@ -1,14 +1,15 @@
 ---
 name: handoff
-description: Closes out a work session — records where things stand, migrates completed work out of the continuity docs into the history index, derives and stages the next scope, flags (not briefs) the decisions waiting on a human for `/iyu:resume` to brief when the next session opens, and commits everything it can confidently attribute (this session's work, pre-existing uncommitted leftovers, and its own doc edits) toward a clean `git status` — never pushing, and reporting rather than guessing at anything ambiguous. Produces the document a fresh session (or another person) resumes from, so nothing depends on the current conversation surviving.
-when_to_use: User-invoked with "세션 종료를 위한 정리", "HANDOFF/ROADMAP 업데이트", "다음 작업범위 제안", "로드맵 최신화", "wrap up and hand off". Model-invoked (announce before running, per Rule 7) only on a concrete signal that the session is actually ending — the user is closing out or the context window is nearly exhausted — or when HANDOFF.md/ROADMAP.md are visibly stale against what git log shows happened. Not for mid-task pauses, and never as a substitute for asking what to do next.
+description: Checkpoints a work session — at its close (the main use), mid-session before clearing context or switching focus, or at the end of a `/iyu:run-cycle` run. Records where things stand, migrates completed work out of the continuity docs into the history index, derives and stages the next scope, flags (not briefs) the decisions waiting on a human for `/iyu:resume` to brief when the next session opens, and commits everything it can confidently attribute (this session's work, pre-existing uncommitted leftovers, and its own doc edits) toward a clean `git status` — never pushing, and reporting rather than guessing at anything ambiguous. Produces the document a fresh session (or another person) resumes from, so nothing depends on the current conversation surviving.
+when_to_use: User-invoked any time — "세션 종료를 위한 정리", "중간 정리", "컨텍스트 비우기 전에 정리", "HANDOFF/ROADMAP 업데이트", "다음 작업범위 제안", "로드맵 최신화", "wrap up and hand off", "checkpoint before /clear". Invoked by `/iyu:run-cycle` as the last step of every run. Model-invoked on its own (announce first, per Rule 7) only on a concrete signal that the session is ending — the user is closing out or the context window is nearly exhausted — or when HANDOFF.md/ROADMAP.md are visibly stale against what git log shows happened. Never as a substitute for asking what to do next.
 argument-hint: "[focus or scope note]"
 allowed-tools: Read, Glob, Grep, Write, Edit, TodoWrite, Bash
 ---
 
 # Session Handoff
 
-Write down what the next session needs and nothing else. The output is judged by one test:
+Write down what the next session — or this one, after its context is cleared — needs, and nothing
+else. The output is judged by one test:
 **could someone with no access to this conversation pick up the work from these files alone?**
 
 Work this like a capable **team lead** closing out the week. `run-cycle` is the employee who
@@ -16,11 +17,27 @@ executes a scope and reports back; this skill is the lead who says where the wor
 team does next — and, for the calls that are the owner's to make, **names them** so `/iyu:resume` can
 brief them properly when the next session actually opens (step 6).
 
+## When it runs
+
+The output is the same in every case — a `HANDOFF.md` that stands on its own — but what surrounds it
+differs:
+
+| Occasion | Who starts it | What differs |
+|---|---|---|
+| **Session close** — the main use | the user, or the model on a concrete end signal (Rule 7) | nothing; this is the default below |
+| **Mid-session checkpoint** — before `/clear`, a topic switch, or when the context is getting heavy | the user | the session goes on afterwards. `## In flight` is often not "None" — say exactly where the work stopped. Half-done edits stay uncommitted and are named (## Commit step 3) |
+| **End of a `/iyu:run-cycle` run** | `run-cycle`, as its last step | the End-of-Run Report is already the run's chat report — read it as evidence (step 2) and keep your own chat report to a few lines pointing at `HANDOFF.md`. The run's cycles already updated `STRANDS.md` |
+
+Every occasion ends the same way, too: once `HANDOFF.md` is written and committed, the conversation
+is no longer needed to continue. Close the report with one line saying so — the context can be
+cleared, and `/iyu:resume` picks up from `HANDOFF.md`.
+
 ## Why this exists separately
 
-`/iyu:run-cycle` already closes out its own runs — but only its own. Most sessions are not cycle
-runs, and they end the same way: work happened, the roadmap no longer matches reality, decisions are
-pending, and the next scope lives only in a conversation that is about to disappear.
+A session that is not a cycle run ends the way a run does: work happened, the roadmap no longer
+matches reality, decisions are pending, and the next scope lives only in a conversation that is about
+to disappear. `/iyu:run-cycle` ends each run by invoking this skill rather than carrying its own copy
+of the closeout, so both paths produce the same `HANDOFF.md`.
 
 This skill is that closeout, detached from the cycle machinery. It shares its definitions with
 `run-cycle` rather than restating them: **[continuity-docs.md](${CLAUDE_SKILL_DIR}/../_shared/continuity-docs.md)**
@@ -58,7 +75,9 @@ The conversation may already be compacted, and it is not the record. Read the ac
 - `git log` / `git status` / `git diff --stat` since the session started
 - The existing `HANDOFF.md` and `ROADMAP.md` — what did they claim, and is it still true?
 - The most recent `cycle-logs/cycle-*.md`, if the project runs cycles — its Carry-Forward, ledgers,
-  and Next-Cycle Scope are inherited obligations, not history
+  and Next-Cycle Scope are inherited obligations, not history. At the end of a run, also that run's
+  `RUN-SUMMARY-*.md` block: its deferred (L2) decisions feed step 6's "Waiting on you", and its
+  self-made (L1) decisions feed "Decided this session"
 - Any `<root>/issues/` drafts written this session
 - The project's external inbox, if it defines one
   ([continuity-docs.md §6](${CLAUDE_SKILL_DIR}/../_shared/continuity-docs.md)) — an item that arrived
@@ -80,7 +99,8 @@ Per [continuity-docs.md](${CLAUDE_SKILL_DIR}/../_shared/continuity-docs.md) §3,
 every completed item out of `ROADMAP.md` (including pre-existing leftovers) into `HISTORY.md`
 (archiving overflow past its live window), rewrite `HANDOFF.md` to current + next only, **update**
 `STRANDS.md` (the same transition procedure `run-cycle` applies per cycle, applied here per this
-closing session — record the unit as `session-{YYYY-MM-DD}`) then compress it (archiving overflow
+closing session — record the unit as `session-{YYYY-MM-DD}`, counted once per the rule in §3 step 4,
+so a second handoff the same day and a handoff at the end of a run add nothing) then compress it (archiving overflow
 past its live window; `## 진행 중`/`## 중단됨` are never archived), keep the `> History:` link.
 
 This is the step that makes the skill worth running repeatedly. The docs converge toward
@@ -189,7 +209,9 @@ starting a scheme of your own.
 **Updated**: {YYYY-MM-DD} · **Root**: {resolved root}
 
 ## In flight
-{What is half-done right now, and where exactly it stopped. "None" if the session ended clean.}
+{What is half-done right now, and where exactly it stopped — the file, the step, the next command.
+"None" if nothing is half-done. A mid-session checkpoint is read by this same session after `/clear`,
+so this is the section that has to be exact.}
 
 ## Next
 {Concrete scope for the next session — from carry-forward, discoveries, or an autonomous-eligible
@@ -219,7 +241,9 @@ Plus: `ROADMAP.md` with completed work removed (hygiene pass) **and its remainin
 order step 5 settled on**, and `HISTORY.md` with the completed work appended.
 
 Then report the same five sections in chat — the file is for the next session, the response is for
-the person reading now. Carry the flagged decisions into the response too, exactly as one-liners; do
+the person reading now (at the end of a run, a few lines instead: the End-of-Run Report already said
+it). End with the one-line pointer: the context can be cleared now, and `/iyu:resume` continues from
+`HANDOFF.md`. Carry the flagged decisions into the response too, exactly as one-liners; do
 not improvise options or a recommendation in chat that step 6 deliberately left for `/iyu:resume` to
 produce later.
 
@@ -269,7 +293,8 @@ session that never got committed) are in scope, not just this session's own edit
 6. **One root per handoff.** In an umbrella repo, several submodules touched means several handoffs,
    each in its own root.
 7. **Model-invoked runs announce first.** When this skill starts without an explicit user invocation
-   (`/iyu:handoff`), say in one line that a handoff is running and why, *before* touching any file —
+   (`/iyu:handoff`) — including when `/iyu:run-cycle` invokes it at the end of a run — say in one line
+   that a handoff is running and why, *before* touching any file —
    the rewrite is reversible, but a silent one still surprises whoever is reading the conversation.
 8. **Point, don't brief, when `## Next` is empty.** Name `/iyu:backlog-discover`; do not produce
    options, a cross-lens read, or a recommendation — see step 4. That stays `resume`'s job.
