@@ -37,7 +37,8 @@ would expose.
 If the test clears, say nothing and proceed — there is no question to ask.
 
 If it does not, **ask, and put the analysis in the question** per
-**[decision-briefing.md](${CLAUDE_SKILL_DIR}/../_shared/decision-briefing.md) §2**. Here the
+**[decision-briefing.md](${CLAUDE_SKILL_DIR}/../_shared/decision-briefing.md) §2**, with the cross-lens
+read from [decision-lenses.md](${CLAUDE_SKILL_DIR}/../_shared/decision-lenses.md). Here the
 briefing is the question itself, not a document section: the options, what each costs, and which one
 you would pick, so the answer needs a judgment rather than an investigation.
 
@@ -70,8 +71,10 @@ Items the project does not have are N/A — skip them, do not invent them.
    ran them after the last change. **Their actual output is the evidence** — never ship on a recalled
    pass. Failing: stop.
 3. **Version consistency.** Every version-bearing file agrees after the bump (package manifest,
-   plugin/marketplace manifests, README badges, `Directory.Build.props`, whatever the project has).
-   A mismatch is a defect to fix before committing, not a note to leave behind.
+   plugin manifest, README badges, `Directory.Build.props`, whatever the project has).
+   A mismatch is a defect to fix before committing, not a note to leave behind. A Claude Code plugin's
+   version lives in `plugin.json` only — a copy on its marketplace entry is overridden silently, so
+   remove it rather than keep it in step.
 4. **Changelog.** If the project keeps one, this release has an entry describing what changed. Add
    it if missing.
 

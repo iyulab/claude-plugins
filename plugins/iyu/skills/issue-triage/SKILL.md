@@ -1,6 +1,6 @@
 ---
 name: issue-triage
-description: Use when discussing whether to accept, reject, or redirect an external issue or PR. Triggers on "triage this issue", "evaluate this feature request", "should I accept/merge this", "is this in scope", "review this PR/contribution", "how should I respond to this issue".
+description: Supplies decision matrices for accepting, rejecting, or redirecting external issues and PRs. Use when discussing whether to accept, reject, or redirect an external issue or PR. Triggers on "triage this issue", "evaluate this feature request", "should I accept/merge this", "is this in scope", "review this PR/contribution", "how should I respond to this issue".
 ---
 
 # Issue & PR Triage Framework

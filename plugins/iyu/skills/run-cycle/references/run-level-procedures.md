@@ -60,7 +60,7 @@ Before the single end-of-run commit, run a **lightweight release-readiness check
 
 **Checklist** (items the project lacks are N/A — skip them, do not invent them):
 
-1. **Version consistency** — if any version-bearing file changed this run, confirm all agree (e.g. `plugin.json`, `marketplace.json`, README badges, package manifest, intended tag). A mismatch is a defect: fix it before committing.
+1. **Version consistency** — if any version-bearing file changed this run, confirm all agree (e.g. `plugin.json`, README badges, package manifest, intended tag — a Claude Code plugin's version belongs in `plugin.json` alone, never also on its marketplace entry). A mismatch is a defect: fix it before committing.
 2. **Changelog** — if the project keeps a CHANGELOG / release notes, confirm this run's changes are recorded. A missing entry is additive/low-risk: add it now.
 3. **Docs** — confirm the doc-sync floor (ladder ②) ran and reported consistent, and that continuity docs are lean (no completed items left in `ROADMAP.md`/`HANDOFF.md`; completed work indexed in `HISTORY.md`); do not re-run the sweep here.
 4. **Evidence** — package the actual STEP 3 verification output (test counts, build result, lint status). Assertions are not evidence (rule 7.5); if you cannot show the output, it is not verified.

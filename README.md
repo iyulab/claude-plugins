@@ -37,9 +37,9 @@ How that differs from the mainstream:
 
 ## Available Plugins
 
-> **Versioning** — two independent version numbers exist by design: `marketplace.json → version` tracks the **marketplace registry** (structure of this catalog), while each plugin's `plugin.json → version` tracks that **plugin** itself. They advance separately. Per-plugin `keywords`, `homepage`, and `license` are sourced from `plugin.json` and mirrored into the marketplace entry — the marketplace's own `metadata` object only recognizes `pluginRoot`, so per-plugin fields belong on the entry, not there. See [CHANGELOG.md](./CHANGELOG.md) for the iyu plugin history.
+> **Versioning** — two independent version numbers exist by design: `marketplace.json → version` tracks the **marketplace registry** (structure of this catalog), while each plugin's `plugin.json → version` tracks that **plugin** itself. They advance separately. Every per-plugin field (`version`, `description`, `keywords`, `homepage`, `license`, …) lives only in `plugin.json`: the entry's `source` is a relative path, so Claude Code reads `plugin.json` even before install, and a copy on the entry would silently override it (for `version`, the official docs say not to set it in both). See [CHANGELOG.md](./CHANGELOG.md) for the iyu plugin history.
 
-### iyu (v1.37.0)
+### iyu
 
 **Productivity toolkit for open-source library maintainers — adaptive iterative development, session continuity, issue triage, telemetry and backlog discovery**
 
