@@ -1,0 +1,72 @@
+{
+  "ok": false,
+  "why": "the latest human message is the run-cycle invocation (hook feedback is not human) - the run is still driving, work remains -> keep working",
+  "reasonNotContains": [
+    "RUN-SUMMARY"
+  ],
+  "transcript": [
+    {
+      "type": "user",
+      "userType": "external",
+      "origin": {
+        "kind": "human"
+      },
+      "message": {
+        "role": "user",
+        "content": "<command-message>iyu:run-cycle</command-message>\n<command-name>/iyu:run-cycle</command-name>\n<command-args>10</command-args>"
+      }
+    },
+    {
+      "type": "user",
+      "userType": "external",
+      "isMeta": true,
+      "message": {
+        "role": "user",
+        "content": [
+          {
+            "type": "text",
+            "text": "Base directory for this skill: …\n# Development Cycle Runner"
+          }
+        ]
+      }
+    },
+    {
+      "type": "assistant",
+      "message": {
+        "role": "assistant",
+        "content": [
+          {
+            "type": "text",
+            "text": "Cycle 01 done."
+          }
+        ]
+      }
+    },
+    {
+      "type": "user",
+      "userType": "external",
+      "isMeta": true,
+      "message": {
+        "role": "user",
+        "content": [
+          {
+            "type": "text",
+            "text": "Stop hook feedback:\nUnblocked autonomous work remains."
+          }
+        ]
+      }
+    },
+    {
+      "type": "assistant",
+      "message": {
+        "role": "assistant",
+        "content": [
+          {
+            "type": "text",
+            "text": "Starting cycle 02."
+          }
+        ]
+      }
+    }
+  ]
+}

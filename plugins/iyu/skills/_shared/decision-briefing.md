@@ -1,5 +1,7 @@
 # Decision briefing — how a decision goes up to the human
 
+**Contents** — 1. Three entry shapes — do not force one on another · 2. The four parts of a decision-class briefing · 3. Guards
+
 **This file is the single definition** of the shape a decision takes when it leaves the agent and
 reaches the person who owns it. Three consumers read it:
 

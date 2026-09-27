@@ -89,6 +89,14 @@ Cycle accounting is relative to where the run started: Preparation derives the s
 auditor — it never writes a log or report, only reports what is missing — and the newest log is the
 highest-*numbered* one, in-progress stub included, never the most recently modified.
 
+The hook can keep a run going only so far: Claude Code ends the turn anyway after **eight consecutive**
+Stop-hook blocks. `run-cycle` therefore moves from one cycle to the next without ending its turn, so
+the hook is a backstop rather than the engine. If a run in your setup keeps stopping between cycles,
+raise the cap with the `CLAUDE_CODE_STOP_HOOK_BLOCK_CAP` environment variable. The hook also stays
+registered for the rest of the session once `/iyu:run-cycle` has been invoked, so it checks who is
+driving first: once you type a request of your own after the run started, it lets turns end, and
+invoking `/iyu:run-cycle` again resumes the run from its logs.
+
 ### /iyu:handoff
 
 Close out a session so the next one can resume from files alone.

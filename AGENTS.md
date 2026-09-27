@@ -25,6 +25,7 @@ plugins/
     │   └── [skill-name]/
     │       ├── SKILL.md      # Skill definition (frontmatter + body)
     │       └── references/   # Supporting documentation, loaded on demand
+    ├── evals/                # `claude plugin eval` cases (results/ is git-ignored)
     └── README.md
 ```
 
@@ -141,6 +142,12 @@ The four canonical philosophy dimensions live only in
    prompt lives in frontmatter, which never enters the conversation, so its length costs the hook's
    own run and nothing in the 5,000-token re-attach window. Grow it when a fixture needs it; cut it
    when a fixture still passes without the words.
+9. **A skill's `description`/`when_to_use` is behavior, and the trigger evals are its test.** A
+   model-invoked skill that is never chosen does nothing — `mindset` sat at 0/3 until its description
+   said what it does and when. After editing either field, run
+   `claude plugin eval plugins/iyu --ablation none --no-publish` and keep `no-skill-for-general-question`
+   passing so a wider description does not over-trigger. `version` and every other per-plugin field
+   live only in `plugin.json`, never on the marketplace entry.
 
 ## Adding a New Plugin
 

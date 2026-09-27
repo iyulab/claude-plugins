@@ -1,5 +1,7 @@
 # Proposal document template
 
+**Contents** — the template (sections: 이번 실행 요약 · 현재 상태 진단 · 우선순위 및 단계 구성 · 발굴 항목 · 기술 채택 판정 (적정기술 판정이 돌았을 때만) · 스킵된 활동)
+
 Fill this structure and write it to `<root>/backlog-discovery/proposal-YYYY-MM-DD.md` (or
 `proposal-YYYY-MM-DD-{k}.md` for a later same-day run — SKILL.md P7) in the
 consumer repo — `<root>` being the docs root resolved in SKILL.md's "File layout" section

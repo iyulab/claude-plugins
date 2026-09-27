@@ -1,5 +1,7 @@
 # Continuity docs — the shared contract
 
+**Contents** — 1. Resolving the continuity root · 2. What belongs in each document · 3. Hygiene pass · 4. Deriving next scope · 5. Output language · 6. Session-boundary inbox check
+
 **This file is the single definition** of where a project's dev-tracking documents live and what
 belongs in each. `run-cycle`, `handoff`, `resume`, `backlog-discover`, and `telemetry-az` all read it.
 Copies of these rules inside individual skills drift apart; keep the definition here and link to it.

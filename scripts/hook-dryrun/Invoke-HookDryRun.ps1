@@ -100,15 +100,27 @@ function Invoke-HookRun($fxPath, $expect, [string]$prompt, [string]$model) {
         }
     }
     $before = Get-TreeHashes $root
+    $transcript = ''
+    if ($expect.transcript) {
+        # Beside the tree, not in it, so the hash check covers only the tree.
+        $metaDir = "$root.meta"
+        New-Item -ItemType Directory -Path $metaDir | Out-Null
+        $transcript = Join-Path $metaDir 'transcript.jsonl'
+        $lines = foreach ($entry in @($expect.transcript)) { $entry | ConvertTo-Json -Compress -Depth 10 }
+        Set-Content -LiteralPath $transcript -Value $lines -Encoding utf8
+    }
     $hookInput = [ordered]@{
-        session_id = 'dryrun'; transcript_path = ''; cwd = $root; hook_event_name = 'Stop'
+        session_id = 'dryrun'; transcript_path = $transcript; cwd = $root; hook_event_name = 'Stop'
         stop_hook_active = $false; last_assistant_message = 'Cycle work for this turn is done.'
     } | ConvertTo-Json -Compress
     $p = $prompt.Replace('$ARGUMENTS', $hookInput)
 
+    # A real session's transcript lives outside the project too; grant read access the way a user's
+    # session would need to, so the dry run tests the prompt rather than the sandbox.
+    $extra = if ($transcript) { @('--add-dir', (Split-Path $transcript)) } else { @() }
     Push-Location $root
     try {
-        $raw = $p | claude -p --model $model --setting-sources '' --tools 'Read,Glob,Grep,Write,Edit' `
+        $raw = $p | claude -p --model $model --setting-sources '' --tools 'Read,Glob,Grep,Write,Edit' @extra `
             --permission-mode acceptEdits --no-session-persistence --output-format stream-json --verbose 2>&1 | Out-String
     } finally { Pop-Location }
 
@@ -131,7 +143,10 @@ function Invoke-HookRun($fxPath, $expect, [string]$prompt, [string]$model) {
 
     $trace = "$root.trace.jsonl"
     if ($problems) { Set-Content -LiteralPath $trace -Value $raw -Encoding utf8 }  # beside the tree, not in it
-    else { Remove-Item -LiteralPath $root -Recurse -Force }
+    else {
+        Remove-Item -LiteralPath $root -Recurse -Force
+        if ($transcript) { Remove-Item -LiteralPath (Split-Path $transcript) -Recurse -Force }
+    }
     [pscustomobject]@{ Problems = $problems; Reason = $v.reason; Root = $root; Trace = $trace }
 }
 

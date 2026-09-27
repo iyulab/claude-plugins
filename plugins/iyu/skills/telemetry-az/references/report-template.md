@@ -1,5 +1,7 @@
 # Report template
 
+**Contents** — the template (sections: Run {HH:mm UTC} → Trend · Summary · Findings · User Analytics · Gaps & caveats · Dedup & recurrence · Watermark) · Rules
+
 Write to `<root>/telemetry/report-YYYY-MM-DD.md` (`-{k}` suffix for a later same-day run — SKILL.md P6). The report is the **full ledger** of a
 run: it **leads with a run-over-run Trend section** (both purposes), then carries every finding
 at every risk level, the triage summary, dedup/recurrence notes, and links to any issue files

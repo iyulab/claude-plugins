@@ -1,5 +1,7 @@
 # `state.json` — schema, cadence semantics, and the first-run split
 
+**Contents** — the `state.json` schema · `history[]` (the sole trend state) and its fields · the first-run split
+
 **This file is the normative definition of `<root>/backlog-discovery/state.json`.** `SKILL.md` keeps
 the one-line obligations (P0 reads it, P8 writes it); everything about its shape, the cadence
 clock, the emergent rotation pointer, and the cold-start split lives here. Read it whenever you are

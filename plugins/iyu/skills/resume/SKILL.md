@@ -139,7 +139,8 @@ on the first pass, close the gap before writing anything:
   the recommendation was already available.
 - **Settle it, bounded (~5 min per entry)**, per decision-lenses.md's cause table — (b) read the
   file/test/dependent or `WebSearch`/`WebFetch` the convention; (c) derive the missing criterion
-  from CLAUDE.md/README and philosophy-alignment-guide.md and recommend it with the option it
+  from CLAUDE.md/README and
+  [philosophy-alignment-guide.md](${CLAUDE_SKILL_DIR}/../mindset/references/philosophy-alignment-guide.md) and recommend it with the option it
   implies. Run the cheap command rather than naming it. Only (a) and (d) become criterion requests,
   and only once (b) and (c) are ruled out.
 - **If the bounded search came back empty, say what you searched**, not only what is still unknown.

@@ -13,6 +13,7 @@ hooks:
             Decide block/allow from durable on-disk state — the cycle logs ARE the state. Read them with your tools; do not rely on conversation memory, on the hook input alone, or on re-deriving the plan.
             You are a READ-ONLY auditor: never create, edit, move, or delete any file. A missing or wrong artifact goes into the BLOCK reason for the run to fix — you never fix it. Your only output is the JSON verdict.
             Hook input (JSON): $ARGUMENTS — use its `cwd` as the search root. It carries no invocation arguments, so step 1 reads this run's budget from the logs.
+            00. Human takeover — this hook stays registered for the rest of the session, so first check who is driving. If the input's `transcript_path` is non-empty, Grep that file for `"origin":{"kind":"human"}` and take the LAST matching line: the human's most recent message (Stop-hook feedback and skill text are not human-authored and never match). If it does NOT contain `/iyu:run-cycle`, the human has taken over since the run started — respond ALLOW (the logs keep the run resumable; re-invoking `/iyu:run-cycle` resumes it) and skip everything below. If the path is empty, unreadable, or no line matches, skip this step and continue.
             0. Resolve the log directory from disk — never assume a literal path. Glob `**/cycle-logs/cycle-*.md` (skip `node_modules`, `.git`, build output). One match → use it. Several (an umbrella repo) → the one holding the most recently modified `cycle-*.md`. Call that directory `<logs dir>`: the `cycle-logs/` directory that holds the `cycle-*.md` files themselves. It is the ONE anchor — every path below is relative to it, and its parent (the continuity root, where `ROADMAP.md`/`HANDOFF.md` live) is never an anchor of its own: it appears only as `<logs dir>/..` in step 4a. Mixing in a sibling submodule's logs corrupts step 1. **No match at all** → cycles completed = 0, treat both logs as absent in steps 2–2b, and continue to step 3, which blocks: with no log there is no frontier token, and a run that stopped before its first log is never a valid stop. Never allow merely because nothing resolved.
             1. Read the **highest-indexed** `<logs dir>/cycle-*.md`'s header — highest by the NUMBER in the filename (`cycle-240` > `cycle-111` > `cycle-99`), never by string order or modification time, and an `in-progress` stub counts (`Budget:` / `Start:` / `Status:`). **Cycles completed = logs whose index is >= `Start:` AND whose `Status:` is `complete`** — not the raw file count, and never the in-progress log of the cycle running now. If the newest log has **no `Budget:`/`Start:` header at all**, it predates this scheme and this run has written nothing: completed = 0, continue to step 3. Do NOT extend that to a headered `complete` log sitting at its own ceiling — from here that is indistinguishable from a clean finish, and blocking there yields a run that can never end.
             2. Read the latest **`complete`** log of this run (index >= `Start:`) — call it the latest log below. An `in-progress` stub has no sections yet; it only means that cycle is running, which is itself unblocked work. Two kinds of human blocker, opposite behaviour:
@@ -103,6 +104,11 @@ ends the run).
 **At the end of the run**, not of a cycle: the End-of-Run Report, then the commit — both
 unconditional on every termination path, procedure in
 [references/run-level-procedures.md](${CLAUDE_SKILL_DIR}/references/run-level-procedures.md).
+
+**Do not end the turn between cycles** — go from one cycle's STEP 5 straight into the next cycle's
+STEP 0. Ending the turn is a stop the Stop hook has to reverse, and Claude Code overrides the next
+block after eight consecutive reversals (`CLAUDE_CODE_STOP_HOOK_BLOCK_CAP`), ending the run with no
+report. Wait on long commands inside the turn; end it only when the run itself ends.
 
 ## Continuity root — where that durable state lives
 

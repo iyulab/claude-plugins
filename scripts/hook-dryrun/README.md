@@ -42,6 +42,8 @@ hook and by continuity-root resolution, both of which glob `**/cycle-logs/cycle-
 | `c-legacy-report-allow` | ALLOW | A report written before the `Run:` header existed still satisfies the check |
 | `d-same-day-second-block-allow` | ALLOW | The covering `Run:` line is the second block of a same-day report |
 | `e-numeric-newest-with-stub-block` | BLOCK | Newest log chosen by filename number with an in-progress stub present, even when an older log has the latest mtime |
+| `g-human-took-over-allow` | ALLOW | Work remains, but the human's latest message (from the transcript) is a new request — the run is paused, not driving |
+| `h-run-still-driving-block` | BLOCK | The latest human message is the `/iyu:run-cycle` invocation; Stop-hook feedback in between is not human-authored |
 | `f-stub-after-open-block` | BLOCK | Work remains, so the verdict is "keep working" — never a report demand, never the frontier-token shapes a stub has not written yet |
 
 Add a fixture as a new directory with a `tree/` and an `expect.json`:
@@ -53,13 +55,17 @@ Add a fixture as a new directory with a `tree/` and an `expect.json`:
   "reasonContains": ["…"],
   "reasonNotContains": ["…"],
   "reasonContainsFixtureRoot": true,
-  "touch": { "claudedocs/_cycle-logs_/cycle-111.md": 10 }
+  "touch": { "claudedocs/_cycle-logs_/cycle-111.md": 10 },
+  "transcript": [ { "type": "user", "origin": { "kind": "human" }, "message": { "role": "user", "content": "…" } } ]
 }
 ```
 
 Fixtures `a` and `c` carry a report dated two weeks before the run. In real use the hook fires on
 the day the report is written, so this is a stricter bar than normal operation — on purpose: it
 checks that no date is ever the test.
+
+`transcript` (a list of JSON objects) is written as the session transcript beside the tree, and its
+directory is granted with `--add-dir`: a real transcript also lives outside the project.
 
 `touch` sets a file's modification time to *now + N minutes* after copying, to test that the hook
 does not rank logs by mtime.

@@ -19,8 +19,32 @@ bugs or docs. MAJOR is never bumped automatically.
   and record the result, including "nothing new"; `backlog-discover`'s `issue-community` reads the
   same definition. No tracker is named, and nothing happens without a definition.
 
+- **Trigger eval suite** (`plugins/iyu/evals/`, run with `claude plugin eval`). One case per
+  model-invoked skill (`issue-triage`, `mindset`, `handoff`, `resume`) checks it is chosen for a request
+  that does not name it, and one checks a general question loads none of them.
+
+### Changed
+
+- **`version` and every other per-plugin field live only in `plugin.json`.** The marketplace entry
+  carried copies; the official docs say not to set `version` in both, and an entry's display fields
+  silently override the manifest's (the entry's `homepage` already differed). `plugin.json` gains
+  `displayName`, a shorter `description`, and on-topic `keywords`. `ship` and `run-cycle`'s
+  release-readiness check no longer ask for a version on the marketplace entry.
+- **`run-cycle` moves between cycles without ending its turn.** Claude Code ends a turn after eight
+  consecutive Stop-hook blocks, so a run that stopped after every cycle was cut short with no report.
+- Reference files over 100 lines open with a contents line, and the two references that were reached
+  only through another reference are now linked from the skill that needs them.
+
 ### Fixed
 
+- **`mindset` now triggers.** Its description named an attitude rather than what it does and when, and
+  the new trigger eval showed it was never chosen (0/3). Rewritten as what it does plus when to use
+  it: 3/3, with no loading for a general question.
+- **The Stop hook lets an unrelated turn end once the human has taken over.** The hook stays
+  registered for the rest of the session; after the human typed a new request, it still blocked every
+  turn to continue the run. It now reads the human's latest message from the transcript and allows the
+  stop when that message is not the `/iyu:run-cycle` invocation. When the transcript cannot be read,
+  the check is skipped.
 - **`STRANDS.md` sections are found by their heading lines only.** An entry inserted after the first
   occurrence of `## 진행 중` could land inside a header note that merely mentioned the section name,
   producing a duplicated heading. The update now anchors on the heading line and first checks that

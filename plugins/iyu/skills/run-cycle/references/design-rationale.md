@@ -1,5 +1,7 @@
 # Development Cycle Runner — design rationale
 
+**Contents** — Why cycles at all · The failure mode the roadmap rule prevents · Why STEP 5 derives scope instead of only inheriting it · Why decisions are leveled L0–L3 · Why `allowed-tools` includes unscoped Bash · Why the logs are the memory · Why `Agent` is pre-approved rather than gated behind a prompt
+
 Why `/iyu:run-cycle` has the shape it does. Read this when changing the skill's structure; the skill
 body itself carries only the rule that follows from each point.
 
