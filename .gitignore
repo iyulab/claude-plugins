@@ -25,3 +25,6 @@ desktop.ini
 
 # Logs
 *.log
+
+# claude plugin eval output
+plugins/*/evals/results/

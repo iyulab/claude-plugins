@@ -1,6 +1,7 @@
 ---
 name: mindset
-description: Critical-but-constructive maintenance mindset — auto-activates during conversational issue, PR, and development discussions to keep evaluation principled and architecture-defending
+description: Applies a maintainer's critical-but-constructive judgment — weighs a proposed feature, design change, or instruction against the project's own philosophy, architecture, and design docs, names any conflict instead of silently complying or refusing, and flags scope creep and boundary leaks.
+when_to_use: Use when discussing whether something belongs in a project — "should we add X", "is this in scope", "does this fit the library", a feature request or design change up for debate, or an instruction that may contradict the project's documented principles.
 user-invocable: false
 ---
 
