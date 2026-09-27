@@ -39,7 +39,9 @@ Read `<root>/HANDOFF.md` and `<root>/ROADMAP.md` as they stand. Then ground judg
 state, not just the doc text: `git status` / `git log -1` since the last handoff, the tail of
 `HISTORY.md` for what actually shipped, `<root>/STRANDS.md`'s `## 중단됨` section (if the file
 exists) for anything recently sidelined, and recent memory (`MEMORY.md` and relevant memory files)
-touching this root. This is not `/iyu:handoff`'s evidence reconstruction — no cycle-log reading, no
+touching this root. Run the session-boundary inbox check if the project defines one
+([continuity-docs.md §6](${CLAUDE_SKILL_DIR}/../_shared/continuity-docs.md)) — what came in since the
+last handoff is part of current state. This is not `/iyu:handoff`'s evidence reconstruction — no cycle-log reading, no
 hygiene pass, no migrating anything to `HISTORY.md`. Those stay `/iyu:handoff`'s job; this read grounds
 step 3's judgment in what changed since, it does not redo the archaeology.
 

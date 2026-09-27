@@ -60,6 +60,9 @@ The conversation may already be compacted, and it is not the record. Read the ac
 - The most recent `cycle-logs/cycle-*.md`, if the project runs cycles — its Carry-Forward, ledgers,
   and Next-Cycle Scope are inherited obligations, not history
 - Any `<root>/issues/` drafts written this session
+- The project's external inbox, if it defines one
+  ([continuity-docs.md §6](${CLAUDE_SKILL_DIR}/../_shared/continuity-docs.md)) — an item that arrived
+  during the session belongs in the handoff even though nothing in git mentions it
 - The existing `## Decided this session` entries in `HANDOFF.md`, if `/iyu:resume` already recorded
   one earlier in this same session — carry these forward as **fact**, not something to re-derive; a
   decision `/iyu:resume` wrote back the instant it was made may leave no distinguishing git diff to

@@ -85,7 +85,9 @@ When primary work finishes early and cycles remain, run-cycle does not stop idle
 
 Before committing, run-cycle runs a **lightweight release-readiness check** — version consistency across version-bearing files, CHANGELOG coverage, doc-sync, and an evidence block of the actual test/build/lint output. It verifies and packages only; tagging, publishing, and pushing stay with the human / CI. The commit itself defaults to **one per run** (bundling beats fragmenting), splitting on **verified-cycle boundaries** only when a long run's single diff would no longer be reviewable in one pass — each cycle's passing STEP 3 is already a clean rollback point.
 
-Cycle accounting is relative to where the run started: Preparation derives the starting index from the existing logs and records it (with the budget) in every cycle log header, and only logs from that index onward count toward the budget — so a repo carrying logs from earlier runs can't read as already over budget and stop before doing any work. The Stop hook reads those headers, since it gets no invocation arguments of its own.
+Cycle accounting is relative to where the run started: Preparation derives the starting index from the existing logs and records it (with the budget) in every cycle log header, and only logs from that index onward count toward the budget — so a repo carrying logs from earlier runs can't read as already over budget and stop before doing any work. The Stop hook reads those headers, since it gets no invocation arguments of its own. It is a read-only
+auditor — it never writes a log or report, only reports what is missing — and the newest log is the
+highest-*numbered* one, in-progress stub included, never the most recently modified.
 
 ### /iyu:handoff
 
@@ -140,6 +142,11 @@ where the docs live, what belongs in each, the hygiene pass, and how next scope 
 defined once, in one file, for both — and
 [`_shared/decision-lenses.md`](./skills/_shared/decision-lenses.md), which defines those five lenses
 for the two self-decide/brief purposes described below.
+
+**External inbox.** If your project's instructions (`CLAUDE.md`/`AGENTS.md`) define how to query an
+external issue queue, `resume`, `run-cycle`, and `handoff` run that query at each session boundary and
+record the result — even "nothing new" — so work filed outside the repo is not missed by a session
+that skipped `resume`. The plugin names no tracker; with no definition, nothing happens.
 
 ### /iyu:resume
 

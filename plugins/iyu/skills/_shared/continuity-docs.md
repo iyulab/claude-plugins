@@ -160,6 +160,14 @@ Apply whenever continuity docs are written — every `run-cycle` STEP 5, every `
    cycle) and `handoff` (per closing session) apply identically — "this unit" below means whichever
    produced the update, recorded literally as `cycle-{NN}` or `session-{YYYY-MM-DD}`.
 
+   **Find the sections by their heading lines only.** A section is the line that *is* its heading —
+   `## 진행 중`, `## 중단됨 …`, `## 완료·졸업 …` at the start of a line — never the same words quoted in
+   a header note, a comment, or prose (§2 has every other reference use the short form, so the words
+   do appear elsewhere). Before editing, confirm each of the three heading lines occurs exactly once.
+   If one is missing or duplicated, do not repair it and do not guess which is real — report it and
+   leave the ledger as is; an edit anchored on the wrong occurrence is how entries end up inside a
+   quote.
+
    **Update (transition procedure):**
 
    a. Identify the strand this unit predominantly served — the `ROADMAP.md` phase advanced, or a
@@ -247,3 +255,31 @@ language — a document should not fragment into two languages across one hygien
 language:** `HUMAN-NEEDED:`, `BLOCKED-ITEM:`, `FRONTIER-OPEN:`, `FRONTIER-EXHAUSTED:`, and decision
 IDs (`HD-01`, `D-03`). The Stop hook and cross-run references match these as literal strings; the
 label after the colon, and the rest of the entry, still follows the sentence above.
+
+---
+
+## 6. Session-boundary inbox check
+
+Work also arrives from outside the repo — an issue tracker, a shared work queue. The continuity docs
+know only what a session wrote into them, so a session that never looks outside hands over a
+`HANDOFF.md` that silently misses whatever came in, however carefully it was written.
+
+**The project defines the inbox; the skills only run it.** If the project's instructions
+(`CLAUDE.md`/`AGENTS.md`, or a user- or org-level instructions file already in context) define how to
+query an external inbox, run that query at every session boundary:
+
+| Boundary | Where |
+|---|---|
+| Session opens | `resume` step 2 |
+| Run starts | `run-cycle` Preparation step 1 |
+| Session closes | `handoff` step 2 |
+| Discovery run | `backlog-discover` `issue-community`, alongside `gh issue list` |
+
+What it returns is known work, not new discovery: a new item becomes a `## Next` candidate (or a
+`## Waiting on you` entry when only the owner can act on it), a state change on a tracked item is
+reflected where that item is tracked. **Record the check even when it finds nothing** — one line in
+`HANDOFF.md`'s State of play (or the cycle log's Re-plan) with the date — so a later reader can tell
+"checked, empty" from "never checked". A query that fails (auth, network) is reported the same way,
+not treated as empty and not a blocker.
+
+No such definition → skip without comment. This plugin names no tracker and assumes none.

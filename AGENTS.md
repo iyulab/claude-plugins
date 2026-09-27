@@ -132,6 +132,15 @@ The four canonical philosophy dimensions live only in
    where the artifact table puts it, demanding a copy in the parent. Its parent is spelled
    `<logs dir>/..`, never given a name of its own, and a block reason carries the resolved absolute
    path, not a placeholder.
+8. **The hook reads; it never writes — and every prompt change is dry-run before release.** Agent
+   hooks have no tool-restriction field (only `prompt`/`model`/`timeout` are documented), so
+   read-only is a sentence in the prompt, not a setting — before that sentence existed, a hook in a
+   real run rewrote the report it was auditing, deleting an earlier run's block. `scripts/hook-dryrun/` replays the
+   prompt against fixtures and asserts the verdict, the reason, and unchanged file hashes; a
+   fixture passes only when every repeat passes. Size is judged there, not by invariant 5: the
+   prompt lives in frontmatter, which never enters the conversation, so its length costs the hook's
+   own run and nothing in the 5,000-token re-attach window. Grow it when a fixture needs it; cut it
+   when a fixture still passes without the words.
 
 ## Adding a New Plugin
 

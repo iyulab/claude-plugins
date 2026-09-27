@@ -8,6 +8,47 @@ bugs or docs. MAJOR is never bumped automatically.
 > History is reconstructed from git from v1.11.0 onward. Earlier versions live in
 > the git log only.
 
+## [Unreleased]
+
+### Added
+
+- **Session-boundary inbox check** (`_shared/continuity-docs.md` §6). Work filed in an external queue
+  was seen only by `/iyu:resume`, so a session that went straight to `/iyu:run-cycle` and closed with
+  `/iyu:handoff` handed over a `HANDOFF.md` that never mentioned it. When the project's instructions
+  define how to query an external inbox, `resume`, `run-cycle` Preparation, and `handoff` now run it
+  and record the result, including "nothing new"; `backlog-discover`'s `issue-community` reads the
+  same definition. No tracker is named, and nothing happens without a definition.
+
+### Fixed
+
+- **`STRANDS.md` sections are found by their heading lines only.** An entry inserted after the first
+  occurrence of `## 진행 중` could land inside a header note that merely mentioned the section name,
+  producing a duplicated heading. The update now anchors on the heading line and first checks that
+  each of the three headings occurs exactly once — reporting, not repairing, when one does not.
+- **`backlog-discover`'s onboarding/DX symptom counts unresolved issues only.** Counting `closed/`
+  made the row permanently true in any repo that moves issues instead of deleting them. Matched
+  filenames are now cited in the diagnosis.
+- **`backlog-discover`'s P1.5 coverage floor reads each activity's `lastRunUtc`.** It read
+  `history[].selected`, which records only P2's picks, so activities run by cadence or the dry-backlog
+  ladder looked absent and the floor fired almost every run.
+
+- **The `run-cycle` Stop hook no longer writes.** It is an auditor, but nothing said so, and agent
+  hooks have no setting that removes write tools. A hook was observed replacing a same-day
+  `RUN-SUMMARY` with its own audit text, deleting the earlier run's block. The prompt now opens by
+  forbidding any file change; a missing report is the run's to write.
+- **A same-day second run is recognized.** The hook read only the first `Run:` line of a report, so a
+  run that appended its block below an earlier one was told to write the report again. It now
+  searches the whole file.
+- **The newest cycle log is chosen by the number in its name**, never by string order or modification
+  time, and an in-progress stub counts. Frontier and ledger checks read the newest *complete* log of
+  this run, so a block no longer cites a stub for lacking the sections it has not written yet.
+- **An existing report is no longer reported missing.** The hook searched with a pattern that
+  included the `cycle-logs/` directory; in a headless session such a pattern can match nothing even
+  when the file exists. It now searches the log directory itself for the file name. The only thing it
+  compares is the report's cycle range against the run's start — never a filename or `ended` date.
+- **The missing-report path is absolute** — built from the hook input's `cwd` — instead of sometimes
+  coming back relative.
+
 ## [1.41.1] — 2026-09-24
 
 ### Fixed

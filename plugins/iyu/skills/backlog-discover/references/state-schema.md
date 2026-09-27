@@ -65,7 +65,9 @@ convention, and it is what lets P2's heuristics be a plain scan instead of a joi
 - `business` / `techHealth` / `userRequest` — per-run **value axis** counts (P4).
 - `swTech` / `domain` — per-run **inquiry axis** counts (P4). This is what makes the
   "SW 기술 축으로만 조사하고 있다" skew detectable across runs rather than only within one.
-- `symptom` / `selected` — P2's diagnosis, read back by P2 itself for its suppression window.
+- `symptom` / `selected` — P2's diagnosis, read back by P2 itself for its suppression window. Nothing
+  else reads `selected` as "what ran": P1.5 uses each activity's `lastRunUtc`, which P8 advances for
+  every activity that actually ran.
 - `lastItemSeq` — the highest item sequence number issued this run (item IDs, P4). A later run on
   the same UTC date continues from it, so `nn` stays unique within the date.
 
