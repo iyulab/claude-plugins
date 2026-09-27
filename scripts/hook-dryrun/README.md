@@ -40,6 +40,7 @@ hook and by continuity-root resolution, both of which glob `**/cycle-logs/cycle-
 | `c-legacy-report-allow` | ALLOW | A report written before the `Run:` header existed still satisfies the check |
 | `d-same-day-second-block-allow` | ALLOW | The covering `Run:` line is the second block of a same-day report |
 | `e-numeric-newest-with-stub-block` | BLOCK | Newest log chosen by filename number with an in-progress stub present, even when an older log has the latest mtime |
+| `f-stub-after-open-block` | BLOCK | Work remains, so the verdict is "keep working" — never a report demand, never the frontier-token shapes a stub has not written yet |
 
 Add a fixture as a new directory with a `tree/` and an `expect.json`:
 

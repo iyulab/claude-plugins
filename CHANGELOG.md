@@ -46,6 +46,9 @@ bugs or docs. MAJOR is never bumped automatically.
   included the `cycle-logs/` directory; in a headless session such a pattern can match nothing even
   when the file exists. It now searches the log directory itself for the file name. The only thing it
   compares is the report's cycle range against the run's start — never a filename or `ended` date.
+- **A run with work left is told to keep working, not to write its report.** With budget and an open
+  frontier remaining, the hook could run the report check anyway and answer "write the report, then
+  the run may stop". A block for remaining work now ends the check there.
 - **The missing-report path is absolute** — built from the hook input's `cwd` — instead of sometimes
   coming back relative.
 

@@ -1,0 +1,5 @@
+{
+  "ok": false,
+  "why": "cycle 1 of 10 complete with FRONTIER-OPEN, cycle 2 is an in-progress stub -> keep working; the reason must not claim a missing frontier token (the stub is not the log to check)",
+  "reasonNotContains": ["ladder:", "RUN-SUMMARY"]
+}
