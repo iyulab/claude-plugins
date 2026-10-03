@@ -46,8 +46,8 @@ to any user, developer, or operator of it.
 
 Deriving it is not scope creep, because the autonomy bound is strict (the derivation gate in
 STEP 5): only pattern-following completion inside the project's **declared role** is taken
-autonomously. Anything opening a new product direction, dependency, paradigm, or genuine trade-off
-is routed to proposals. "Frontier exhausted" stays a legitimate terminal state — it just has to be a
+autonomously. Anything opening a new product direction, dependency, paradigm, or a trade-off only the owner can
+weigh is routed to proposals; a reversible trade-off inside the declared role is decided and ledgered. "Frontier exhausted" stays a legitimate terminal state — it just has to be a
 *stated judgment* carried by the `FRONTIER-EXHAUSTED:` token, not an empty blank.
 
 ### Worked examples of the derivation gate

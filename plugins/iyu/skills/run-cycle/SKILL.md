@@ -362,7 +362,7 @@ This step has two jobs: (a) record what cannot be resolved autonomously, and (b)
   - **Operator lens** — what does running this in production now require? (input validation, resource limits, an observability hook, an unhandled failure mode)
 
   Then classify **every** candidate through the **derivation gate** — this *is* the answer to "autonomous, or discussion?":
-  - **Autonomous-eligible** (→ becomes a Next-Cycle Scope / value-ladder candidate) when ALL hold: its *absence would be felt as incompleteness or a defect*; it stays within the project's **declared role and established patterns**; and it carries **no real trade-off** (pattern-following, additive, low-risk).
+  - **Autonomous-eligible** (→ becomes a Next-Cycle Scope / value-ladder candidate) when ALL hold: its *absence would be felt as incompleteness or a defect*; it stays within the project's **declared role and established patterns**; and it carries **no trade-off only the owner can weigh** — a reversible trade-off is L1: decide it and ledger it.
   - **Discussion / proposal-only** (→ Pending Human Decisions; **never** taken as autonomous scope) when it opens a **new product direction**, introduces a **new interaction paradigm, dependency, or surface** the project has not committed to, or involves a **trade-off only a human / product owner should weigh**. Propose with rationale — do not self-decide.
   - Worked examples of both: [design-rationale.md](${CLAUDE_SKILL_DIR}/references/design-rationale.md).
   - **Frontier exhausted** — a valid, expected outcome: the capability is genuinely complete and any further extension would be scope creep or needs human direction.

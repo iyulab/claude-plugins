@@ -238,7 +238,8 @@ reignite/shrink/retire verdict rather than a scheduling nudge.
 Classify every emergent candidate before proposing it:
 
 - **Autonomous-eligible** — its absence reads as incompleteness or a defect; it stays within the
-  project's declared role and established patterns; it carries no real trade-off.
+  project's declared role and established patterns; it carries no trade-off only the owner can weigh
+  (a reversible trade-off is decided and recorded, not escalated).
 - **Discussion / proposal-only** — it opens a new product direction, a new dependency or paradigm,
   or a trade-off only a human should weigh. Propose with rationale; never self-decide.
 

@@ -25,6 +25,10 @@ bugs or docs. MAJOR is never bumped automatically.
   contract published at 1.0+ — and never on the size of a change. Pending Human Decisions holds only
   those, irreducible lens conflicts, owner-only scope, and discussion-class emergent candidates; a
   breaking change before 1.0 is L1.
+- **The emergent-scope derivation gate uses the same line.** A candidate is autonomous-eligible
+  unless it carries a trade-off only the owner can weigh; a reversible trade-off inside the
+  project's declared role is decided and recorded rather than routed to a proposal
+  (`run-cycle` STEP 5, `_shared/continuity-docs.md` §4).
 - **Request count, effort, and breaking-ness are no longer scoring inputs.** The philosophy
   dimension *User Base Impact* now scores how widely a request's root cause is shared; request
   counts and reactions are evidence for that reading, not the score. "Breaking change" is removed
