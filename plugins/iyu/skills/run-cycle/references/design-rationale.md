@@ -73,6 +73,15 @@ existed, and the operational markers are unchanged (L2 keeps `BLOCKED-ITEM:`, L3
 the Decisions Ledger makes nothing self-decided hidden or unrecoverable, and because the ledger
 never gates termination.
 
+**Why a structural improvement is L1, however large.** A refactor inside the repository is a
+two-way door until it is published — version control undoes it, and the Decisions Ledger names how.
+Routing such findings to the human as proposals made escalation the default for the most common
+thing a reflective cycle finds, which is the inversion in-dubio-pro-autonomy exists to prevent; it
+also left the run working on top of defects it had already seen. Size changes how the work is
+staged (this cycle, the next, or a roadmap phase), not who decides it. What stays with the human is
+what is actually one-way: an act outside the repo, a change to a contract published at 1.0+, or a
+direction the project has not committed to.
+
 ## Why `allowed-tools` includes unscoped Bash
 
 Development execution requires arbitrary build/test/lint/git commands across unknown projects;
@@ -84,13 +93,13 @@ form (`Bash(gh *)`) instead.
 The skill runs on the **host agent's native loop and context management** — it does not wrap itself
 in an external reset loop. But native context can be compacted or summarized mid-run, so a cycle
 must never depend on remembering earlier cycles from conversation alone. Reconstructing state from
-on-disk artifacts makes the run survive compaction transparently. This is the minimal-intervention
+on-disk artifacts makes the run survive compaction transparently. This is the thin-layer
 stance: do not rebuild context machinery the harness already owns — just keep durable state complete
 enough to survive it.
 
 ## Why `Agent` is pre-approved rather than gated behind a prompt
 
-`mindset`'s Rule 1 (Minimal Intervention) is explicit: use the harness's native subagents, don't
+`mindset`'s Rule 1 (Thin Layer) is explicit: use the harness's native subagents, don't
 fence them off — a custom layer that blocks a native feature accrues debt every release the harness
 adds to that feature and this skill does not. Leaving `Agent` out of `allowed-tools` would do exactly
 that in practice: not by making delegation impossible, but by making every attempt stall on a mid-cycle

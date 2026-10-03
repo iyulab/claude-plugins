@@ -21,9 +21,11 @@ Evaluate external Issues/PRs against project philosophy. The goal is not just to
 | Core Mission Fit | Serves project's core purpose? |
 | Scope Alignment | Library vs application responsibility? |
 | Pattern Consistency | Consistent with existing architecture? |
-| User Base Impact | Benefits majority or niche? |
+| User Base Impact | How widely is the root cause shared? Request counts are evidence, not the score |
 
-**Overall**: High (4-5 avg) / Medium (3-3.9) / Low (1-2.9)
+**Overall**: High (4-5 avg) / Medium (3-3.9) / Low (1-2.9). A breaking change is not scored: pre-1.0
+it is an ordinary minor-release tool; at 1.0+ a published-contract change is reported as a version
+decision.
 
 ## Issue Decision Matrix
 
@@ -34,6 +36,12 @@ Feasibility HIGH | ACCEPT          | REDIRECT        |
 Feasibility MED  | ADAPT           | DEFER/REDIRECT  |
 Feasibility LOW  | DEFER           | DECLINE         |
 ```
+
+**Feasibility means real blockers, not effort.** HIGH: nothing blocks it · MED: a slice or adapted
+form proceeds now, the rest waits on a named blocker · LOW: a real prerequisite blocks it — an open
+design decision, an unavailable external dependency, earlier work on the same surface. Large aligned
+work is staged, not deferred; a DEFER names its blocker as the resume condition, never a demand
+threshold.
 
 ## PR Decision Matrix
 

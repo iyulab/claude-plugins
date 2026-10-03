@@ -22,10 +22,10 @@ Real-world examples demonstrating the decision framework in action.
 - Patterns: 4 - Standard practice in ecosystem
 - User Impact: 5 - Benefits majority of modern users
 
-**Feasibility**: High
-- Complexity: Low - straightforward type extraction
-- Breaking: None - additive only
-- Maintenance: Low - types update with API
+**Feasibility**: High — nothing blocks it
+- Effort: low — one change (effort decides staging, not the verdict)
+- Breaking: none — additive
+- Maintenance: low — types move with the API, no new complexity left behind
 
 **Decision**: ACCEPT
 - Perfect alignment with DX mission
@@ -51,10 +51,10 @@ Real-world examples demonstrating the decision framework in action.
 - Patterns: 3 - Not our current pattern
 - User Impact: 4 - Benefits international users
 
-**Feasibility**: Medium
-- Complexity: Medium - affects many files
-- Breaking: Minor - if done carefully
-- Maintenance: Medium - new surface area
+**Feasibility**: Medium — partly blocked
+- Error codes can ship now; they are also the prerequisite for any message catalog
+- Per-string customization would need a catalog design that is not decided yet
+- Effort: touches many files — staged, not a reason to wait
 
 **Decision**: ADAPT
 - Good idea, but full customization is over-engineered
@@ -88,22 +88,23 @@ throw new LibraryError({ code: "USER_NOT_FOUND", context: { id } });
 - Patterns: 3 - Would require new patterns
 - User Impact: 4 - Growing GraphQL adoption
 
-**Feasibility**: Low
-- Complexity: High - different paradigm from SQL
-- Breaking: None - would be new module
-- Maintenance: High - separate ecosystem to track
+**Feasibility**: Low — a real prerequisite blocks it
+- The query AST is SQL-shaped; a second target language needs the dialect-neutral AST that is
+  already an open design decision on the roadmap
+- Building GraphQL on the current AST would bake SQL assumptions into it — the debt the AST work
+  exists to remove
+- Effort: large — once unblocked, it is staged (read queries first), not deferred for its size
 
 **Decision**: DEFER
-- Valuable and aligned, but significant undertaking
-- Current focus on SQL performance
-- Add to roadmap for v3.0
+- Valuable and aligned; blocked on the AST design decision, not on demand or size
+- Recorded as a roadmap phase placed after the AST work
 
-**Conditions to accelerate**:
-- Community PR with full implementation
-- Sponsorship for dedicated development
-- GraphQL usage survey showing >30% demand
+**Resume condition**:
+- The dialect-neutral AST design is decided — the item moves to ACCEPT then, with no further
+  demand signal required
+- Not: a usage survey, a vote count, or a sponsor — none of those changes what blocks it
 
-**Response**: "Excellent suggestion! GraphQL support aligns with our mission, but it's a significant undertaking. We've added this to our v3.0 roadmap. A community PR or sponsorship would accelerate this timeline."
+**Response**: "GraphQL support fits what this library is for. It depends on the dialect-neutral query AST we still have to design — building it on the current SQL-shaped AST would bake in assumptions we want to remove. It's on the roadmap right after that design work, and we'll pick it up as soon as that lands. If you want to help, the AST design discussion is the place that unblocks this."
 
 ---
 
@@ -122,9 +123,9 @@ throw new LibraryError({ code: "USER_NOT_FOUND", context: { id } });
 - Patterns: 2 - Would require fundamental changes
 - User Impact: 3 - Some users would benefit
 
-**Feasibility**: High (technically possible)
-- Complexity: High but doable
-- Breaking: Major - would change core abstraction
+**Feasibility**: High (nothing blocks it technically)
+- Effort: large, but effort is not the issue
+- It would change the core abstraction — the problem is fit (philosophy), not feasibility
 
 **Decision**: REDIRECT
 - Good idea, wrong project
@@ -154,10 +155,10 @@ throw new LibraryError({ code: "USER_NOT_FOUND", context: { id } });
 - Patterns: 2 - We don't manage external connections
 - User Impact: 3 - Useful for some, not universal
 
-**Feasibility**: Low
-- Complexity: High - connection management, TTL, invalidation
-- Breaking: None - would be additive
-- Maintenance: High - Redis version compat, security patches
+**Feasibility**: Low — the prerequisite is itself out of scope
+- Caching needs a connection-and-runtime-state layer the library does not have and has declared a
+  non-goal, so the prerequisite would be declined on its own
+- Maintenance (complexity left behind): high — Redis version compatibility, security patches
 
 **Decision**: DECLINE
 - Crosses boundary from query library to infrastructure
@@ -177,9 +178,9 @@ throw new LibraryError({ code: "USER_NOT_FOUND", context: { id } });
 
 ### Signs pointing to ACCEPT
 - Directly serves core mission
-- Low complexity, high impact
-- No maintenance concerns
-- Benefits majority of users
+- Nothing blocks it (a large change is staged, not deferred)
+- Leaves no lasting design complexity behind
+- Its root cause is widely shared
 
 ### Signs pointing to ADAPT
 - Good underlying idea
@@ -188,10 +189,12 @@ throw new LibraryError({ code: "USER_NOT_FOUND", context: { id } });
 - Can be done without expanding scope
 
 ### Signs pointing to DEFER
-- Aligned but resource-intensive
-- Competes with current priorities
-- Would benefit from more community input
-- Clear conditions for revisiting
+- Aligned, but a named prerequisite blocks it — an open design decision, an unavailable external
+  dependency, or earlier work on the same surface
+- The blocker is concrete enough to be the resume condition
+- Not DEFER: "it's a lot of work" (stage it), "it competes with current priorities" (accept it and
+  place it in the backlog), "only one person asked" (read the root cause), "let's wait for more
+  input" (unless the intent itself is unclear — then ask the requester, which is a named blocker)
 
 ### Signs pointing to REDIRECT
 - Good idea, wrong project
@@ -202,5 +205,5 @@ throw new LibraryError({ code: "USER_NOT_FOUND", context: { id } });
 ### Signs pointing to DECLINE
 - Conflicts with core philosophy
 - Would set problematic precedent
-- High burden, low alignment
+- Lasting design complexity, low alignment
 - Better alternatives exist elsewhere

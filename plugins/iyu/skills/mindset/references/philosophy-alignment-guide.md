@@ -86,7 +86,7 @@ Philosophy alignment scoring determines whether a request fits the project's ide
 | 4 | Consistent | Minor adaptation of existing patterns |
 | 3 | Compatible | Different but not conflicting |
 | 2 | Divergent | Requires new patterns that might conflict |
-| 1 | Breaking | Fundamentally conflicts with architecture |
+| 1 | Conflicting | Fundamentally conflicts with architecture |
 
 **Pattern Considerations**:
 - API style (fluent, functional, declarative)
@@ -109,34 +109,40 @@ Philosophy alignment scoring determines whether a request fits the project's ide
 
 ### 4. User Base Impact (1-5)
 
-**Question**: Does it benefit the majority or a niche use case?
+**Question**: How wide is the set of users who share this request's *root cause*?
 
-| Score | Description | User Impact |
-|-------|-------------|-------------|
-| 5 | Universal | Benefits >80% of users |
-| 4 | Majority | Benefits 50-80% of users |
-| 3 | Significant minority | Benefits 20-50% of users |
-| 2 | Niche | Benefits 5-20% of users |
-| 1 | Edge case | Benefits <5% of users |
+Read one request as a sample of everyone who runs into the same underlying problem ("Think 10 from
+1"). A niche-sounding API request is often the first report of a gap every user of that path hits;
+a popular one can still be a single deployment's concern stated many times. Restate the root cause
+in the library's own terms first, then score how far it reaches — not how many people asked.
 
-**Estimation Methods**:
-- Issue reactions/votes
-- Related issues or questions
+| Score | Description | The root cause is shared by |
+|-------|-------------|-----------------------------|
+| 5 | Universal | Effectively every user of the library |
+| 4 | Majority | Most users — a common path, a mainstream platform |
+| 3 | Significant minority | A substantial, recognizable segment |
+| 2 | Niche | A narrow segment with a distinct environment |
+| 1 | Single context | One deployment's specifics — usually a sign the concern sits outside the library (see Scope Alignment) |
+
+**Evidence for the reading — never the score itself**:
+- Related issues, questions, or reactions
 - Industry adoption data
-- Community survey results
 - Download/usage analytics
 
+These help establish who shares the root cause. Their absence is not a low score: the first report
+of a problem everyone has scores high on its first day.
+
 **Examples**:
-- Score 5: "TypeScript support" (~70% of modern JS projects)
+- Score 5: "TypeScript support" (type safety is wanted on every typed call path)
 - Score 4: "PostgreSQL array support" (common database)
-- Score 3: "Oracle-specific features" (enterprise niche)
+- Score 3: "Oracle-specific features" (enterprise segment)
 - Score 2: "Firebird database support" (rare database)
-- Score 1: "Custom protocol for company X" (single user)
+- Score 1: "Custom protocol for company X" (one deployment's private protocol)
 
 **Key Questions**:
-- How many similar requests have we received?
+- What is the root cause behind the request, stated in the library's terms?
+- Who else runs into that root cause, whether or not they have asked?
 - Is this technology/pattern gaining or losing adoption?
-- Would this attract new users or just help existing ones?
 
 ## Calculating Overall Alignment
 
@@ -151,7 +157,7 @@ Overall = (Mission + Scope + Patterns + Impact) / 4
 | Range | Level | Typical Decision |
 |-------|-------|------------------|
 | 4.0-5.0 | High | ACCEPT likely |
-| 3.0-3.9 | Medium | ADAPT or DEFER likely |
+| 3.0-3.9 | Medium | ADAPT likely (DEFER only with a named blocker) |
 | 1.0-2.9 | Low | REDIRECT or DECLINE likely |
 
 ### Weighted Considerations
@@ -166,25 +172,33 @@ In some cases, certain dimensions matter more:
 - Weight User Base Impact higher
 - Consider adoption and ecosystem fit
 
-**Early-Stage Projects**:
+**Pre-1.0 Projects**:
 - Be more flexible with patterns
 - Focus on mission and impact
+- A breaking change is an ordinary tool here (released as a minor) — it costs nothing in the score
 
-**Mature Projects**:
+**Stable (1.0+) Projects**:
 - Weight Pattern Consistency higher
-- Protect existing users and API stability
+- A change to a published contract is not scored down; it is reported as a version decision
+  (it implies a major release, which is the owner's call)
 
 ## Red Flags
 
-Automatic score reductions regardless of other factors:
+Score reductions for properties of the *design* — never for the effort it takes or the number of
+people who asked ([decision-lenses.md](../../_shared/decision-lenses.md) defines what is not a
+lens):
 
 | Red Flag | Impact | Example |
 |----------|--------|---------|
 | Security risk | -2 overall | Exposing credentials |
-| Breaking change | -1 to patterns | Removing existing API |
 | Runtime dependency | -1 to scope | Adding heavy library |
-| Maintenance burden | -1 to scope | External service integration |
+| Maintenance burden — complexity the design leaves behind | -1 to scope | An external service the library must track from now on (not "a lot of work to build") |
 | Precedent danger | -1 to mission | Opens flood of similar requests |
+
+**Breaking change is not a red flag — it is read by version stage.** Pre-1.0: no reduction; breaking
+is an ordinary tool, released as a minor. 1.0+: no reduction either, but a change to a published
+contract is flagged for the owner as a version decision. Neither stage lets "it breaks something"
+decide between options.
 
 ## Scoring Worksheet Template
 
@@ -212,10 +226,13 @@ Reasoning: [why this score]
 RED FLAGS
 ---------
 [ ] Security risk
-[ ] Breaking change
 [ ] Runtime dependency
-[ ] High maintenance burden
+[ ] High maintenance burden (complexity left behind, not effort)
 [ ] Precedent danger
+
+VERSION NOTE (not scored)
+-------------------------
+[ ] Breaking change — pre-1.0: ordinary, minor release · 1.0+: report as version decision
 
 OVERALL CALCULATION
 -------------------
@@ -248,6 +265,8 @@ Popular doesn't mean aligned:
 Consider long-term cost:
 - A feature with high initial impact but ongoing burden might score lower
 - Factor maintenance into scope alignment
+- "Burden" is the complexity the design leaves for every future change — not the effort to build
+  it. Effort decides staging, not alignment
 
 ### Pitfall 4: Inconsistent Scoring Over Time
 
@@ -256,9 +275,28 @@ Keep consistent standards:
 - Review past decisions when similar requests arrive
 - Maintain project philosophy document
 
+### Pitfall 5: Scoring the Effort or the Headcount
+
+Neither how much work a change is nor how many people asked for it is a dimension:
+- Large, aligned work is staged into pieces that each ship — not marked down
+- A single request is read for its root cause (User Base Impact) — not discounted for being single
+
 ## Integration with Feasibility
 
-Philosophy alignment combines with feasibility for final decision:
+Philosophy alignment combines with feasibility for final decision.
+
+**Feasibility is about real blockers, not effort.** It asks whether something concrete has to
+happen first:
+
+| Feasibility | Means |
+|-------------|-------|
+| HIGH | Nothing blocks starting now |
+| MED | Partly blocked — a slice or an adapted form can proceed now; the rest waits on a named blocker |
+| LOW | A real prerequisite blocks it: a design decision not yet made, an external dependency not yet available, or earlier work on the same surface |
+
+How much work it takes is not feasibility. A large, aligned change is accepted and **staged**, never
+deferred for its size. "It competes with current priorities" is ordering, not a blocker: accept it
+and place it in the backlog.
 
 ```
                  | Philosophy HIGH | Philosophy LOW  |
@@ -268,6 +306,7 @@ Feasibility MED  | ADAPT           | DEFER/REDIRECT  |
 Feasibility LOW  | DEFER           | DECLINE         |
 ```
 
-High philosophy + low feasibility = valuable but defer
+High philosophy + low feasibility = valuable but blocked — defer with the named blocker as the
+resume condition (it resumes when the blocker clears, not when demand accumulates)
 Low philosophy + high feasibility = redirect to alternatives
 Both low = decline with clear explanation

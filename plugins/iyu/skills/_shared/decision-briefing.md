@@ -65,7 +65,9 @@ owner supplies is a correction, not a choice (§3).
    consequence. **Options must be observed, not invented**: feasibility, cost, and blast radius come
    from what was actually read — the files, the dependents, the tests, the remaining backlog. Three
    plausible-sounding options nobody checked are worse than two real ones. An unknown cost stays
-   "unknown", named with the command that would settle it.
+   "unknown", named with the command that would settle it. A "do nothing / defer" option is not the
+   neutral baseline: state what it leaves standing — the debt, the workaround, the defect — as its
+   근본 cost.
 3. **The cross-lens read** — how the *leading* options differ across the five co-equal lenses in
    **[decision-lenses.md](./decision-lenses.md)** (근본/정석/표준/세련/철학). Only the lenses that
    actually separate the options; one that reads the same for all of them is noise. This is the

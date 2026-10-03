@@ -8,6 +8,43 @@ bugs or docs. MAJOR is never bumped automatically.
 > History is reconstructed from git from v1.11.0 onward. Earlier versions live in
 > the git log only.
 
+## [1.43.0] — 2026-10-03
+
+### Changed
+
+- **Reversible structural improvements are self-decided (L1), not proposed.** `run-cycle` STEP 4 no
+  longer parks refactoring candidates as "proposals for human decision": a change inside the
+  repository is reversible until it is published, so it is judged on the decision lenses, done this
+  cycle or scheduled as the next (or as a roadmap phase when it spans several), and recorded in the
+  Decisions Ledger for confirmation or reversal. A structural defect the current work can only route
+  around is fixed at the root in the same cycle. The cycle log's `Structural Improvement Proposals`
+  line becomes `Structural Improvements` (done or scheduled, with reason). The value ladder's
+  execution guard follows the same rule: size decides staging, reversibility decides autonomy.
+- **L2 is defined by the act, not the edit.** `_shared/decision-lenses.md` now states that the
+  human gate sits on acts that leave the repo — push, publish, a major-version bump, changing a
+  contract published at 1.0+ — and never on the size of a change. Pending Human Decisions holds only
+  those, irreducible lens conflicts, owner-only scope, and discussion-class emergent candidates; a
+  breaking change before 1.0 is L1.
+- **Request count, effort, and breaking-ness are no longer scoring inputs.** The philosophy
+  dimension *User Base Impact* now scores how widely a request's root cause is shared; request
+  counts and reactions are evidence for that reading, not the score. "Breaking change" is removed
+  from the red-flag reductions and read by version stage instead (pre-1.0: ordinary, released as a
+  minor; 1.0+: reported as a version decision). "Maintenance burden" means complexity the design
+  leaves behind, not the effort to build it.
+- **Feasibility in the triage matrix means real blockers, not effort.** LOW now requires a named
+  prerequisite (an open design decision, an unavailable external dependency, earlier work on the
+  same surface); large aligned work is staged rather than deferred. The DEFER example and response
+  template use the blocker as the resume condition instead of votes, surveys, or sponsorship.
+- **`backlog-discover`**: a breaking item is an ordinary minor-scale item before 1.0 and a version
+  decision only at 1.0+; an item whose cost comes from size alone is decomposed, not marked
+  `Discussion 필요`.
+- **`mindset`**: Constitution principle 1 is renamed *Thin Layer (harness-native)* and states that it
+  governs the plugin's relationship to the harness, not how much code a change may touch. "Scope
+  discipline" becomes "Finish what you take on" — split a large solution into stages rather than
+  shrinking the goal into a workaround.
+- A "do nothing / defer" option in a decision briefing now states what it leaves standing as its
+  cost, and deferred matches in pattern detection each carry an issue entry and a concrete reason.
+
 ## [1.42.0] — 2026-09-27
 
 ### Added

@@ -33,8 +33,14 @@ For each found pattern, assess the risk level:
 |------|----------|--------|
 | 🔴 Critical | Same exact pattern, likely same bug | Fix immediately with this PR |
 | 🟠 High | Very similar pattern, >70% chance of defect | Include in this fix |
-| 🟡 Medium | Related pattern, should be reviewed | Schedule follow-up review |
-| 🟢 Low | Loosely related, might be fine | Add to monitoring/tech debt |
+| 🟡 Medium | Related pattern, should be reviewed | Review in this fix; if it cannot be settled now, record it (see below) |
+| 🟢 Low | Loosely related, might be fine | Record it with why it was left (see below) |
+
+**Leaving a match unfixed is a recorded decision, not a default.** Every match not fixed in this
+change gets an issue entry (`<root>/issues/ISSUE-*.md`, or wherever the project tracks issues) that
+names the match and the concrete reason it waits — the review needs information not yet available,
+the fix belongs with earlier work on the same surface, or the pattern is intentional here. "Later"
+and "tech debt" are not reasons; a match with no reason to wait is fixed now.
 
 **Assessment Questions:**
 - Does this pattern have the SAME root cause vulnerability?
@@ -65,12 +71,12 @@ AGGREGATE RISK
 --------------
 🔴 Critical: 2 patterns - IMMEDIATE ACTION REQUIRED
 🟠 High: 5 patterns - Address in this fix
-🟡 Medium: 8 patterns - Schedule review
-🟢 Low: 3 patterns - Monitor
+🟡 Medium: 8 patterns - Review now, or record with reason
+🟢 Low: 3 patterns - Record with reason
 
 RECOMMENDATION
 --------------
-[Fix N+M / Comprehensive refactor / Fix N only with follow-up]
+[Fix N+M / Comprehensive refactor / Fix N only — with an issue entry per deferred match and the reason it waits]
 
 PREVENTIVE FIXES
 ----------------

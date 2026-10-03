@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "iyu",
-  "version": "1.42.0",
+  "version": "1.43.0",
   "description": "Maintainer toolkit: adaptive development cycles, session handoff/resume, issue/PR triage, backlog discovery, telemetry triage, and release shipping",
   "author": {
     "name": "iyulab",

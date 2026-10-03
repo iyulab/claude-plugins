@@ -15,7 +15,7 @@ procedure.
 
 When primary roadmap work finishes and cycles remain, a passionate maintainer does not down tools — they harden, document, and accelerate. Most agentic loops terminate the moment the task compiles; this skill instead treats the **remaining cycle budget as an investment fund for the full software lifecycle**.
 
-This is the project-specific judgment a generic harness cannot supply, and it is our distinctive contribution — so it stays inside the minimal-intervention boundary: surplus cycles never exceed the requested budget `N`, never preempt defect resolution, and follow the same STEP 1→4 discipline (including "structural changes are proposals, not silent edits").
+This is the project-specific judgment a generic harness cannot supply, and it is our distinctive contribution — so it stays inside the thin-layer boundary — it spends the budget it was given and adds no machinery of its own: surplus cycles never exceed the requested budget `N`, never preempt defect resolution, and follow the same STEP 1→4 discipline (including "structural changes are ledgered, never silent").
 
 **Climb in order. Within each track, act only where the project shows a concrete gap (a signal) — do not invent work.**
 
@@ -26,13 +26,13 @@ This is the project-specific judgment a generic harness cannot supply, and it is
 | **③ 방어선 / Stability** | test/coverage & monitoring gaps → security & compliance → error-handling & resilience | Untested critical path, missing input validation, unhandled failure mode, no observability hook |
 | **④ 가속기 / Efficiency** | CI/DevOps/platform → DX improvements | Manual repetitive steps, slow/flaky pipeline, awkward local setup |
 
-**Execution guard (keeps minimal-intervention intact):**
-- **Additive & low-risk → do it** this cycle (doc-sync, filling a test gap, adding validation, a small CI fix). Run it through STEP 2→4 and log it as a `[ladder:②/③/④]` cycle.
-- **Invasive or opinionated → propose in Derive-Next**, do not perform (large refactors, dependency swaps, new infra, security architecture). Human decides.
+**Execution guard — size decides staging, reversibility decides autonomy:**
+- **Reversible → do it.** Additive work (doc-sync, filling a test gap, adding validation, a small CI fix) fits in this cycle; a larger reversible change — a structural refactor, a restructure within the project's committed stack and patterns — gets its own cycle, or a `ROADMAP.md` phase when it spans several. Run it through STEP 2→4, log it as a `[ladder:②/③/④]` cycle, and record the choice in the Decisions Ledger (L1, `provisional`). Being large is not a reason to hand it back.
+- **A new direction or an L2 act → Pending Human Decisions**, do not perform: a dependency, infrastructure, or security architecture the project has not committed to (the STEP 5 derivation gate's discussion class), a change to a contract published at 1.0+, or anything that must leave the repo. What makes these the human's is that they commit the project or cannot be undone — never their size ([decision-lenses.md](../../_shared/decision-lenses.md#reversibility-belongs-to-the-act-not-the-edit)).
 - **Regression back-flow** — if any surplus track surfaces a defect or regression, drop the surplus work and return to the main loop (track ①, STEP 2). Defects always outrank surplus value; resume climbing only once the regression is resolved.
 - Track ② rung "documentation" is the floor: even when nothing else applies, a stale-doc sweep (README, `docs/`, CLAUDE.md, CHANGELOG, examples) plus the continuity-doc lean check (Continuity-Doc Hygiene) is always in-scope surplus work.
 
-**Terminate early only when** the ladder surfaces no *unblocked* signal the remaining budget can act on, on top of the conditions in **rule 9(d)** — which is the normative home for the termination test; do not restate it here. Log which rungs were climbed and which were proposed.
+**Terminate early only when** the ladder surfaces no *unblocked* signal the remaining budget can act on, on top of the conditions in **rule 9(d)** — which is the normative home for the termination test; do not restate it here. Log which rungs were climbed, which were scheduled, and which went to Pending Human Decisions.
 
 ## End-of-Run Report
 

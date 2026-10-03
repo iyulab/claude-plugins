@@ -46,20 +46,21 @@ Would this work for you?
 ```markdown
 Thank you for this thoughtful suggestion!
 
-This is valuable, but we're currently focused on [priority].
+This fits the project, and it depends on [the blocker: an open design decision / an external dependency / earlier work on the same surface].
 
-**Why not now:**
-- [Specific reason]
+**What it's waiting on:**
+- [The named blocker, and why building it before that would leave debt]
 
-**Roadmap placement:** [Where this fits]
+**Roadmap placement:** [Where this fits — after the blocking work]
 
-**What would accelerate:**
-- Community interest/votes
-- Sponsored development
-- Community PR
+**When it moves:** as soon as [the blocker] is resolved — no further votes or demand needed.
+If you want to help, [the blocking work / discussion] is what unblocks this.
 
 Added `[label]` label to track.
 ```
+
+A DEFER always names a real blocker. "We're busy", "it's a lot of work", or "not enough people
+asked" is not one — accept and stage it instead.
 
 ## REDIRECT
 

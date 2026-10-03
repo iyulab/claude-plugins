@@ -9,7 +9,9 @@ for two different purposes, and the lenses are the same in both:
   decision (only a gated act behind it waits on the owner).
 
 Same vocabulary, opposite outcomes. Which purpose applies is decided *before* this file is opened,
-by reversibility — not by how interesting the decision is.
+by reversibility — not by how interesting the decision is. `mindset` and the philosophy-scoring
+guide link here for the same definitions of what is *not* a lens and of what makes a choice
+irreversible.
 
 ---
 
@@ -35,6 +37,25 @@ asks what fully solves the problem with the least complexity **left behind**, no
 fewest lines. An option that wins only on smallness is a 근본 **penalty**: that is the shape
 technical debt arrives in. In a 0.X.X project it is doubly wrong — there is no compatibility
 contract to protect yet, and the same change only costs more the longer it waits.
+
+**Nor is how many asked, or whether it breaks.** The number of requests behind a change is evidence
+for *reading* the problem — who else shares its root cause — never a score and never a gate; "only
+one user asked" is not a reason to defer. Whether a change breaks an API is read by version stage:
+before 1.0 a breaking change is an ordinary tool, released as a minor; at 1.0+ changing a
+**published** contract is an act to report (it implies a major version, which is the owner's call),
+not a penalty that decides between options. How much work an option takes decides how it is
+**staged** — one change or several — not whether it is chosen.
+
+### Reversibility belongs to the act, not the edit
+
+A change inside the repository — a refactor, a restructure, a breaking change before 1.0 — is
+reversible until it leaves the repo: version control undoes it. It is decided on the lenses and
+done: **L1** in `run-cycle`, a provisional decision in `resume`. What is irreversible is an **act
+outside the repo** — push, publish/release, a major-version bump, changing a contract already
+published at 1.0+, registering something in an external tracker. The human gate sits on those acts
+([decision-briefing.md §1, "the owner can be the resource"](./decision-briefing.md#1-three-entry-shapes--do-not-force-one-on-another)),
+never on the size of the edit behind them. A defect the current work can only route around is fixed
+at its root in the same work — a workaround carried forward is the 근본 penalty above, not restraint.
 
 ---
 

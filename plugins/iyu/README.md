@@ -2,7 +2,7 @@
 
 [![Claude Code Plugin](https://img.shields.io/badge/Claude%20Code-Plugin-blueviolet?logo=anthropic&logoColor=white)](https://code.claude.com/docs/en/plugins)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-1.42.0-blue.svg)](./.claude-plugin/plugin.json)
+[![Version](https://img.shields.io/badge/version-1.43.0-blue.svg)](./.claude-plugin/plugin.json)
 
 Productivity toolkit for open-source library maintainers and developers.
 
@@ -81,7 +81,7 @@ Cycles maintain continuity — unresolved issues and pending decisions automatic
 
 **Self-unblock before parking** — a blocker only counts once you've tried to remove it. Before any `BLOCKED-ITEM` is parked, the cycle checks whether the credential/dependency is actually missing (look, don't assume), whether the "user-only decision" is already answered in CLAUDE.md / an accepted issue / a prior ledger entry, and whether a genuinely useful slice can proceed without the blocked part — parking only the residue, and recording what was tried. An assumed blocker is how a run stalls with budget left.
 
-When primary work finishes early and cycles remain, run-cycle does not stop idle. It climbs a **Surplus-Cycle Value Ladder** — investing the remaining budget across the full software lifecycle: **① main loop → ② durable value** (research → refactoring → docs/assets) **→ ③ stability** (tests/monitoring → security/compliance → resilience) **→ ④ efficiency** (DevOps → DX). It acts only where the project shows a concrete signal; additive/low-risk work is done in-cycle, invasive/opinionated work is proposed for human decision. Doc-sync is the always-applicable floor of this ladder.
+When primary work finishes early and cycles remain, run-cycle does not stop idle. It climbs a **Surplus-Cycle Value Ladder** — investing the remaining budget across the full software lifecycle: **① main loop → ② durable value** (research → refactoring → docs/assets) **→ ③ stability** (tests/monitoring → security/compliance → resilience) **→ ④ efficiency** (DevOps → DX). It acts only where the project shows a concrete signal. Reversible work is done whatever its size — a large refactor gets its own cycle or roadmap phase, and the choice is recorded for the human to confirm or reverse; only a direction the project has not committed to, or an act that cannot be undone (push, publish, a change to a contract published at 1.0+), goes to the human first. Doc-sync is the always-applicable floor of this ladder.
 
 A run ends with the End-of-Run Report, a commit, and then **`/iyu:handoff`**, which it invokes itself — so the everyday loop is `run-cycle → /clear → resume → run-cycle` without a manual handoff in between.
 
@@ -357,6 +357,10 @@ skipped forever. A single `history[]` (last 12 runs) is the sole trend state, ma
 | Feasibility HIGH | ACCEPT | REDIRECT |
 | Feasibility MED | ADAPT | DEFER/REDIRECT |
 | Feasibility LOW | DEFER | DECLINE |
+
+Feasibility means real blockers — an open design decision, an unavailable external dependency,
+earlier work on the same surface — not effort. Large aligned work is staged rather than deferred,
+and request counts inform how a request is read, never the verdict itself.
 
 **PR Review:**
 
