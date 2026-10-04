@@ -10,6 +10,8 @@
 
 # Generated reports
 claudedocs/
+# ...except the hook-dryrun fixture trees, which reproduce that layout as test data
+!scripts/hook-dryrun/fixtures/*/tree/claudedocs/
 
 # OS files
 .DS_Store
