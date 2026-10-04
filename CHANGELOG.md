@@ -8,6 +8,43 @@ bugs or docs. MAJOR is never bumped automatically.
 > History is reconstructed from git from v1.11.0 onward. Earlier versions live in
 > the git log only.
 
+## [1.43.1] — 2026-10-04
+
+### Fixed
+
+- **The `run-cycle` Stop hook could resume long-finished work after a run had ended.** Once a run
+  was over and the human had moved on to other requests, ending a turn could be blocked with an
+  instruction to continue a scope that an early cycle log had named long before. Two causes,
+  neither fixable in the prompt: the hook was a model that found logs with `Glob`, which returns at
+  most 100 files, so past 100 logs it could not see the newest one and read an old, header-less log as
+  this run's; and its check for "the human has taken over" was a model reading the transcript, which
+  it could skip. The hook is now a script, `skills/run-cycle/scripts/stop-gate.sh`
+  (`type: command`): who is driving, which log is newest (by number, across any number of logs),
+  the budget, the completed count, the frontier token, `HUMAN-NEEDED:`, and the report check are
+  decided deterministically from the files. A run whose report covers its `Start:` is recognized as
+  over even when the transcript cannot be read, and a newest log without a `Budget:`/`Start:` header
+  no longer stands in for this run unless the run is visibly driving.
+- **An early `FRONTIER-EXHAUSTED:` is still audited, by a reader the run does not control.** It is
+  the one judgment that needs reading: the script hands the claim, with the latest log, the one
+  before it, and `ROADMAP.md` as resolved absolute paths, to `claude -p` with only read tools, and
+  blocks if work plainly remains unparked — a backlog phase, a scope named in the log, or a ledger
+  entry dropped between the two logs. The audit runs at most once per run end instead of a model run
+  at every turn end, and if it cannot reach a verdict (no `claude` on `PATH`, no answer) the stop is
+  allowed and the user is told the claim went unaudited.
+- **A block that keeps a run going names the next step precisely**: the cycle to continue when its
+  stub is already open, or the header of the stub to open, and for a missing report its absolute path
+  with the exact `Run: cycles {Start}–{last}` line filled in.
+- Shell scripts are checked out with LF line endings on every platform (`.gitattributes`), since the
+  plugin installs by `git clone` and a CR breaks `sh`.
+
+### Changed
+
+- `scripts/hook-dryrun/` tests the script directly and deterministically, with the auditor replaced
+  by a stub; `-LiveAudit` runs the real auditor on the fixtures that reach it. New fixtures cover a
+  finished run followed by unrelated turns (with and without a readable transcript, beyond 100
+  logs), the audit passing, failing, and giving no verdict, a run that has not opened its stub, a
+  first cycle still in progress, and a run-fatal `HUMAN-NEEDED:` without a report.
+
 ## [1.43.0] — 2026-10-03
 
 ### Changed

@@ -1,75 +1,76 @@
 <#
 .SYNOPSIS
-  Dry-runs the run-cycle Stop hook (a `type: agent` hook) against on-disk fixtures.
+  Tests the run-cycle Stop hook (plugins/iyu/skills/run-cycle/scripts/stop-gate.sh) against fixtures.
 
 .DESCRIPTION
-  The Stop hook is the plugin's only enforcement surface and it is an LLM reading a prompt, so a
-  one-sentence prompt edit can change what it blocks. This script is its regression check.
+  The Stop hook is the plugin's only enforcement surface. It is a `type: command` script, so every
+  verdict it reaches by itself is deterministic and checked here exactly, run once per fixture.
 
-  For each fixture it:
+  For each fixture the script:
     1. copies `fixtures/<name>/tree` to a fresh temp directory, renaming every `_cycle-logs_`
        directory to `cycle-logs` (fixtures store them renamed so that neither this repository's own
-       Stop hook nor continuity-root resolution mistakes a fixture for a real log directory);
-    2. extracts the hook prompt from `plugins/iyu/skills/run-cycle/SKILL.md` frontmatter and
-       substitutes `$ARGUMENTS` with a Stop hook input whose `cwd` is that temp directory;
-    3. runs it through `claude -p` with read AND write tools available — the hook's real tool set is
-       undocumented beyond "tools like Read, Grep, and Glob", so the dry run must be able to observe
-       a hook that writes;
-    4. asserts the `ok` verdict, reason substrings, and that no file in the tree changed.
+       Stop hook nor continuity-root resolution mistakes a fixture for a real log directory), then
+       applies `fill` and `touch` from expect.json;
+    2. writes the fixture's `transcript` beside the tree and pipes a Stop hook input whose `cwd` is
+       the temp tree into the script, under the same sh that Claude Code uses (Git Bash on Windows);
+    3. asserts the verdict, reason or message substrings, whether the auditor was called, and that
+       no file in the tree changed.
 
-  NON-DETERMINISM: the hook is a model run, so one pass proves little. A fixture passes only when
-  all -Repeat runs (default 3) satisfy every assertion. Treat a flaky fixture as a failing one: a
-  verdict that holds two times in three is a prompt that a real run can still trip over.
-
-  The model defaults to haiku because agent hooks without a `model` field run on "a fast model".
-
-  Runs (fixture x repeat) execute concurrently, -ThrottleLimit at a time (default 6); each has its own
-  temp tree, so they share nothing. -ThrottleLimit 1 runs them one after another.
+  The one model call the hook can make, auditing a FRONTIER-EXHAUSTED claim, is replaced by a stub
+  that returns the fixture's `auditor` verdict (IYU_RUN_CYCLE_AUDITOR). -LiveAudit instead runs the
+  real auditor (`claude -p`) on the fixtures that define `auditor`, -Repeat times each, and passes a
+  fixture only when every repeat does: a verdict that holds two runs in three is one a real run can
+  still trip over.
 
 .EXAMPLE
   pwsh scripts/hook-dryrun/Invoke-HookDryRun.ps1
-  pwsh scripts/hook-dryrun/Invoke-HookDryRun.ps1 -Fixture e-* -Repeat 5
+  pwsh scripts/hook-dryrun/Invoke-HookDryRun.ps1 -Fixture k-*
+  pwsh scripts/hook-dryrun/Invoke-HookDryRun.ps1 -LiveAudit -Repeat 3
 #>
 [CmdletBinding()]
 param(
     [string]$Fixture = '*',
+    [switch]$LiveAudit,
     [int]$Repeat = 3,
-    [string]$Model = 'haiku',
-    [int]$ThrottleLimit = 6,
-    [string]$SkillPath = (Join-Path $PSScriptRoot '../../plugins/iyu/skills/run-cycle/SKILL.md')
+    [string]$Gate = (Join-Path $PSScriptRoot '../../plugins/iyu/skills/run-cycle/scripts/stop-gate.sh')
 )
 
 $ErrorActionPreference = 'Stop'
 
-function Get-HookPrompt([string]$path) {
-    $lines = Get-Content -LiteralPath $path -Encoding utf8
-    if ($lines[0] -ne '---') { throw "No frontmatter in $path" }
-    $end = [Array]::IndexOf($lines, '---', 1)
-    $fm = $lines[1..($end - 1)]
-    $start = -1
-    for ($i = 0; $i -lt $fm.Count; $i++) {
-        if ($fm[$i] -match '^(\s*)prompt:\s*\|\s*$') { $start = $i; $indent = $Matches[1].Length; break }
-    }
-    if ($start -lt 0) { throw "No 'prompt: |' block in the frontmatter of $path" }
-    $body = New-Object System.Collections.Generic.List[string]
-    for ($i = $start + 1; $i -lt $fm.Count; $i++) {
-        $l = $fm[$i]
-        if ($l.Trim() -eq '') { $body.Add(''); continue }
-        $lead = $l.Length - $l.TrimStart().Length
-        if ($lead -le $indent) { break }
-        $body.Add($l)
-    }
-    $strip = ($body | Where-Object { $_ -ne '' } | ForEach-Object { $_.Length - $_.TrimStart().Length } | Measure-Object -Minimum).Minimum
-    $text = ($body | ForEach-Object { if ($_.Length -ge $strip) { $_.Substring($strip) } else { $_ } }) -join "`n"
-    if ($text -notmatch 'Output contract') { throw 'Extracted hook prompt looks truncated (no "Output contract").' }
-    return $text
+function Get-Sh {
+    if (-not $IsWindows) { return (Get-Command sh).Source }
+    # Claude Code runs shell-form hooks under Git Bash. `bash` on PATH is often WSL's, which is not it.
+    $candidates = @($env:CLAUDE_CODE_GIT_BASH_PATH)
+    $git = Get-Command git -ErrorAction SilentlyContinue
+    if ($git) { $candidates += Join-Path (Split-Path (Split-Path $git.Source)) 'bin/bash.exe' }
+    $candidates += Join-Path $env:ProgramFiles 'Git/bin/bash.exe'
+    $found = $candidates | Where-Object { $_ -and (Test-Path -LiteralPath $_) } | Select-Object -First 1
+    if (-not $found) { throw 'Git Bash not found; set CLAUDE_CODE_GIT_BASH_PATH.' }
+    return $found
 }
 
-function New-FixtureTree([string]$src, [string]$dst) {
+function New-FixtureTree([string]$src, [string]$dst, $expect) {
     Copy-Item -LiteralPath $src -Destination $dst -Recurse
     Get-ChildItem -LiteralPath $dst -Recurse -Directory -Filter '_cycle-logs_' |
         Sort-Object { $_.FullName.Length } -Descending |
         ForEach-Object { Rename-Item -LiteralPath $_.FullName -NewName 'cycle-logs' }
+    if ($expect.fill) {
+        # Bulk logs from finished runs, so a fixture can hold more logs than a file-listing tool returns.
+        $logs = Join-Path $dst ($expect.fill.dir -replace '_cycle-logs_', 'cycle-logs')
+        foreach ($i in [int]$expect.fill.from..[int]$expect.fill.to) {
+            $runStart = $i - (($i - [int]$expect.fill.from) % 10)
+            Set-Content -LiteralPath (Join-Path $logs ('cycle-{0:D2}.md' -f $i)) -Encoding utf8 -Value @(
+                "# Cycle ${i}: earlier work", 'Date: 2026-09-20', 'Root: `claudedocs/`', 'Budget: 10',
+                "Start: $runStart", 'Status: complete', '', '## Carry-Forward',
+                '- Emergent Next Capability: `FRONTIER-OPEN:` next slice [autonomous]')
+        }
+    }
+    if ($expect.touch) {
+        foreach ($p in $expect.touch.PSObject.Properties) {
+            $rel = $p.Name -replace '_cycle-logs_', 'cycle-logs'
+            (Get-Item -LiteralPath (Join-Path $dst $rel)).LastWriteTime = (Get-Date).AddMinutes([int]$p.Value)
+        }
+    }
 }
 
 function Get-TreeHashes([string]$root) {
@@ -80,107 +81,98 @@ function Get-TreeHashes([string]$root) {
     return $h
 }
 
-function Get-Verdict([string]$raw) {
-    # stream-json: one event per line; the last `result` event carries the final text.
-    $res = $raw -split "`r?`n" | Where-Object { $_ -match '^\{.*"type"\s*:\s*"result"' } | Select-Object -Last 1
-    if (-not $res) { return $null }
-    $text = [string]($res | ConvertFrom-Json).result
-    $m = [regex]::Matches($text, '\{[^{}]*"ok"\s*:\s*(true|false)[^{}]*\}')
-    if ($m.Count -eq 0) { return $null }
-    try { return ($m[$m.Count - 1].Value | ConvertFrom-Json) } catch { return $null }
-}
-
-function Invoke-HookRun($fxPath, $expect, [string]$prompt, [string]$model) {
-    $root = Join-Path ([IO.Path]::GetTempPath()) ("hook-dryrun-" + [guid]::NewGuid().ToString('N').Substring(0, 8))
-    New-FixtureTree (Join-Path $fxPath 'tree') $root
-    if ($expect.touch) {
-        foreach ($p in $expect.touch.PSObject.Properties) {
-            $rel = $p.Name -replace '_cycle-logs_', 'cycle-logs'
-            (Get-Item -LiteralPath (Join-Path $root $rel)).LastWriteTime = (Get-Date).AddMinutes([int]$p.Value)
-        }
-    }
+function Invoke-GateRun($fx, $expect, [string]$sh, [string]$gate, [bool]$live) {
+    $root = Join-Path ([IO.Path]::GetTempPath()) ('hook-dryrun-' + [guid]::NewGuid().ToString('N').Substring(0, 8))
+    New-FixtureTree (Join-Path $fx.FullName 'tree') $root $expect
     $before = Get-TreeHashes $root
+
+    # Transcript and auditor stub live beside the tree, not in it, so the hash check covers only the tree.
+    $meta = "$root.meta"
+    New-Item -ItemType Directory -Path $meta | Out-Null
     $transcript = ''
     if ($expect.transcript) {
-        # Beside the tree, not in it, so the hash check covers only the tree.
-        $metaDir = "$root.meta"
-        New-Item -ItemType Directory -Path $metaDir | Out-Null
-        $transcript = Join-Path $metaDir 'transcript.jsonl'
+        $transcript = Join-Path $meta 'transcript.jsonl'
         $lines = foreach ($entry in @($expect.transcript)) { $entry | ConvertTo-Json -Compress -Depth 10 }
         Set-Content -LiteralPath $transcript -Value $lines -Encoding utf8
     }
+    $calls = Join-Path $meta 'auditor-called'
+    $callsSh = $calls -replace '\\', '/'
+    $verdict = switch -Regex ([string]$expect.auditor) {
+        '^pass$' { '{"ok": true, "reason": "claim holds"}' }
+        '^fail: (.*)$' { (@{ ok = $false; reason = $Matches[1] } | ConvertTo-Json -Compress) }
+        default { 'no verdict here' }
+    }
+    $stub = Join-Path $meta 'auditor.sh'
+    Set-Content -LiteralPath $stub -Encoding utf8 -Value @('cat > /dev/null', "echo called >> '$callsSh'", "printf '%s\n' '$verdict'")
+
     $hookInput = [ordered]@{
         session_id = 'dryrun'; transcript_path = $transcript; cwd = $root; hook_event_name = 'Stop'
-        stop_hook_active = $false; last_assistant_message = 'Cycle work for this turn is done.'
+        stop_hook_active = $false; last_assistant_message = 'Done for this turn.'
     } | ConvertTo-Json -Compress
-    $p = $prompt.Replace('$ARGUMENTS', $hookInput)
-
-    # A real session's transcript lives outside the project too; grant read access the way a user's
-    # session would need to, so the dry run tests the prompt rather than the sandbox.
-    $extra = if ($transcript) { @('--add-dir', (Split-Path $transcript)) } else { @() }
-    Push-Location $root
+    $saved = $env:IYU_RUN_CYCLE_AUDITOR
     try {
-        $raw = $p | claude -p --model $model --setting-sources '' --tools 'Read,Glob,Grep,Write,Edit' @extra `
-            --permission-mode acceptEdits --no-session-persistence --output-format stream-json --verbose 2>&1 | Out-String
-    } finally { Pop-Location }
+        $env:IYU_RUN_CYCLE_AUDITOR = if ($live) { $null } else { "sh '$($stub -replace '\\', '/')'" }
+        $out = ($hookInput | & $sh $gate 2>&1 | Out-String).Trim()
+        $exit = $LASTEXITCODE
+    } finally { $env:IYU_RUN_CYCLE_AUDITOR = $saved }
 
-    $v = Get-Verdict $raw
     $problems = @()
-    if ($null -eq $v) { $problems += 'no JSON verdict in output' }
-    else {
-        if ([bool]$v.ok -ne [bool]$expect.ok) { $problems += "ok=$($v.ok), expected $($expect.ok)" }
-        $reason = ([string]$v.reason) -replace '\\', '/'
-        $rootFwd = $root -replace '\\', '/'
-        foreach ($s in @($expect.reasonContains)) { if ($s -and $reason -notlike "*$s*") { $problems += "reason lacks '$s'" } }
-        foreach ($s in @($expect.reasonNotContains)) { if ($s -and $reason -like "*$s*") { $problems += "reason contains '$s'" } }
-        if ($expect.reasonContainsFixtureRoot -and $reason -notlike "*$rootFwd*" -and $reason -notlike "*$($rootFwd.TrimEnd('/') -replace '^([A-Za-z]):', '/$1')*") {
-            $problems += 'reason does not carry the resolved absolute path'
-        }
+    $ok = $true; $reason = ''; $message = ''
+    if ($exit -ne 0) { $problems += "exit code $exit" }
+    if ($out) {
+        try { $o = $out | ConvertFrom-Json } catch { $problems += "output is not JSON: $out"; $o = $null }
+        if ($o -and $o.decision -eq 'block') { $ok = $false; $reason = [string]$o.reason }
+        elseif ($o) { $message = [string]$o.systemMessage }
+    }
+    if ($ok -ne [bool]$expect.ok) { $problems += "ok=$ok, expected $($expect.ok)" }
+    $reasonFwd = $reason -replace '\\', '/'
+    foreach ($s in @($expect.reasonContains)) { if ($s -and $reasonFwd -notlike "*$s*") { $problems += "reason lacks '$s'" } }
+    foreach ($s in @($expect.reasonNotContains)) { if ($s -and $reasonFwd -like "*$s*") { $problems += "reason contains '$s'" } }
+    foreach ($s in @($expect.messageContains)) { if ($s -and $message -notlike "*$s*") { $problems += "message lacks '$s'" } }
+    if ($expect.reasonContainsFixtureRoot -and $reasonFwd -notlike "*$($root -replace '\\', '/')*") {
+        $problems += 'reason does not carry the resolved absolute path'
+    }
+    if (-not $live) {
+        $audited = Test-Path -LiteralPath $calls
+        $wantAudit = $null -ne $expect.auditor -and $(if ($null -ne $expect.audited) { [bool]$expect.audited } else { $true })
+        if ($audited -ne $wantAudit) { $problems += "auditor called=$audited, expected $wantAudit" }
     }
     $after = Get-TreeHashes $root
     $changed = @($before.Keys | Where-Object { $after[$_] -ne $before[$_] }) + @($after.Keys | Where-Object { -not $before.ContainsKey($_) })
     if ($changed) { $problems += "hook modified files: $($changed -join ', ')" }
 
-    $trace = "$root.trace.jsonl"
-    if ($problems) { Set-Content -LiteralPath $trace -Value $raw -Encoding utf8 }  # beside the tree, not in it
-    else {
-        Remove-Item -LiteralPath $root -Recurse -Force
-        if ($transcript) { Remove-Item -LiteralPath (Split-Path $transcript) -Recurse -Force }
-    }
-    [pscustomobject]@{ Problems = $problems; Reason = $v.reason; Root = $root; Trace = $trace }
+    if (-not $problems) { Remove-Item -LiteralPath $root, $meta -Recurse -Force }
+    [pscustomobject]@{ Problems = $problems; Reason = if ($reason) { $reason } else { $message }; Root = $root }
 }
 
-$prompt = Get-HookPrompt (Resolve-Path $SkillPath)
+$sh = Get-Sh
+$gatePath = (Resolve-Path $Gate).Path -replace '\\', '/'
 $fixtures = Get-ChildItem -LiteralPath (Join-Path $PSScriptRoot 'fixtures') -Directory | Where-Object Name -like $Fixture
 if (-not $fixtures) { throw "No fixture matches '$Fixture'." }
 
-$jobs = foreach ($fx in $fixtures) {
-    $expect = Get-Content -LiteralPath (Join-Path $fx.FullName 'expect.json') -Raw -Encoding utf8 | ConvertFrom-Json
-    for ($r = 1; $r -le $Repeat; $r++) { [pscustomobject]@{ Name = $fx.Name; Path = $fx.FullName; Expect = $expect; Run = $r } }
-}
-# Parallel runspaces do not inherit this script's functions; hand them over as source.
-$lib = @('New-FixtureTree', 'Get-TreeHashes', 'Get-Verdict', 'Invoke-HookRun' |
-    ForEach-Object { "function $_ {`n$((Get-Item "function:$_").Definition)`n}" }) -join "`n"
-$results = $jobs | ForEach-Object -ThrottleLimit $ThrottleLimit -Parallel {
-    $ErrorActionPreference = 'Stop'
-    . ([scriptblock]::Create($using:lib))
-    $res = Invoke-HookRun $_.Path $_.Expect $using:prompt $using:Model
-    $res | Add-Member -NotePropertyName Name -NotePropertyValue $_.Name -PassThru |
-        Add-Member -NotePropertyName Run -NotePropertyValue $_.Run -PassThru
-}
-
-$failed = 0
+$failed = 0; $ran = 0
 foreach ($fx in $fixtures) {
-    $expect = ($jobs | Where-Object Name -eq $fx.Name | Select-Object -First 1).Expect
-    $bad = @($results | Where-Object { $_.Name -eq $fx.Name -and $_.Problems } | Sort-Object Run)
+    $expect = Get-Content -LiteralPath (Join-Path $fx.FullName 'expect.json') -Raw -Encoding utf8 | ConvertFrom-Json
+    if ($LiveAudit) {
+        # Only fixtures whose verdict a real auditor can reach: a pass or a fail it actually gets asked.
+        if ($expect.auditor -notmatch '^(pass|fail: )' -or $expect.audited -eq $false) { continue }
+        $expect = $expect.PSObject.Copy()
+        if ($expect.liveReasonContains) { $expect.reasonContains = $expect.liveReasonContains }
+        else { $expect.PSObject.Properties.Remove('reasonContains') }
+        $runs = 1..$Repeat | ForEach-Object { Invoke-GateRun $fx $expect $sh $gatePath $true }
+    } else {
+        $runs = @(Invoke-GateRun $fx $expect $sh $gatePath $false)
+    }
+    $ran++
+    $bad = @($runs | Where-Object Problems)
     $status = if ($bad) { 'FAIL'; $failed++ } else { 'PASS' }
-    Write-Host ("[{0}] {1}  ({2}/{3} runs clean) — {4}" -f $status, $fx.Name, ($Repeat - $bad.Count), $Repeat, $expect.why)
+    Write-Host ('[{0}] {1}  ({2}/{3}) — {4}' -f $status, $fx.Name, ($runs.Count - $bad.Count), $runs.Count, $expect.why)
     foreach ($b in $bad) {
-        Write-Host ("    run {0}: {1}" -f $b.Run, ($b.Problems -join '; '))
-        Write-Host ("      reason: {0}" -f $b.Reason)
-        Write-Host ("      tree kept at: {0}" -f $b.Root)
-        Write-Host ("      tool trace:   {0}" -f $b.Trace)
+        Write-Host ('    {0}' -f ($b.Problems -join '; '))
+        Write-Host ('      reason: {0}' -f $b.Reason)
+        Write-Host ('      tree kept at: {0}' -f $b.Root)
     }
 }
+if (-not $ran) { throw 'No fixture ran.' }
 if ($failed) { Write-Host "$failed fixture(s) failed."; exit 1 }
 Write-Host 'All fixtures passed.'

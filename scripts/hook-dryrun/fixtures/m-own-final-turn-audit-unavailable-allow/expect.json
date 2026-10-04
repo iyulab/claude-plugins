@@ -1,0 +1,78 @@
+{
+  "ok": true,
+  "why": "the run's own final turn after an early FRONTIER-EXHAUSTED: the claim goes to the auditor, which returns no verdict; the stop is allowed (fail toward allowing) and the user is told the claim went unaudited",
+  "fill": {
+    "dir": "claudedocs/_cycle-logs_",
+    "from": 11,
+    "to": 201
+  },
+  "auditor": "none",
+  "messageContains": [
+    "could not be audited"
+  ],
+  "transcript": [
+    {
+      "type": "user",
+      "userType": "external",
+      "origin": {
+        "kind": "human"
+      },
+      "message": {
+        "role": "user",
+        "content": "<command-message>iyu:run-cycle</command-message>\n<command-name>/iyu:run-cycle</command-name>\n<command-args>10</command-args>"
+      }
+    },
+    {
+      "type": "user",
+      "userType": "external",
+      "isMeta": true,
+      "message": {
+        "role": "user",
+        "content": [
+          {
+            "type": "text",
+            "text": "Base directory for this skill: …\n# Development Cycle Runner"
+          }
+        ]
+      }
+    },
+    {
+      "type": "assistant",
+      "message": {
+        "role": "assistant",
+        "content": [
+          {
+            "type": "text",
+            "text": "Cycle 03 done; frontier exhausted, report written."
+          }
+        ]
+      }
+    },
+    {
+      "type": "user",
+      "userType": "external",
+      "isMeta": true,
+      "message": {
+        "role": "user",
+        "content": [
+          {
+            "type": "text",
+            "text": "Stop hook feedback:\nUnblocked autonomous work remains."
+          }
+        ]
+      }
+    },
+    {
+      "type": "assistant",
+      "message": {
+        "role": "assistant",
+        "content": [
+          {
+            "type": "text",
+            "text": "Report and handoff are done."
+          }
+        ]
+      }
+    }
+  ]
+}

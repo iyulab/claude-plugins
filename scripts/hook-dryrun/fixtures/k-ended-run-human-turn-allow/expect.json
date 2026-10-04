@@ -1,0 +1,96 @@
+{
+  "ok": true,
+  "why": "run 202-205 ended with its report; 191 logs (more than a file listing returns), header-less early logs carry FRONTIER-OPEN for long-finished work; the human then asked for something else, so the turn ends without consulting the auditor",
+  "fill": {
+    "dir": "claudedocs/_cycle-logs_",
+    "from": 11,
+    "to": 201
+  },
+  "auditor": "fail: the sample dataset remains",
+  "audited": false,
+  "transcript": [
+    {
+      "type": "user",
+      "userType": "external",
+      "origin": {
+        "kind": "human"
+      },
+      "message": {
+        "role": "user",
+        "content": "<command-message>iyu:run-cycle</command-message>\n<command-name>/iyu:run-cycle</command-name>\n<command-args>10</command-args>"
+      }
+    },
+    {
+      "type": "user",
+      "userType": "external",
+      "isMeta": true,
+      "message": {
+        "role": "user",
+        "content": [
+          {
+            "type": "text",
+            "text": "Base directory for this skill: …\n# Development Cycle Runner"
+          }
+        ]
+      }
+    },
+    {
+      "type": "assistant",
+      "message": {
+        "role": "assistant",
+        "content": [
+          {
+            "type": "text",
+            "text": "Run complete."
+          }
+        ]
+      }
+    },
+    {
+      "type": "user",
+      "userType": "external",
+      "origin": {
+        "kind": "human"
+      },
+      "message": {
+        "role": "user",
+        "content": "<command-message>iyu:handoff</command-message>\n<command-name>/iyu:handoff</command-name>\n<command-args>push</command-args>"
+      }
+    },
+    {
+      "type": "assistant",
+      "message": {
+        "role": "assistant",
+        "content": [
+          {
+            "type": "text",
+            "text": "Handoff written."
+          }
+        ]
+      }
+    },
+    {
+      "type": "user",
+      "userType": "external",
+      "origin": {
+        "kind": "human"
+      },
+      "message": {
+        "role": "user",
+        "content": "Summarize what changed this week."
+      }
+    },
+    {
+      "type": "assistant",
+      "message": {
+        "role": "assistant",
+        "content": [
+          {
+            "type": "text",
+            "text": "Here is the summary."
+          }
+        ]
+      }
+    }
+  ]
+}

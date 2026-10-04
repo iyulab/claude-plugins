@@ -47,27 +47,30 @@ allowed-tools: Read, Glob, Bash(gh *)   # pre-approval for the invoking turn —
 context: fork                       # run in an isolated subagent
 agent: general-purpose              # which agent type the fork uses
 background: false                   # wait for the fork in the invoking turn (default: true)
-hooks:                              # lifecycle hooks scoped to this skill
+hooks:                              # registered once the skill is invoked, for the rest of the session
   Stop:
     - hooks:
-        - type: agent               # `prompt` = single LLM call, no tools; `agent` = tool access
-          timeout: 180
-          prompt: |
-            … respond {"ok": true|false, "reason": "…"}
+        - type: command             # a script; `prompt` = one LLM call, `agent` = an LLM with tools
+          command: 'sh "${CLAUDE_PLUGIN_ROOT}/skills/run-cycle/scripts/stop-gate.sh"'
+          timeout: 300
 ---
 ```
 
-Two traps worth restating, both hit this plugin before:
+Traps worth restating, all hit this plugin before:
 
 - **`allowed-tools` grants approval, not capability.** What a forked skill *can* do comes from its
   `agent` type — `Explore` has no `Write`, so a skill that saves a file must not fork into it.
 - **A `type: prompt` hook cannot read files.** It is one LLM call over the hook input JSON. Any hook
   that inspects the repo needs `type: agent` (tools, up to 50 turns) or `type: command`. Its
   `$ARGUMENTS` is the hook input JSON, never the skill's invocation arguments.
+- **Hooks on one event run in parallel, and any block wins.** A `command` hook cannot screen an
+  `agent` hook beside it: each must be right on its own about when it blocks. In a skill's
+  frontmatter, `${CLAUDE_PLUGIN_ROOT}` expands in a `command` and `${CLAUDE_SKILL_DIR}` does not; an
+  `agent` hook's Bash obeys the session's permission mode, so it cannot be relied on to run a script.
 
 ## Current Plugins
 
-### iyu (v1.43.0)
+### iyu (v1.43.1)
 
 Productivity toolkit for open-source maintainers. **Design principle**: teach Claude what is
 *different* about a project, not how to develop software — skills supply decision frameworks, Claude
@@ -104,11 +107,13 @@ The four canonical philosophy dimensions live only in
 **Invariants — easy to break while editing a skill, expensive to notice later:**
 
 1. **The Stop hook is the only enforcement surface, and it matches literal tokens.**
-   `HUMAN-NEEDED:` · `BLOCKED-ITEM:` · `FRONTIER-OPEN:` · `FRONTIER-EXHAUSTED:` are strings the hook
-   greps for. Rewording one silently disables the check it gates. The hook has no session context —
-   anything it needs (budget, start index, the report's `Run:` line) must be written into a header. It
-   also opens `<logs dir>/../ROADMAP.md` on the exhaustion path, to audit `FRONTIER-EXHAUSTED:` as a *claim* rather than
-   accept it as a fact — a token the same agent both writes and reads is not verification.
+   `HUMAN-NEEDED:` · `FRONTIER-OPEN:` · `FRONTIER-EXHAUSTED:` and the header lines `Budget:` ·
+   `Start:` · `Status:` · `Run: cycles a–b` are strings the hook parses. Rewording one silently
+   disables the check it gates. The hook has no session context — anything it needs must be written
+   into a header. On the exhaustion path it hands `FRONTIER-EXHAUSTED:` to a separate read-only
+   auditor model, with the latest log, the one before it and `<logs dir>/../ROADMAP.md`, to check it
+   as a *claim* rather than accept it as a fact — a token the same agent both writes and reads is not
+   verification.
 2. **The roadmap is a phase backlog.** No cycle numbers, dates, or durations anywhere — in
    `run-cycle`'s roadmap or `backlog-discover`'s horizons. Concrete scope exists for one cycle only.
 3. **Continuity docs hold remaining work only.** Completed work belongs in `HISTORY.md`.
@@ -124,24 +129,27 @@ The four canonical philosophy dimensions live only in
    explanation moves out — and **what a skill needs on every iteration goes before what it needs once
    per run**, with the rest reachable through a link named early enough to survive the cut.
 6. **The Stop hook's BLOCK reason is the one instruction channel compaction cannot truncate.** It
-   runs with its own prompt and reads the logs, so a block restates the literal contract it turns on
-   (invariant 1's tokens, the report's path and parts). Keep it that way when editing the hook.
-7. **Every path in the hook prompt is named relative to exactly one anchor — `<logs dir>`, the
-   `cycle-logs/` directory holding the `cycle-*.md` files.** The hook is an LLM reading a prompt, not
-   a script: the first release whose prompt introduced a second directory ("the continuity root is
-   the parent of `cycle-logs/`") was the first to block a finished run for a report that sat exactly
-   where the artifact table puts it, demanding a copy in the parent. Its parent is spelled
-   `<logs dir>/..`, never given a name of its own, and a block reason carries the resolved absolute
-   path, not a placeholder.
-8. **The hook reads; it never writes — and every prompt change is dry-run before release.** Agent
-   hooks have no tool-restriction field (only `prompt`/`model`/`timeout` are documented), so
-   read-only is a sentence in the prompt, not a setting — before that sentence existed, a hook in a
-   real run rewrote the report it was auditing, deleting an earlier run's block. `scripts/hook-dryrun/` replays the
-   prompt against fixtures and asserts the verdict, the reason, and unchanged file hashes; a
-   fixture passes only when every repeat passes. Size is judged there, not by invariant 5: the
-   prompt lives in frontmatter, which never enters the conversation, so its length costs the hook's
-   own run and nothing in the 5,000-token re-attach window. Grow it when a fixture needs it; cut it
-   when a fixture still passes without the words.
+   is a script that reads the logs, so a block restates the literal contract it turns on
+   (invariant 1's tokens, the report's absolute path, opening line and parts). Keep it that way when
+   editing the hook.
+7. **Everything mechanical in the hook is a script; a model is asked only what needs reading.**
+   The hook was an `agent` hook, and its recurring failures were a model doing bookkeeping: ranking
+   logs by name or mtime instead of by number, missing the newest log once there were more than the
+   100 files `Glob` returns, reading a header-less log from an earlier run as this run's, naming a
+   second directory and then demanding the report there. So `scripts/stop-gate.sh` owns the takeover
+   check, log resolution, numbering, counting, tokens and the report check, and a model sees only the
+   exhaustion audit — handed resolved absolute paths, only read tools (`--tools Read,Grep,Glob`), and
+   one question. Every failure to reach a verdict fails toward allowing: a premature stop is escaped
+   by invoking again, a run that cannot end is not. The script runs at every turn end for the rest of
+   the session, under Git Bash on Windows where each process costs a tenth of a second or more —
+   parse with one `awk` per input, never a pipeline per file.
+8. **The hook reads; it never writes — and every change is tested before release.**
+   `scripts/hook-dryrun/` pipes a hook input into the script for each fixture and asserts the verdict,
+   the reason, whether the auditor was asked, and unchanged file hashes. The auditor is a stub there
+   (`IYU_RUN_CYCLE_AUDITOR`), so the suite is deterministic; `-LiveAudit` runs the real auditor on the
+   fixtures that reach it, and passes a fixture only when every repeat does. Run the deterministic
+   suite after any hook change and `-LiveAudit` after editing the audit prompt. A failure mode no
+   fixture catches gets a fixture, and removing the gate it protects should make that fixture fail.
 9. **A skill's `description`/`when_to_use` is behavior, and the trigger evals are its test.** A
    model-invoked skill that is never chosen does nothing — `mindset` sat at 0/3 until its description
    said what it does and when. After editing either field, run

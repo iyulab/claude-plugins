@@ -1,0 +1,11 @@
+{
+  "ok": true,
+  "why": "same tree as k with no readable transcript: the report covering Start 202 and a complete newest log mean the run is over, so the turn ends without consulting the auditor",
+  "fill": {
+    "dir": "claudedocs/_cycle-logs_",
+    "from": 11,
+    "to": 201
+  },
+  "auditor": "fail: the sample dataset remains",
+  "audited": false
+}

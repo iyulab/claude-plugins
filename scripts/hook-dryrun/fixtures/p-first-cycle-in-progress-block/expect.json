@@ -1,0 +1,12 @@
+{
+  "ok": false,
+  "why": "this run (Start 8) has only its in-progress stub; the previous run's report covers 3-7, not this run; keep working on cycle 8",
+  "reasonContains": [
+    "Cycle 8",
+    "in-progress"
+  ],
+  "reasonNotContains": [
+    "RUN-SUMMARY",
+    "ladder:"
+  ]
+}

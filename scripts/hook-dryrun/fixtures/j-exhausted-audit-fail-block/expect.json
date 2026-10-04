@@ -1,0 +1,81 @@
+{
+  "ok": false,
+  "why": "cycle 3 of 10 claims FRONTIER-EXHAUSTED but the roadmap still holds an unstarted, unparked phase; the audit fails and the reason names it",
+  "auditor": "fail: Phase 3 (CSV export) is neither completed nor parked",
+  "reasonContains": [
+    "CSV export",
+    "FRONTIER-EXHAUSTED",
+    "Status: in-progress"
+  ],
+  "liveReasonContains": [
+    "CSV"
+  ],
+  "reasonNotContains": [
+    "RUN-SUMMARY"
+  ],
+  "transcript": [
+    {
+      "type": "user",
+      "userType": "external",
+      "origin": {
+        "kind": "human"
+      },
+      "message": {
+        "role": "user",
+        "content": "<command-message>iyu:run-cycle</command-message>\n<command-name>/iyu:run-cycle</command-name>\n<command-args>10</command-args>"
+      }
+    },
+    {
+      "type": "user",
+      "userType": "external",
+      "isMeta": true,
+      "message": {
+        "role": "user",
+        "content": [
+          {
+            "type": "text",
+            "text": "Base directory for this skill: …\n# Development Cycle Runner"
+          }
+        ]
+      }
+    },
+    {
+      "type": "assistant",
+      "message": {
+        "role": "assistant",
+        "content": [
+          {
+            "type": "text",
+            "text": "Cycle 03 done; frontier exhausted, report written."
+          }
+        ]
+      }
+    },
+    {
+      "type": "user",
+      "userType": "external",
+      "isMeta": true,
+      "message": {
+        "role": "user",
+        "content": [
+          {
+            "type": "text",
+            "text": "Stop hook feedback:\nUnblocked autonomous work remains."
+          }
+        ]
+      }
+    },
+    {
+      "type": "assistant",
+      "message": {
+        "role": "assistant",
+        "content": [
+          {
+            "type": "text",
+            "text": "Report and handoff are done."
+          }
+        ]
+      }
+    }
+  ]
+}

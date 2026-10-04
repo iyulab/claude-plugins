@@ -1,0 +1,9 @@
+{
+  "ok": false,
+  "why": "a run-fatal HUMAN-NEEDED: ends the run with budget left, but the report is missing",
+  "reasonContains": [
+    "RUN-SUMMARY-",
+    "Run: cycles 1–2"
+  ],
+  "reasonContainsFixtureRoot": true
+}

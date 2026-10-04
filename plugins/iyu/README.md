@@ -2,7 +2,7 @@
 
 [![Claude Code Plugin](https://img.shields.io/badge/Claude%20Code-Plugin-blueviolet?logo=anthropic&logoColor=white)](https://code.claude.com/docs/en/plugins)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-1.43.0-blue.svg)](./.claude-plugin/plugin.json)
+[![Version](https://img.shields.io/badge/version-1.43.1-blue.svg)](./.claude-plugin/plugin.json)
 
 Productivity toolkit for open-source library maintainers and developers.
 
@@ -54,9 +54,11 @@ or after it — is the cycle.
 Each cycle: Scope → Research → Implement → Test → Evaluate → Carry-Forward.
 
 **Early termination is audited, not self-declared.** A run may stop before `N` when the frontier is
-genuinely exhausted — but that claim is checked: the Stop hook opens `ROADMAP.md` and blocks the stop
-if the backlog plainly still holds unparked phase work, naming those phases back into the run. A token
-the same agent writes and reads is not verification, so the check reads a file the run is not writing.
+genuinely exhausted — but that claim is checked: the Stop hook has a separate, read-only model audit
+it against `ROADMAP.md` and the last two cycle logs, and blocks the stop if work plainly remains
+unparked, naming it back into the run. A token the same agent writes and reads is not verification,
+so the check is made by a reader the run does not control. It needs the `claude` CLI on `PATH`;
+without it the stop is allowed and you are told the claim went unaudited.
 Blocked items and operational blockers record *the step and where the value lives* (an env var name, a
 config key) and never the value itself — these logs get committed.
 
@@ -87,17 +89,21 @@ A run ends with the End-of-Run Report, a commit, and then **`/iyu:handoff`**, wh
 
 Before committing, run-cycle runs a **lightweight release-readiness check** — version consistency across version-bearing files, CHANGELOG coverage, doc-sync, and an evidence block of the actual test/build/lint output. It verifies and packages only; tagging, publishing, and pushing stay with the human / CI. The commit itself defaults to **one per run** (bundling beats fragmenting), splitting on **verified-cycle boundaries** only when a long run's single diff would no longer be reviewable in one pass — each cycle's passing STEP 3 is already a clean rollback point.
 
-Cycle accounting is relative to where the run started: Preparation derives the starting index from the existing logs and records it (with the budget) in every cycle log header, and only logs from that index onward count toward the budget — so a repo carrying logs from earlier runs can't read as already over budget and stop before doing any work. The Stop hook reads those headers, since it gets no invocation arguments of its own. It is a read-only
-auditor — it never writes a log or report, only reports what is missing — and the newest log is the
-highest-*numbered* one, in-progress stub included, never the most recently modified.
+Cycle accounting is relative to where the run started: Preparation derives the starting index from the existing logs and records it (with the budget) in every cycle log header, and only logs from that index onward count toward the budget — so a repo carrying logs from earlier runs can't read as already over budget and stop before doing any work. The Stop hook reads those headers, since it gets no invocation arguments of its own. It is a
+script (POSIX `sh`; Git Bash on Windows), not a model: which log is newest, how many cycles count,
+whether a report covers the run and whether the run has already ended are decided from the files
+alone, and only the exhaustion audit above asks a model. It is read-only — it never writes a log or
+report, only reports what is missing — and the newest log is the highest-*numbered* one, in-progress
+stub included, never the most recently modified, however many logs the directory holds.
 
 The hook can keep a run going only so far: Claude Code ends the turn anyway after **eight consecutive**
 Stop-hook blocks. `run-cycle` therefore moves from one cycle to the next without ending its turn, so
 the hook is a backstop rather than the engine. If a run in your setup keeps stopping between cycles,
 raise the cap with the `CLAUDE_CODE_STOP_HOOK_BLOCK_CAP` environment variable. The hook also stays
 registered for the rest of the session once `/iyu:run-cycle` has been invoked, so it checks who is
-driving first: once you type a request of your own after the run started, it lets turns end, and
-invoking `/iyu:run-cycle` again resumes the run from its logs.
+driving first: once you type a request of your own after the run started — or, when the session
+transcript cannot be read, once the run's report covers it — it lets turns end, and invoking
+`/iyu:run-cycle` again resumes the run from its logs.
 
 ### /iyu:handoff
 
