@@ -77,9 +77,9 @@ FRONTIER-OPEN: <candidate> [autonomous|discussion]
 FRONTIER-EXHAUSTED: <why, across all three lenses> | ladder: <rung acted on, or "no actionable signal — why">
 ```
 
-Plus, when they apply: `HUMAN-NEEDED: <reason>` (run-fatal only — ends the run) and
-`BLOCKED-ITEM: <scope> — <reason + what was tried + what would unblock it>` (parks one scope, never
-ends the run).
+Plus, when they apply: `HUMAN-NEEDED: <reason>` at the start of a line (run-fatal only — ends the
+run) and `BLOCKED-ITEM: <scope> — <reason + what was tried + what would unblock it>` (parks one scope,
+never ends the run; it is read from the Blocked-on-Human ledger when an early stop is audited).
 
 **At the end of the run**, not of a cycle: the End-of-Run Report, then the commit, then
 **`/iyu:handoff`** (invoke it with the `Skill` tool) — all three unconditional on every termination
@@ -347,7 +347,7 @@ This step has two jobs: (a) record what cannot be resolved autonomously, and (b)
   - Worked examples of both: [design-rationale.md](${CLAUDE_SKILL_DIR}/references/design-rationale.md).
   - **Frontier exhausted** — a valid, expected outcome: the capability is genuinely complete and any further extension would be scope creep or needs human direction.
 
-  **Write the outcome as a token, not as prose.** The Emergent Next Capability line's **value** is one of exactly two markers — the Stop hook searches for them as literal strings, the same way it searches for `HUMAN-NEEDED:` and `BLOCKED-ITEM:`:
+  **Write the outcome as a token, not as prose.** The Emergent Next Capability line's **value** is one of exactly two markers — the Stop hook searches for them as literal strings, the same way it searches for `HUMAN-NEEDED:`:
   - `FRONTIER-OPEN: <candidate> [autonomous|discussion]` — at least one follow-on was derived.
   - `FRONTIER-EXHAUSTED: <why, across all three lenses> | ladder: <rung acted on, or "no actionable signal — why">` — derivation ran and produced no autonomous-eligible candidate. **Only this token permits early termination.**
     The `ladder:` half is **observability, not enforcement** — nothing verifies it, and it is not what the Stop hook gates on. It exists because "the ladder was checked and had no signal" and "the ladder was skipped" are indistinguishable in prose, so neither a later cycle nor an audit can tell them apart. Write the rung you acted on, or say plainly that there was no signal and why.
