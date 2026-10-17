@@ -87,7 +87,8 @@ Then:
   publishing, or pushing: taking the work out is a separate, human-initiated decision (`/iyu:ship`,
   or the project's own path) because pushing spends CI budget and publishing cannot be undone. If the
   run left the project at a point worth releasing, say so in the End-of-Run Report and stop there.
-  With a grant, the release review below decides — and nothing else in the run does
+  With a grant, the release review below decides — beyond §5's two mid-run exceptions, nothing else
+  in the run does
 - **NEVER bump MAJOR version**
 
 ## Release review (only with a release grant)

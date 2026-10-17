@@ -87,12 +87,10 @@ the `Skill` tool) — the report, commit and handoff unconditional on every term
 in [references/run-level-procedures.md](${CLAUDE_SKILL_DIR}/references/run-level-procedures.md). The
 handoff leaves `HANDOFF.md` ready for `/clear` → `/iyu:resume`, so the next run starts from files.
 
-**A release grant is permission for the run's end, not for each cycle.** "push+ship 승인", "배포
-승인" and the like mean *may release when the gate says so* — never *must*. Cycles do not push,
-publish or deploy, except for a defect users are hitting now or an external window that closes
-before the run does (the log names which). The run releases at most once, at the release review,
-and an open gate is handed over rather than forced:
-[release-cadence.md §5](${CLAUDE_SKILL_DIR}/../_shared/release-cadence.md).
+**A release grant ("push+ship 승인", "배포 승인") is permission for the run's end, never a
+per-cycle *must*.** Cycles do not push, publish or deploy — except a defect users are hitting now or
+an external window closing before the run does (log which). One release review at run end; an open
+gate is handed over: [release-cadence.md §5](${CLAUDE_SKILL_DIR}/../_shared/release-cadence.md).
 
 **Do not end the turn between cycles** — go from one cycle's STEP 5 straight into the next cycle's
 STEP 0. Ending the turn is a stop the Stop hook has to reverse, and Claude Code overrides the next
@@ -120,8 +118,7 @@ Run-specific on top of it:
 **One parameter: the cycle budget.** `$0` = total cycles (default: **10**). Anything else in
 `$ARGUMENTS`, and anything the user wrote alongside the invocation, is **scope context** — it feeds
 Preparation step 1, not a flag parser. There are no flags: a run always executes, and always commits.
-A release grant among that context is permission read once at run end (see *The cycle, at a
-glance*) — record it in the first cycle log's Re-plan so the run end finds it after a compaction.
+A release grant there is recorded in the first cycle log's Re-plan, where the run end finds it.
 
 **The starting cycle number is derived, not passed.** Preparation reads the existing
 `<root>/cycle-logs/cycle-*.md`, takes the highest index, and starts at *that + 1* (1 when none
