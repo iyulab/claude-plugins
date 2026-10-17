@@ -81,11 +81,18 @@ Plus, when they apply: `HUMAN-NEEDED: <reason>` at the start of a line (run-fata
 run) and `BLOCKED-ITEM: <scope> — <reason + what was tried + what would unblock it>` (parks one scope,
 never ends the run; it is read from the Blocked-on-Human ledger when an early stop is audited).
 
-**At the end of the run**, not of a cycle: the End-of-Run Report, then the commit, then
-**`/iyu:handoff`** (invoke it with the `Skill` tool) — all three unconditional on every termination
-path, procedure in
-[references/run-level-procedures.md](${CLAUDE_SKILL_DIR}/references/run-level-procedures.md). The
+**At the end of the run**, not of a cycle: the End-of-Run Report, then the commit, then the
+release review (only when the invocation granted a release), then **`/iyu:handoff`** (invoke it with
+the `Skill` tool) — the report, commit and handoff unconditional on every termination path, procedure
+in [references/run-level-procedures.md](${CLAUDE_SKILL_DIR}/references/run-level-procedures.md). The
 handoff leaves `HANDOFF.md` ready for `/clear` → `/iyu:resume`, so the next run starts from files.
+
+**A release grant is permission for the run's end, not for each cycle.** "push+ship 승인", "배포
+승인" and the like mean *may release when the gate says so* — never *must*. Cycles do not push,
+publish or deploy, except for a defect users are hitting now or an external window that closes
+before the run does (the log names which). The run releases at most once, at the release review,
+and an open gate is handed over rather than forced:
+[release-cadence.md §5](${CLAUDE_SKILL_DIR}/../_shared/release-cadence.md).
 
 **Do not end the turn between cycles** — go from one cycle's STEP 5 straight into the next cycle's
 STEP 0. Ending the turn is a stop the Stop hook has to reverse, and Claude Code overrides the next
@@ -113,6 +120,8 @@ Run-specific on top of it:
 **One parameter: the cycle budget.** `$0` = total cycles (default: **10**). Anything else in
 `$ARGUMENTS`, and anything the user wrote alongside the invocation, is **scope context** — it feeds
 Preparation step 1, not a flag parser. There are no flags: a run always executes, and always commits.
+A release grant among that context is permission read once at run end (see *The cycle, at a
+glance*) — record it in the first cycle log's Re-plan so the run end finds it after a compaction.
 
 **The starting cycle number is derived, not passed.** Preparation reads the existing
 `<root>/cycle-logs/cycle-*.md`, takes the highest index, and starts at *that + 1* (1 when none
@@ -363,9 +372,10 @@ This step has two jobs: (a) record what cannot be resolved autonomously, and (b)
   boundary it belongs to — remaining work that touches the same consumer-facing surface means the
   release goes *after* it, since publishing mid-phase buys a version the next few items obsolete and
   each pushed pipeline spends a shared CI budget. The outcome is a **reordered `ROADMAP.md`** with a
-  one-line reason at the marker (§4), not a note. Log the move under Roadmap Revisions
+  one-line reason and the frozen batch at the marker (§2, §4), not a note. Log the move under Roadmap
+  Revisions. This places the release; it never performs one — a grant is used only at run end (§5)
 - **Continuity-doc hygiene (every cycle, unconditional)**: Apply **Continuity-Doc Hygiene** (section below) — migrate every completed phase/item found in `ROADMAP.md` (and `HANDOFF.md`, if the project keeps one) to `HISTORY.md`, keep the handoff current + next only, and update `STRANDS.md` (see below). Runs even when nothing else in the roadmap changed.
-- **Next-Cycle Scope**: This is where the next cycle is actually planned — concretely, for **one** cycle only. Draw it from three sources in priority order: (1) inherited / this-cycle Carry-Forward defects, (2) mid-cycle discoveries (a problem too large for this cycle, or one deserving its own), (3) the highest-value **autonomous-eligible Emergent Next Capability**. Only when all three are empty — feature frontier explicitly judged exhausted — does Next-Cycle Scope become "none", handing off to the value ladder. Do **not** scope cycle+2 and beyond — those stay phase-level in the backlog until their predecessor's STEP 5 reaches them.
+- **Next-Cycle Scope**: This is where the next cycle is actually planned — concretely, for **one** cycle only. Draw it from three sources in priority order: (1) inherited / this-cycle Carry-Forward defects, (2) mid-cycle discoveries (a problem too large for this cycle, or one deserving its own), (3) the highest-value **autonomous-eligible Emergent Next Capability**. Only when all three are empty — feature frontier explicitly judged exhausted — does Next-Cycle Scope become "none", handing off to the value ladder. Do **not** scope cycle+2 and beyond — those stay phase-level in the backlog until their predecessor's STEP 5 reaches them. When the next cycle is the budget's last, the run holds a release grant, and the release batch is still open, prefer the candidate that closes the batch over one that opens a new surface ([release-cadence.md §5](${CLAUDE_SKILL_DIR}/../_shared/release-cadence.md)).
 
 **Do NOT carry forward defects that could have been fixed in STEP 4.** If you can fix it, fix it now.
 

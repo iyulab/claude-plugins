@@ -2,7 +2,7 @@
 
 [![Claude Code Plugin](https://img.shields.io/badge/Claude%20Code-Plugin-blueviolet?logo=anthropic&logoColor=white)](https://code.claude.com/docs/en/plugins)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-1.43.1-blue.svg)](./.claude-plugin/plugin.json)
+[![Version](https://img.shields.io/badge/version-1.44.0-blue.svg)](./.claude-plugin/plugin.json)
 
 Productivity toolkit for open-source library maintainers and developers.
 
@@ -87,7 +87,7 @@ When primary work finishes early and cycles remain, run-cycle does not stop idle
 
 A run ends with the End-of-Run Report, a commit, and then **`/iyu:handoff`**, which it invokes itself — so the everyday loop is `run-cycle → /clear → resume → run-cycle` without a manual handoff in between.
 
-Before committing, run-cycle runs a **lightweight release-readiness check** — version consistency across version-bearing files, CHANGELOG coverage, doc-sync, and an evidence block of the actual test/build/lint output. It verifies and packages only; tagging, publishing, and pushing stay with the human / CI. The commit itself defaults to **one per run** (bundling beats fragmenting), splitting on **verified-cycle boundaries** only when a long run's single diff would no longer be reviewable in one pass — each cycle's passing STEP 3 is already a clean rollback point.
+Before committing, run-cycle runs a **lightweight release-readiness check** — version consistency across version-bearing files, CHANGELOG coverage, doc-sync, and an evidence block of the actual test/build/lint output. It verifies and packages only; tagging, publishing, and pushing stay with the human / CI. A release grant written into the invocation ("push+ship approved", "release if needed") is **permission, not an instruction**: cycles never release on it — except for a defect users are hitting now or an external window that closes before the run does — and a single release review after the end-of-run commit releases once if the release batch is closed. An open batch is handed over instead: the release marker, with its frozen batch, goes into the handoff's next steps, and the act waits on the owner (the next run's grant, or `/iyu:ship`). To release unconditionally, use `/iyu:ship`. The commit itself defaults to **one per run** (bundling beats fragmenting), splitting on **verified-cycle boundaries** only when a long run's single diff would no longer be reviewable in one pass — each cycle's passing STEP 3 is already a clean rollback point.
 
 Cycle accounting is relative to where the run started: Preparation derives the starting index from the existing logs and records it (with the budget) in every cycle log header, and only logs from that index onward count toward the budget — so a repo carrying logs from earlier runs can't read as already over budget and stop before doing any work. The Stop hook reads those headers, since it gets no invocation arguments of its own. It is a
 script (POSIX `sh`; Git Bash on Windows), not a model: which log is newest, how many cycles count,

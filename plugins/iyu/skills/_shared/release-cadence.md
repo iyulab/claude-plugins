@@ -1,7 +1,8 @@
 # Release cadence — when publishing belongs in the order
 
 **This file is the single definition** of how release work is *placed* relative to remaining work.
-`handoff` (deriving next scope), `run-cycle` (STEP 5), and `ship` (its precondition check) all read
+`handoff` (deriving next scope), `run-cycle` (STEP 5, and its run-end release review — §5), and
+`ship` (its precondition check) all read
 it. It answers one question: **is now the moment, or does this belong after the work that is left?**
 
 It does **not** decide a project's release policy. That varies — some projects publish on every
@@ -50,6 +51,22 @@ Before scheduling a release — or before running one — ask, in order:
 Publishing is irreversible. Surface the trade-off — what is finished, what remains, what a
 re-release would cost — and let the human choose.
 
+### The gate is a frozen batch, not the live backlog
+
+Question (1) read against the whole backlog has only two answers on a long project: "something
+remains" (so nothing ever ships) or "something is finished" (so every unit of work ships). Neither
+is a gate. So when (1) defers a release, **cut the gate**: name the remaining items that touch the
+same surface *as they are known now* — that set is the batch, and the release goes out when the batch
+closes.
+
+- **The batch is frozen at the cut.** Work discovered afterwards goes to the next batch, even when it
+  touches the same surface. The one exception is a regression the batch itself introduced — that is
+  part of closing it.
+- **A gate already written down is the one to judge against.** A later session or run that finds a
+  release marker with its batch reads whether *that* batch is closed; it does not re-cut the gate from
+  the current backlog, which would move the line every time something new is found.
+- **Write the batch at the marker**, per §4: `📦 release — after {A, B, C}; same CLI output`.
+
 ---
 
 ## 3. Project cadence declaration
@@ -90,3 +107,41 @@ So:
   backlog looks like drift.
 - Reordering is **within** what is already there. Adding, dropping, or rescoping items is separate
   work with its own rules; do not smuggle it in as a reorder.
+
+---
+
+## 5. A release grant inside a run
+
+A grant passed to `/iyu:run-cycle` alongside its budget ("push+ship 승인", "배포 승인", "release if
+needed") is **permission, not an instruction**: the run *may* release when the gate says so, and is
+not obliged to release at all. Someone who wants a release to happen invokes `/iyu:ship` — that is
+the explicit instruction, and it still runs its own §2 check.
+
+Each cycle of a run is self-contained, so each cycle's end looks like a phase boundary (§2's
+question 4). A grant read cycle by cycle therefore releases once per cycle — the most expensive
+cadence there is, for consumers and for the people who operate the release. So the grant is read
+**once per run, at its end**:
+
+1. **Cycles do not release.** A cycle that finishes something worth delivering records it and moves
+   on. Two exceptions only, and the cycle log names which one applied:
+   - **a defect users are hitting now** — an outage, a security exposure, corrupted or wrong data in
+     production — whose fix cannot wait for the run to end;
+   - **an external window with a fixed time** (a maintenance slot, a consumer's scheduled cutover)
+     that closes before the run will.
+2. **In the budget's final cycle, prefer closing over opening.** When a grant is present and the
+   batch is still open, the last cycle the budget allows picks scope that closes it over scope that
+   starts a new surface. A run that ends early ends on an exhausted frontier, so this matters only
+   for the budget-bounded end.
+3. **At run end, one release review** over everything the run left undelivered: is the tree at a
+   verified, committed state; and, by §2 with the frozen gate, is the batch closed? Closed → release
+   once, under the grant, and report what went where. Not closed → do not release, and hand the gate
+   over (4).
+4. **Hand an open gate over as an order plus an act.** The gate is not a question for the owner —
+   the run can see which batch it waits on, so it writes the release marker into `HANDOFF.md`'s
+   `## Next` at the boundary it belongs to, with the batch (§4). What the owner holds is only the act:
+   a one-line owner-gated entry in "Waiting on you" — blocker = the release gate · tried = the marker
+   · unblocks = a grant on the next run, or `/iyu:ship`, once the batch closes. The next run reads
+   that marker as the gate (§2) instead of cutting a new one.
+
+The two mid-run exceptions are the only releases a run makes before its end. Any other release in a
+cycle log is the cycle-by-cycle reading this section exists to prevent.

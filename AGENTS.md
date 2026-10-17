@@ -70,7 +70,7 @@ Traps worth restating, all hit this plugin before:
 
 ## Current Plugins
 
-### iyu (v1.43.1)
+### iyu (v1.44.0)
 
 Productivity toolkit for open-source maintainers. **Design principle**: teach Claude what is
 *different* about a project, not how to develop software — skills supply decision frameworks, Claude
@@ -97,7 +97,7 @@ copies of a rule become four rules the moment one is edited:
 | File | Defines | Read by |
 |---|---|---|
 | `continuity-docs.md` | root resolution · what belongs in each doc · hygiene pass · next-scope derivation | run-cycle, handoff, resume, backlog-discover, telemetry-az |
-| `release-cadence.md` | three stages/three costs · the placement test · cadence declaration · reorder-don't-explain | run-cycle, handoff, ship |
+| `release-cadence.md` | three stages/three costs · the placement test · the frozen-batch gate · cadence declaration · reorder-don't-explain · a run's release grant (permission, read once at run end) | run-cycle, handoff, ship |
 | `decision-briefing.md` | the entry shapes (resource-blocked incl. owner-gated act · decision-class · criterion request) · the four parts of a briefing · the guards (decide ≠ act; ask for resources and criteria, never a pick) | run-cycle, resume, ship |
 | `decision-lenses.md` | the five co-equal lenses (근본/정석/표준/세련/철학) · what is *not* a lens (scope size, request count, pre-1.0 breaking) · reversibility belongs to the act, not the edit · the four causes a pick won't form — (b)/(c) trigger bounded research, (a)/(d) turn into a criterion request | run-cycle (self-decide), resume (brief), mindset, philosophy-alignment-guide |
 

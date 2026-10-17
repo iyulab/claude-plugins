@@ -27,12 +27,18 @@ reaches **consumers and cannot be undone**. Each stage is reachable without the 
 changes. **Never bump MAJOR on your own** — that is a human decision, and if the changes appear to
 warrant one, stop and say so.
 
+**This command is the explicit instruction to release.** A grant written into a `/iyu:run-cycle`
+invocation is only permission, used once at that run's end
+([release-cadence.md §5](${CLAUDE_SKILL_DIR}/../_shared/release-cadence.md)); invoking `ship` is what
+asks for a release now.
+
 ## Step 0: Is now the moment?
 
 **Before anything else**, apply the placement test in
 **[release-cadence.md](${CLAUDE_SKILL_DIR}/../_shared/release-cadence.md) §2**: read the remaining
 backlog, and check whether unfinished work would touch the same consumer-facing surface this release
-would expose.
+would expose. If `HANDOFF.md`/`ROADMAP.md` already carries a release marker with its batch, that
+batch is the gate — judge whether it is closed rather than re-reading the whole backlog.
 
 If the test clears, say nothing and proceed — there is no question to ask.
 

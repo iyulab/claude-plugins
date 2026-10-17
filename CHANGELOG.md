@@ -8,6 +8,27 @@ bugs or docs. MAJOR is never bumped automatically.
 > History is reconstructed from git from v1.11.0 onward. Earlier versions live in
 > the git log only.
 
+## [1.44.0] — 2026-10-17
+
+### Changed
+
+- **A release grant given to `run-cycle` is permission for the run's end, not for each cycle.**
+  Cycles are self-contained, so every cycle's end looked like a phase boundary, and a run invoked
+  with "push+ship approved" could release once per cycle — the most expensive cadence for consumers
+  and for whoever operates the release. Now cycles never release on a grant, except for a defect
+  users are hitting now or an external window that closes before the run does (the cycle log names
+  which). After the end-of-run commit, a single **release review** releases once if the release
+  batch is closed; otherwise the open gate is handed over through `/iyu:handoff` — the release
+  marker goes into `## Next`, and the act waits on the owner (the next run's grant, or `/iyu:ship`).
+  In the budget's final cycle, a run holding a grant prefers scope that closes the open batch.
+  `/iyu:ship` remains the explicit instruction to release.
+- **A deferred release now waits on a frozen batch, not on the live backlog.** Read against the
+  whole backlog, "is anything left on this surface?" either never clears on a long project or clears
+  after every unit of work. `release-cadence.md` §2 now cuts the gate as the items known when the
+  release is deferred; later discoveries go to the next batch (except regressions of this batch), and
+  a marker already written down is judged as-is rather than re-cut. `handoff` and `ship` read the
+  same gate.
+
 ## [1.43.1] — 2026-10-04
 
 ### Fixed

@@ -141,7 +141,11 @@ Apply **[release-cadence.md](${CLAUDE_SKILL_DIR}/../_shared/release-cadence.md)*
   release belongs *after* it: publishing mid-phase buys a version the next few items obsolete, and
   every pushed pipeline spends a shared CI budget. Finished work that consumers are waiting on
   pushes the other way. When the two genuinely conflict, that is a decision for step 6's
-  "Waiting on you", not one to settle here.
+  "Waiting on you", not one to settle here. A deferred release gets a **frozen batch** at its
+  marker — the items known now that it waits on; an existing marker's batch is kept, not re-cut.
+- **§5, an open gate from a run** — when `/iyu:run-cycle`'s release review held a granted release
+  because its batch is open, write the marker (with the batch) into `## Next` at its boundary, and
+  the act into step 6 as a one-line owner-gated entry. The gate itself is placed, not asked about.
 - **§3** — follow the project's declared cadence; if there is none, infer it from tags and release
   history and **say that you inferred it**.
 - **§4** — the outcome is an **edit to the order in `ROADMAP.md`/`HANDOFF.md`**, with a one-line

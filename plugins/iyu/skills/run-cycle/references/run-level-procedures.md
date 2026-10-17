@@ -73,7 +73,7 @@ Record the outcome as a `## Release Readiness` block in the final cycle log:
 - Changelog: {entry present for this run, or "n/a"}
 - Docs: {doc-sync verified consistent; continuity docs lean}
 - Evidence: {e.g. `npm test` 142 passed; build ok; lint clean}
-- Tag/publish: deferred to human/CI (not performed)
+- Tag/publish: {no grant — deferred to human/CI | grant — decided at the release review below}
 ```
 
 Then:
@@ -83,15 +83,40 @@ Then:
 - Commit with `git` directly, following the project's message convention. If the session has a
   commit skill available (`/commit` ships in some plugin sets, not in Claude Code itself), use it
   instead of hand-rolling the message
-- **Do NOT perform the release** — no tagging, publishing, or pushing. A run ends at a commit; taking
-  the work out is a separate, human-initiated decision (`/iyu:ship`, or the project's own path)
-  because pushing spends CI budget and publishing cannot be undone. If the run left the project at a
-  point worth releasing, say so in the End-of-Run Report and stop there
+- **The commit is not a release.** Without a release grant in the invocation, no tagging,
+  publishing, or pushing: taking the work out is a separate, human-initiated decision (`/iyu:ship`,
+  or the project's own path) because pushing spends CI budget and publishing cannot be undone. If the
+  run left the project at a point worth releasing, say so in the End-of-Run Report and stop there.
+  With a grant, the release review below decides — and nothing else in the run does
 - **NEVER bump MAJOR version**
+
+## Release review (only with a release grant)
+
+A grant recorded in the first cycle log's Re-plan is permission, read here once
+([release-cadence.md §5](../../_shared/release-cadence.md)). After the commit, before the handoff:
+
+1. **Gather what the run left undelivered** — the commits since the last release, and any release
+   the run already made under a §5 exception (those are delivered; they are not a reason to release
+   again).
+2. **Find the gate.** A release marker already in `HANDOFF.md`/`ROADMAP.md` with its batch is the
+   gate — judge against it. No marker → cut one now by §2: the remaining items, as known now, that
+   touch the same consumer-facing surface.
+3. **Decide.** The tree must be at a verified, committed state (an in-progress scope is not), and
+   the batch must be closed. Both hold → release once, by the project's own release path or
+   `/iyu:ship`'s stages, under the grant; the grant replaces `ship`'s Step 0 question, not its CI
+   watch. Either fails → do not release.
+4. **Record.** Append one line to this run's block in `RUN-SUMMARY-{date}.md`: `Release review:
+   released {what → where}` or `Release review: held — gate {batch} open`. An open gate goes to
+   `/iyu:handoff` as the release marker in `## Next` plus a one-line owner-gated act — §5(4); write
+   both there, not here.
+
+The End-of-Run Report, written before this review, lists in its progress part each mid-run release
+with the exception it used; the review's line completes the count. More than one release in a run is
+worth a reader's second look.
 
 ## Handoff
 
-After the commit, invoke **`/iyu:handoff`** with the `Skill` tool — on every termination path, the
+After the commit (and the release review, when there is one), invoke **`/iyu:handoff`** with the `Skill` tool — on every termination path, the
 same as the report and the commit. The run's cycles kept the continuity docs current one cycle at a
 time; the handoff turns the run's end state into the `HANDOFF.md` a fresh context resumes from: the
 report's deferred (L2) decisions become flagged "Waiting on you" entries, its self-made (L1)
