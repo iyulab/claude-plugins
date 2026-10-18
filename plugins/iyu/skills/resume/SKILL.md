@@ -164,6 +164,20 @@ step 4 left there: a flag that got decided moves out (its gated act, if any, sta
 resource-blocked entry pointing at the decision); criterion requests go in. Do this now, not at the
 next `/iyu:handoff` — a session that ends first must not lose it.
 
+Every entry left standing keeps its **Registered** date and **Blocks** line from `/iyu:handoff`
+(a new one gets today's date) and gains the two lines only this step can write:
+
+- **Default** — what stands while the owner has not answered: the provisional decision the entry
+  waits on, or, for a criterion request, the decision taken under the proposed criterion.
+- **Meanwhile** — what work proceeds without it, and what does not. **Never the gated act itself**:
+  silence does not run a push, a release, or an issue registration (rule 3), so "on no reply: publish"
+  is not a Meanwhile line.
+
+When the project keeps a decision ledger
+([continuity-docs.md §2](${CLAUDE_SKILL_DIR}/../_shared/continuity-docs.md)), each decision goes
+into it as well, in the ledger's own form, and `## Decided this session` carries its ID and the
+to-correct line rather than a second copy of the entry.
+
 **A reorder is applied to `## Next` itself, in the same edit** — self-decided or owner-confirmed.
 Rewrite that section into the decided order (keeping the 코드/비코드 split), and mark the
 `## Decided this session` entry as applied.
@@ -206,7 +220,8 @@ the owner answers with feedback instead, handle it per step 5's feedback rules, 
 
 ## Rules
 
-1. **`HANDOFF.md` is the only file this skill writes.** It never migrates `ROADMAP.md` →
+1. **`HANDOFF.md` is the only file this skill writes** — plus the project's decision ledger, when
+   its instructions define one, for the decisions step 4 made. It never migrates `ROADMAP.md` →
    `HISTORY.md`, never touches `ROADMAP.md`, `CLAUDE.md`, or `AGENTS.md`, and never runs
    `/iyu:handoff`'s hygiene pass. Inside `HANDOFF.md` it writes exactly three things (step 5):
    `## Decided this session` entries, `## Next` (a decided reorder, and any criterion-persistence

@@ -101,7 +101,9 @@ every completed item out of `ROADMAP.md` (including pre-existing leftovers) into
 `STRANDS.md` (the same transition procedure `run-cycle` applies per cycle, applied here per this
 closing session — record the unit as `session-{YYYY-MM-DD}`, counted once per the rule in §3 step 4,
 so a second handoff the same day and a handoff at the end of a run add nothing) then compress it (archiving overflow
-past its live window; `## 진행 중`/`## 중단됨` are never archived), keep the `> History:` link.
+past its live window; `## 진행 중`/`## 중단됨` are never archived), keep the `> History:` link —
+then run the structural checks (continuity-docs.md §7) on the result. Run them again after steps 5–6 have written
+their part, before ## Commit: an error-class failure is fixed, never committed.
 
 This is the step that makes the skill worth running repeatedly. The docs converge toward
 remaining-work-only on their own, without anyone scheduling a cleanup. It is also what keeps
@@ -180,7 +182,8 @@ entry shapes — but stop at naming, not briefing:
 
 - **Resource-blocked** entries keep their short factual form (§1): blocker · what was tried · what
   would unblock it. This is a fact, not a decision, so it is written here in full, same as always.
-- **Decision-class** entries get **one line only**: the decision, phrased so it can be answered.
+- **Decision-class** entries get **one line** — plus the two facts every entry carries (below): the
+  decision, phrased so it can be answered.
   **Do not generate options, a cross-lens read, or a recommendation here** — that analysis is
   `/iyu:resume`'s job, done fresh against the repo as it stands when someone is actually about to act
   on it, rather than produced now and left to stale until then. The flag is a placeholder for
@@ -202,6 +205,18 @@ entry shapes — but stop at naming, not briefing:
 
 If the project already uses decision IDs (`HD-01`, `D-03`, …), continue that numbering rather than
 starting a scheme of your own.
+
+**Every entry, whatever its shape, carries two facts** — they are what lets a reader see what a
+gate holds up and how long it has stood, and neither is briefing:
+
+- **Registered** — the date the entry first appeared. A carried-forward entry keeps its original
+  date through every rewrite; resetting it hides exactly the gates that have waited longest.
+- **Blocks** — the `## Next` / `ROADMAP.md` items that cannot move until it clears, by ID or title.
+  "Nothing" is a valid answer and worth knowing.
+
+An entry that clears leaves the section — `HANDOFF.md` is current state, so removal is the
+resolution, and the outcome goes where §2 of continuity-docs.md homes it. `/iyu:resume` adds
+**Default** and **Meanwhile** to the entries it leaves standing; do not write them here.
 
 ## Output
 
@@ -227,19 +242,23 @@ emergent candidate. Anchored to a ROADMAP phase. One session's worth.}
 two shapes below: the first decision-class (flagged, not briefed — `/iyu:resume` briefs and decides it), the
 second resource-blocked.}
 
-### {HD-01} {the decision, in one line — that is all; `/iyu:resume` briefs and decides this next}
+### {HD-01} {the decision, in one line — no options, no recommendation; `/iyu:resume` briefs and decides this next}
+- **Registered**: {YYYY-MM-DD} · **Blocks**: {item IDs, or "nothing"}
 
 ### {HD-02} {what is blocked}
+- **Registered**: {YYYY-MM-DD} · **Blocks**: {item IDs, or "nothing"}
 - **Blocker**: {the missing credential / access / dependency}
 - **Tried**: {what was actually attempted}
-- **Unblocks it**: {the specific thing you need}
+- **Unblocks**: {the specific thing you need}
 
 ## Decided this session
-{Reversible self-made decisions: decision · trade-off · to correct. Or "None".}
+{Reversible self-made decisions: decision · trade-off · to correct. Or "None". When the project
+keeps a decision ledger, the entry IDs and a link instead (continuity-docs.md §2).}
 
 ## State of play
 {Build/test/lint status with the actual output, or explicitly "unverified". Branch, the **post-commit**
-`git status` (see ## Commit below) — "clean", or the specific files still uncommitted and why.}
+`git status` (see ## Commit below) — "clean", or the specific files still uncommitted and why.
+Structural checks (continuity-docs.md §7): "passed", or each warning and unrepairable failure by code.}
 ```
 
 Plus: `ROADMAP.md` with completed work removed (hygiene pass) **and its remaining phases in the

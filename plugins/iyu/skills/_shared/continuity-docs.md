@@ -1,6 +1,6 @@
 # Continuity docs — the shared contract
 
-**Contents** — 1. Resolving the continuity root · 2. What belongs in each document · 3. Hygiene pass · 4. Deriving next scope · 5. Output language · 6. Session-boundary inbox check
+**Contents** — 1. Resolving the continuity root · 2. What belongs in each document · 3. Hygiene pass · 4. Deriving next scope · 5. Output language · 6. Session-boundary inbox check · 7. Structural checks
 
 **This file is the single definition** of where a project's dev-tracking documents live and what
 belongs in each. `run-cycle`, `handoff`, `resume`, `backlog-discover`, and `telemetry-az` all read it.
@@ -97,6 +97,19 @@ grow monotonically until "what's left?" is buried under "what's done".
 | `HISTORY.md` | A pure index, newest first, one compressed entry per completed phase | Detail — cycle logs and git history are the record |
 | `STRANDS.md` | Which dominant strand each cycle or session served, and interruption/resume transitions | Task detail (cycle logs own that), issues (issues/ owns that), completed-work narrative (HISTORY.md owns that), a session's current-vs-next snapshot (HANDOFF.md owns that — STRANDS.md is the cumulative cross-session record HANDOFF.md deliberately does not keep) |
 
+**Every fact has one home.** The documents above overlap in subject, so each kind of fact is
+written in exactly one place; every other document cites its ID or links to it and never restates
+it. A restated copy is accurate the day it is written and drifts from then on — the reader then has
+two answers and no way to tell which is current.
+
+| Fact | Its one home | Elsewhere |
+|---|---|---|
+| Remaining work and its phase order | `ROADMAP.md` | `HANDOFF.md` `## Next` holds the next session's slice of it, by reference |
+| What waits on a human — owner-gated acts, resource blocks, criterion requests | `HANDOFF.md` `## Waiting on you` | cited by ID (`HD-03`) |
+| Decisions and their review state | the project's decision ledger, when its instructions define one; otherwise `HANDOFF.md` `## Decided this session` | with a ledger, `HANDOFF.md` carries the entry IDs, a count and the link — not the entries |
+| Open and interrupted strands | `STRANDS.md` | — |
+| Completed work, released versions | `HISTORY.md` — or, for versions, the project's own release record (`CHANGELOG.md`, tags) when it keeps one | linked, never re-listed |
+
 **`STRANDS.md` and `HISTORY.md` are the two continuity docs with no other structural size ceiling.**
 `HANDOFF.md` is rewritten current+next every time and `ROADMAP.md` only holds what remains — both
 self-bound. `STRANDS.md`'s `## 중단됨` entries persist until a human retires them, and `HISTORY.md`
@@ -126,6 +139,12 @@ docs cycle. `STRANDS.md` format:
 
 `{unit}` is written literally as `cycle-{NN}` (when `run-cycle` writes it) or `session-{YYYY-MM-DD}`
 (when `handoff` writes it) — never a bare number, so provenance survives the merge.
+
+**An entry is its one line.** Nothing is written beneath it — no per-cycle progress, no running
+tally of what each run did. That is a chronology, and its home is the cycle logs and `HISTORY.md`;
+appended under a strand, it is how a ledger grows to tens of kilobytes while still holding only a
+handful of strands. The entry's own fields (`시작`, `최근`, `누적`) are the whole record a strand
+needs here. STRANDS takes no "current" or "next" field either — that is `HANDOFF.md`'s snapshot.
 
 Every other reference to these sections, in any file, uses the short prefix shown above without
 the parenthetical (`## 진행 중` / `## 중단됨` / `## 완료·졸업`) — this is the established
@@ -207,13 +226,15 @@ Apply whenever continuity docs are written — every `run-cycle` STEP 5, every `
    `backlog-discovery/` proposals and never infers a retirement from an unreviewed one.
 5. **Link line** — keep `> History: [HISTORY.md](HISTORY.md)` at the top of each continuity doc
    (create on first migration) so history stays one hop away.
-6. **Size signal (soft)** — a continuity doc still long (~200+ lines) *after* migration means detail
-   is living at the wrong layer: split phase detail into `<root>/plans/` and leave links. A judgment
-   signal, not a hard rule. Does not apply to `STRANDS.md`/`HISTORY.md` — steps 2 and 4 already give
-   those two a hard live-window + archive mechanism, since they are the only two continuity docs
-   with no other structural size ceiling (see §2's caveat).
+6. **Size signal** — a continuity doc or entry over its §7 `L01` budget *after* migration means
+   detail is living at the wrong layer: split phase detail into `<root>/plans/` and leave links.
+   Budgets are in characters, not lines — a single line can carry thousands of characters.
+7. **Run the structural checks** (§7) on the docs as this pass leaves them, and fix what fails.
 
-Hygiene is doc upkeep. It never gates termination and never blocks a run.
+Hygiene is doc upkeep. It never gates a run's termination: inside `run-cycle` a failed check is
+fixed in the same pass or carried into the next one, and the run goes on. Only `handoff` — the step
+that hands the docs to a reader who was not there — refuses to finish on an error-class failure
+(§7).
 
 ---
 
@@ -291,3 +312,46 @@ reflected where that item is tracked. **Record the check even when it finds noth
 not treated as empty and not a blocker.
 
 No such definition → skip without comment. This plugin names no tracker and assumes none.
+
+---
+
+## 7. Structural checks
+
+The rules above already set ceilings — a 30-entry `HISTORY.md`, a 10-entry `## 완료·졸업`, a
+`ROADMAP.md` free of completed work. Stated as advice, they erode: a cap that nothing checks is
+passed one entry at a time, and a "remaining work" roadmap ends up holding more completed checkboxes
+than open ones. So the hygiene pass ends by **checking** the docs it leaves, not by trusting that it
+followed itself. The codes are stable — a future lint script reports the same ones.
+
+**Error class** — fix before the hygiene pass is done. `handoff` does not commit or report while
+one fails.
+
+| Code | Check | The fix |
+|---|---|---|
+| `L04` | No completed item remains in `ROADMAP.md` or in `HANDOFF.md`'s `## In flight` / `## Next` — no `[x]`, no item marked done | migrate it (§3 step 1) |
+| `L05` | Every `## Waiting on you` entry carries `Registered` and `Blocks`; a resource-blocked entry also `Blocker` · `Tried` · `Unblocks` | add the missing field from the evidence; a date you cannot recover is today's, marked `(recovered)` |
+| `L07` | Every relative link in a continuity doc resolves | correct the path, or drop the link if its target is gone |
+| `L10` | `HISTORY.md` ≤ 30 live entries · `## 완료·졸업` ≤ 10 entries · each of the three `STRANDS.md` heading lines occurs exactly once · no `STRANDS.md` entry has lines beneath it | archive the overflow (§3 steps 2, 4). Lines under a strand entry are relocated to the current `STRANDS-ARCHIVE-{NN}.md` under the strand's name — relocated, never deleted. A missing or duplicated heading is the one failure not to repair (§3 step 4): report it |
+
+**Warn class** — report, never block.
+
+| Code | Check |
+|---|---|
+| `L01` | Character budgets: an item or entry 1,200 · a `STRANDS.md` entry 800 · the `Updated` line 300 · `ROADMAP.md` 60 KB · `HANDOFF.md` 30 KB · `STRANDS.md` 12 KB |
+| `L06` | A document restates a fact whose home (§2) is another document, and the two differ |
+| `L08` | A `## Waiting on you` entry registered more than 14 days ago — the gate is going stale; say so where the owner reads it first |
+
+**What a failure means where:**
+
+- **`handoff`** — fix every error-class failure before its commit. One the rules forbid fixing
+  (a duplicated `STRANDS.md` heading) is reported as the first line of `## State of play`, not
+  silently passed. Warnings go in `## State of play` too.
+- **`run-cycle`** — fix what the pass can fix in the same STEP 5. Anything left is carried as a
+  Carry-Forward item; the run is never stopped by it.
+- **A check that cannot be evaluated** — a format this section does not recognize, an unreadable
+  file — counts as passed and is reported as unchecked. Every failure to reach a verdict fails toward
+  finishing: a missed check is caught by the next pass, a handoff that cannot finish strands the
+  session.
+
+A `HANDOFF.md` in a project's own older narrative layout (not the five sections `handoff` writes)
+is not checked against `L04`/`L05` until a `handoff` rewrites it; report it once as unstructured.

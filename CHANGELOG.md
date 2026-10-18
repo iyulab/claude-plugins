@@ -8,6 +8,29 @@ bugs or docs. MAJOR is never bumped automatically.
 > History is reconstructed from git from v1.11.0 onward. Earlier versions live in
 > the git log only.
 
+## [Unreleased]
+
+### Changed
+
+- **The hygiene pass now ends with structural checks, and `handoff` will not finish on an error.**
+  The continuity docs already had ceilings — a 30-entry `HISTORY.md`, a 10-entry `## 완료·졸업`,
+  a `ROADMAP.md` free of completed work — but nothing checked them, so they were passed one entry at
+  a time. `continuity-docs.md` §7 defines stable codes: error-class checks (no completed item left
+  in `ROADMAP.md`/`HANDOFF.md`, every `## Waiting on you` entry complete, relative links resolve,
+  live-window caps and `STRANDS.md` shape) must be fixed before `handoff` commits; size budgets, a
+  restated fact that disagrees with its home, and gates older than 14 days are warnings. Budgets are
+  in characters, not lines. `run-cycle` runs the same checks each cycle and never stops on them; a
+  check that cannot be evaluated counts as passed and is reported as unchecked.
+- **Each kind of fact has one home** (`continuity-docs.md` §2): remaining work in `ROADMAP.md`,
+  what waits on a human in `HANDOFF.md`, decisions in the project's decision ledger when it keeps
+  one (otherwise `## Decided this session`), strands in `STRANDS.md`, completed work and versions in
+  `HISTORY.md` or the project's release record. Other documents cite or link.
+- **`## Waiting on you` entries carry `Registered` and `Blocks`.** `handoff` writes both and keeps a
+  carried entry's original date; `resume` adds `Default` (what stands without an answer) and
+  `Meanwhile` (what proceeds — never the gated act). Decision-class flags stay unbriefed.
+- **A `STRANDS.md` entry is one line.** Progress written beneath an entry is a chronology that
+  belongs in cycle logs and `HISTORY.md`; the checks relocate such lines to the strand archive.
+
 ## [1.44.0] — 2026-10-17
 
 ### Changed
