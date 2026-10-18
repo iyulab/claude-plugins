@@ -1,0 +1,10 @@
+{
+  "why": "a resource-blocked entry (it has a Blocker) also needs Tried and Unblocks",
+  "exit": 1,
+  "verdicts": {
+    "L05": "FAIL"
+  },
+  "contains": [
+    "missing Tried: HD-02"
+  ]
+}

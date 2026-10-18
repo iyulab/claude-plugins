@@ -1,0 +1,11 @@
+{
+  "why": "an item over 1,200 characters is a warning, never a failure",
+  "exit": 0,
+  "verdicts": {
+    "L01": "WARN"
+  },
+  "contains": [
+    "ROADMAP.md:7  item of 1,3",
+    "Result: PASS (warnings: L01; unchecked: L06)"
+  ]
+}

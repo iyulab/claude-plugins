@@ -1,0 +1,7 @@
+{
+  "why": "a done mark in the middle of an open item marks a sub-piece, not the item: not counted",
+  "exit": 0,
+  "notContains": [
+    "completed item:"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "why": "an Updated line over 300 characters is a warning",
+  "exit": 0,
+  "verdicts": {
+    "L01": "WARN"
+  },
+  "contains": [
+    "HANDOFF.md:3  Updated line of"
+  ]
+}

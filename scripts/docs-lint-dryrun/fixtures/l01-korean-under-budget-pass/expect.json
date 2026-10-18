@@ -1,0 +1,7 @@
+{
+  "why": "budgets count characters, not bytes: a Korean item of ~1,000 characters (~2,700 bytes) passes",
+  "exit": 0,
+  "notContains": [
+    "item of"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "why": "a checked item under HANDOFF.md ## Next is a completed item",
+  "exit": 1,
+  "verdicts": {
+    "L04": "FAIL"
+  },
+  "contains": [
+    "completed item in ## Next: 3. [x] Release notes"
+  ]
+}

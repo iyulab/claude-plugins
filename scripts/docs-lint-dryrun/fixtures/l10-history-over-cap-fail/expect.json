@@ -1,0 +1,10 @@
+{
+  "why": "HISTORY.md with 31 live entries is over its 30-entry window",
+  "exit": 1,
+  "verdicts": {
+    "L10": "FAIL"
+  },
+  "contains": [
+    "HISTORY.md  31 live entries (cap 30) - archive the oldest 1"
+  ]
+}

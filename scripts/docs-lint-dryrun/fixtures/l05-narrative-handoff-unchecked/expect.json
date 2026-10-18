@@ -1,0 +1,12 @@
+{
+  "why": "a HANDOFF.md not in the handoff format is not guessed at: L05 and L08 are unchecked",
+  "exit": 0,
+  "verdicts": {
+    "L05": "UNCHECKED",
+    "L08": "UNCHECKED"
+  },
+  "contains": [
+    "unchecked: HANDOFF.md - no ## In flight / ## Next / ## Waiting on you heading",
+    "Result: PASS (unchecked: L05, L06, L08; partly unchecked: L04)"
+  ]
+}

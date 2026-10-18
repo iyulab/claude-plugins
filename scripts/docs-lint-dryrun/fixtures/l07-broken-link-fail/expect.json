@@ -1,0 +1,15 @@
+{
+  "why": "a relative link whose target is gone fails L07",
+  "exit": 1,
+  "verdicts": {
+    "L07": "FAIL"
+  },
+  "contains": [
+    "HANDOFF.md:6  link does not resolve: plans/streaming.md"
+  ],
+  "notContains": [
+    "nope.md",
+    "example.com",
+    "in-flight"
+  ]
+}

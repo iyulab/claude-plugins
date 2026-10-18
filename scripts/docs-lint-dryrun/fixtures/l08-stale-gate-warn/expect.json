@@ -1,0 +1,12 @@
+{
+  "why": "a ## Waiting on you entry registered more than 14 days ago is a warning",
+  "exit": 0,
+  "verdicts": {
+    "L08": "WARN"
+  },
+  "contains": [
+    "registered 2026-10-10, 22 days ago (over 14): HD-01",
+    "registered 2026-10-12, 20 days ago"
+  ],
+  "today": "2026-11-01"
+}

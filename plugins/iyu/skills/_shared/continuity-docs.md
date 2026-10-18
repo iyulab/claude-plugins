@@ -229,7 +229,8 @@ Apply whenever continuity docs are written — every `run-cycle` STEP 5, every `
 6. **Size signal** — a continuity doc or entry over its §7 `L01` budget *after* migration means
    detail is living at the wrong layer: split phase detail into `<root>/plans/` and leave links.
    Budgets are in characters, not lines — a single line can carry thousands of characters.
-7. **Run the structural checks** (§7) on the docs as this pass leaves them, and fix what fails.
+7. **Run the structural checks** (§7) on the docs as this pass leaves them — run the script,
+   `sh <this directory>/scripts/docs-lint.sh <root>` — and fix what fails.
 
 Hygiene is doc upkeep. It never gates a run's termination: inside `run-cycle` a failed check is
 fixed in the same pass or carried into the next one, and the run goes on. Only `handoff` — the step
@@ -283,7 +284,10 @@ language — a document should not fragment into two languages across one hygien
 **Exception — literal machine-matched tokens stay in English, unmodified, regardless of session
 language:** `HUMAN-NEEDED:`, `BLOCKED-ITEM:`, `FRONTIER-OPEN:`, `FRONTIER-EXHAUSTED:`, and decision
 IDs (`HD-01`, `D-03`). The Stop hook and cross-run references match these as literal strings; the
-label after the colon, and the rest of the entry, still follows the sentence above.
+label after the colon, and the rest of the entry, still follows the sentence above. The same holds
+for what the structural-check script matches (§7): `HANDOFF.md`'s `## In flight`, `## Next` and
+`## Waiting on you` headings (a translation may follow in parentheses or after them) and the
+`Registered`, `Blocks`, `Blocker`, `Tried` and `Unblocks` field labels.
 
 ---
 
@@ -321,7 +325,15 @@ The rules above already set ceilings — a 30-entry `HISTORY.md`, a 10-entry `##
 `ROADMAP.md` free of completed work. Stated as advice, they erode: a cap that nothing checks is
 passed one entry at a time, and a "remaining work" roadmap ends up holding more completed checkboxes
 than open ones. So the hygiene pass ends by **checking** the docs it leaves, not by trusting that it
-followed itself. The codes are stable — a future lint script reports the same ones.
+followed itself. The codes are stable.
+
+**The checks are a script: `scripts/docs-lint.sh <root>`**, beside this file. It takes the root
+already resolved (§1), only reads, and prints one verdict per code in the order below — `PASS`,
+`FAIL` (error class), `WARN` (warn class) or `UNCHECKED` — each followed by its findings with file
+and line, then a `Result:` line. It exits 1 only when an error-class check found a violation. Read
+its report rather than re-checking by eye; a report without a `Result:` line means the script did
+not finish, so every code counts as unchecked. Only where `sh` cannot run at all are the checks
+applied by reading.
 
 **Error class** — fix before the hygiene pass is done. `handoff` does not commit or report while
 one fails.
@@ -337,8 +349,8 @@ one fails.
 
 | Code | Check |
 |---|---|
-| `L01` | Character budgets: an item or entry 1,200 · a `STRANDS.md` entry 800 · the `Updated` line 300 · `ROADMAP.md` 60 KB · `HANDOFF.md` 30 KB · `STRANDS.md` 12 KB |
-| `L06` | A document restates a fact whose home (§2) is another document, and the two differ |
+| `L01` | Character budgets: an item or entry 1,200 · a `STRANDS.md` entry 800 · the `Updated` line 300 · `ROADMAP.md` 60,000 · `HANDOFF.md` 30,000 · `STRANDS.md` 12,000 |
+| `L06` | A document restates a fact whose home (§2) is another document, and the two differ. Telling a restatement from a citation takes reading, so the script always reports this one `UNCHECKED` and the pass judges it |
 | `L08` | A `## Waiting on you` entry registered more than 14 days ago — the gate is going stale; say so where the owner reads it first |
 
 **What a failure means where:**
@@ -356,3 +368,11 @@ one fails.
 `L04` reads what the document marks as done — checkboxes, a done status, a completion mark in a
 table row. A `ROADMAP.md` written as prose that marks nothing is not guessed at: report it once as
 unchecked under `L04`, and let the next migration that touches it bring it into a checkable shape.
+The script counts a checked box, a done mark (✅ ✔ ☑) that opens an item or heading, and a table
+cell holding nothing but a done mark or word. A mark mid-line usually records a finished sub-piece;
+the script leaves it to the pass, which removes it under the `L04` fix above.
+
+The script matches the handoff's section headings (`## In flight`, `## Next`, `## Waiting on you`)
+and entry fields (`Registered`, `Blocks`, `Blocker`, `Tried`, `Unblocks`) as literal English
+tokens (§5), `STRANDS.md`'s three headings by their exact text (§2), and `HISTORY.md` entries in
+the §2 `- **{YYYY-MM-DD}**` form; a `HISTORY.md` with no entry in that form is reported unchecked.

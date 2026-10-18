@@ -1,0 +1,8 @@
+{
+  "why": "a tidy root: every check passes, URLs, anchors and code spans are not checked as links; L06 is always unchecked (it needs reading)",
+  "exit": 0,
+  "contains": [
+    "Result: PASS (unchecked: L06)",
+    "unchecked: needs reading"
+  ]
+}

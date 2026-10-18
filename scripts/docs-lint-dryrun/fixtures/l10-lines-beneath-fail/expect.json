@@ -1,0 +1,10 @@
+{
+  "why": "a line under a strand entry breaks the one-line entry rule",
+  "exit": 1,
+  "verdicts": {
+    "L10": "FAIL"
+  },
+  "contains": [
+    "STRANDS.md:6  line beneath the strand entry at line 5"
+  ]
+}

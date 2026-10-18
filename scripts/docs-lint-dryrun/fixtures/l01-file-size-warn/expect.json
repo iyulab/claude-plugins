@@ -1,0 +1,13 @@
+{
+  "why": "STRANDS.md over 12,000 characters is a warning (each entry stays under 800)",
+  "exit": 0,
+  "verdicts": {
+    "L01": "WARN"
+  },
+  "contains": [
+    "characters (budget 12,000)"
+  ],
+  "notContains": [
+    "strand entry of"
+  ]
+}

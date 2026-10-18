@@ -1,0 +1,10 @@
+{
+  "why": "a decision-class entry without Registered fails L05",
+  "exit": 1,
+  "verdicts": {
+    "L05": "FAIL"
+  },
+  "contains": [
+    "missing Registered: HD-01"
+  ]
+}

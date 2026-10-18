@@ -1,0 +1,8 @@
+{
+  "why": "a HISTORY.md without dated entries is not counted: unchecked, and L10 still passes on STRANDS.md",
+  "exit": 0,
+  "contains": [
+    "unchecked: HISTORY.md - no \"- **YYYY-MM-DD**\" entries",
+    "partly unchecked: L10"
+  ]
+}

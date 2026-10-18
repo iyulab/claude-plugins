@@ -10,6 +10,20 @@ bugs or docs. MAJOR is never bumped automatically.
 
 ## [Unreleased]
 
+### Added
+
+- **The structural checks are a script: `_shared/scripts/docs-lint.sh <root>`.** It runs the
+  `continuity-docs.md` §7 checks by code — completed items left in `ROADMAP.md`/`HANDOFF.md`
+  (`L04`), incomplete `## Waiting on you` entries (`L05`), broken relative links (`L07`),
+  live-window caps and `STRANDS.md` shape (`L10`), character budgets (`L01`) and gates older than
+  14 days (`L08`) — and prints a verdict per code with file and line. It only reads, exits 1 only on
+  an error-class violation, and reports anything it cannot judge as `UNCHECKED` rather than failing:
+  a prose roadmap, a handoff in another format, a history without dated entries. `L06` needs reading
+  and is always left to the pass. The hygiene pass, `handoff` step 3 and `run-cycle`'s hygiene now
+  run the script instead of checking by eye; the error semantics are unchanged. `L01`'s file budgets
+  are now stated in characters (60,000 · 30,000 · 12,000), and the handoff headings and
+  `## Waiting on you` field labels the script matches are literal English tokens (§5).
+
 ### Changed
 
 - **The hygiene pass now ends with structural checks, and `handoff` will not finish on an error.**

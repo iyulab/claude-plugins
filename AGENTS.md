@@ -100,6 +100,7 @@ copies of a rule become four rules the moment one is edited:
 | `release-cadence.md` | three stages/three costs · the placement test · the frozen-batch gate · cadence declaration · reorder-don't-explain · a run's release grant (permission, read once at run end) | run-cycle, handoff, ship |
 | `decision-briefing.md` | the entry shapes (resource-blocked incl. owner-gated act · decision-class · criterion request) · the four parts of a briefing · the guards (decide ≠ act; ask for resources and criteria, never a pick) | run-cycle, resume, ship |
 | `decision-lenses.md` | the five co-equal lenses (근본/정석/표준/세련/철학) · what is *not* a lens (scope size, request count, pre-1.0 breaking) · reversibility belongs to the act, not the edit · the four causes a pick won't form — (b)/(c) trigger bounded research, (a)/(d) turn into a criterion request | run-cycle (self-decide), resume (brief), mindset, philosophy-alignment-guide |
+| `scripts/docs-lint.sh` | the §7 structural checks of `continuity-docs.md` as a read-only script — verdict per code, exit 1 only on an error-class violation, `UNCHECKED` whenever no verdict is reached | handoff, run-cycle (through `continuity-docs.md` §3 step 7) |
 
 The four canonical philosophy dimensions live only in
 `skills/mindset/references/philosophy-alignment-guide.md`.
@@ -150,6 +151,10 @@ The four canonical philosophy dimensions live only in
    fixtures that reach it, and passes a fixture only when every repeat does. Run the deterministic
    suite after any hook change and `-LiveAudit` after editing the audit prompt. A failure mode no
    fixture catches gets a fixture, and removing the gate it protects should make that fixture fail.
+   `_shared/scripts/docs-lint.sh` follows the same rules — it reads and never writes, a check that
+   reaches no verdict passes as `UNCHECKED`, one awk scans every document — and has its own suite,
+   `scripts/docs-lint-dryrun/`, one fixture per sub-check, every code's verdict asserted. Run it after
+   any change to the script or to the rules in `continuity-docs.md` §7 it implements.
 9. **A skill's `description`/`when_to_use` is behavior, and the trigger evals are its test.** A
    model-invoked skill that is never chosen does nothing — `mindset` sat at 0/3 until its description
    said what it does and when. After editing either field, run

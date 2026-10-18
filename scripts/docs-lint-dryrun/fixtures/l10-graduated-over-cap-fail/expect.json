@@ -1,0 +1,10 @@
+{
+  "why": "11 entries under ## 완료·졸업 is over its 10-entry window",
+  "exit": 1,
+  "verdicts": {
+    "L10": "FAIL"
+  },
+  "contains": [
+    "STRANDS.md  11 entries under ## 완료·졸업 (cap 10) - archive the oldest 1"
+  ]
+}

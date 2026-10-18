@@ -1,0 +1,10 @@
+{
+  "why": "a duplicated STRANDS.md heading is reported, never repaired",
+  "exit": 1,
+  "verdicts": {
+    "L10": "FAIL"
+  },
+  "contains": [
+    "STRANDS.md  heading \"## 중단됨\" occurs 2 times (expected 1) - report it, do not repair"
+  ]
+}

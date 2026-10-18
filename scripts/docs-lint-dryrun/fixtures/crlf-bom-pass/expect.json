@@ -1,0 +1,8 @@
+{
+  "why": "CRLF line ends and a UTF-8 BOM change nothing: headings, sections and fences are still recognized",
+  "exit": 0,
+  "contains": [
+    "Result: PASS (unchecked: L06)"
+  ],
+  "crlf": true
+}

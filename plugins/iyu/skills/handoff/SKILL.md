@@ -102,8 +102,11 @@ every completed item out of `ROADMAP.md` (including pre-existing leftovers) into
 closing session — record the unit as `session-{YYYY-MM-DD}`, counted once per the rule in §3 step 4,
 so a second handoff the same day and a handoff at the end of a run add nothing) then compress it (archiving overflow
 past its live window; `## 진행 중`/`## 중단됨` are never archived), keep the `> History:` link —
-then run the structural checks (continuity-docs.md §7) on the result. Run them again after steps 5–6 have written
-their part, before ## Commit: an error-class failure is fixed, never committed.
+then run the structural checks (continuity-docs.md §7) on the result by running the script:
+`sh "${CLAUDE_SKILL_DIR}/../_shared/scripts/docs-lint.sh" <root>`. Run it again after steps 5–6
+have written their part, before ## Commit: an error-class failure (`FAIL`, exit 1) is fixed, never
+committed. Its `WARN` and `UNCHECKED` lines, and any failure the rules forbid repairing, go in
+`## State of play`.
 
 This is the step that makes the skill worth running repeatedly. The docs converge toward
 remaining-work-only on their own, without anyone scheduling a cleanup. It is also what keeps

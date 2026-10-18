@@ -1,0 +1,13 @@
+# ROADMAP
+> History: [HISTORY.md](HISTORY.md)
+
+## Phase 2 — Export pipeline
+- [ ] Streaming writer for large sheets — detail in [plans/export.md](plans/export.md)
+- [ ] Column type inference — date probe ✅, numeric probe remains
+
+## Phase 3 — Plugin API
+- [ ] Stable extension points
+
+```markdown
+- [x] an example inside a fence is not an item
+```

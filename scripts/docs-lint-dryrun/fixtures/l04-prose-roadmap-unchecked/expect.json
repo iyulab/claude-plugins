@@ -1,0 +1,8 @@
+{
+  "why": "a ROADMAP.md that marks nothing is not guessed at: reported unchecked, and L04 still passes on HANDOFF.md",
+  "exit": 0,
+  "contains": [
+    "unchecked: ROADMAP.md - marks nothing",
+    "Result: PASS (unchecked: L06; partly unchecked: L04)"
+  ]
+}

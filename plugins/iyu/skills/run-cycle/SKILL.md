@@ -396,8 +396,9 @@ Two things specific to running it inside a cycle: `HISTORY.md` and `STRANDS.md` 
 run's `cycle-{NN}` as their unit (`continuity-docs.md §3` step 4 — `handoff` instead records
 `session-{YYYY-MM-DD}`), and hygiene **never gates termination** — it is doc upkeep inside STEP 5 and
 the doc-sync floor, not a completion criterion, and it adds nothing to the Stop-hook logic. Its
-structural checks (§7) still run every cycle: what fails is fixed in the same pass, and anything
-left becomes a Carry-Forward item rather than a stop.
+structural checks (§7) still run every cycle — run the script,
+`sh "${CLAUDE_SKILL_DIR}/../_shared/scripts/docs-lint.sh" <root>`: what fails is fixed in the same
+pass, and anything left becomes a Carry-Forward item rather than a stop.
 
 ---
 

@@ -1,0 +1,11 @@
+{
+  "why": "a checked box left in ROADMAP.md is a completed item",
+  "exit": 1,
+  "verdicts": {
+    "L04": "FAIL"
+  },
+  "contains": [
+    "ROADMAP.md:7  completed item: - [x] Sheet reader",
+    "Result: FAIL - error-class: L04"
+  ]
+}
