@@ -211,6 +211,8 @@ gate holds up and how long it has stood, and neither is briefing:
 
 - **Registered** — the date the entry first appeared. A carried-forward entry keeps its original
   date through every rewrite; resetting it hides exactly the gates that have waited longest.
+  It keeps every other field it already has, too — `/iyu:resume`'s `Default` and `Meanwhile`
+  included.
 - **Blocks** — the `## Next` / `ROADMAP.md` items that cannot move until it clears, by ID or title.
   "Nothing" is a valid answer and worth knowing.
 

@@ -328,10 +328,10 @@ one fails.
 
 | Code | Check | The fix |
 |---|---|---|
-| `L04` | No completed item remains in `ROADMAP.md` or in `HANDOFF.md`'s `## In flight` / `## Next` — no `[x]`, no item marked done | migrate it (§3 step 1) |
-| `L05` | Every `## Waiting on you` entry carries `Registered` and `Blocks`; a resource-blocked entry also `Blocker` · `Tried` · `Unblocks` | add the missing field from the evidence; a date you cannot recover is today's, marked `(recovered)` |
+| `L04` | No completed item remains in `ROADMAP.md` or in `HANDOFF.md`'s `## In flight` / `## Next` — no `[x]`, no item marked done | a finished item migrates (§3 step 1). A finished sub-piece of an item still open is **removed** — its record is the cycle log and git, and `HISTORY.md` receives it when the item itself closes; the item's line then speaks only of what remains |
+| `L05` | Every `## Waiting on you` entry carries `Registered` and `Blocks`; a resource-blocked entry also `Blocker` · `Tried` · `Unblocks` | add the missing field from the evidence. A missing `Registered` is the date of the commit that first added the entry (`git log -S'<entry heading>'`); only when that finds nothing is it today's, marked `(recovered)` |
 | `L07` | Every relative link in a continuity doc resolves | correct the path, or drop the link if its target is gone |
-| `L10` | `HISTORY.md` ≤ 30 live entries · `## 완료·졸업` ≤ 10 entries · each of the three `STRANDS.md` heading lines occurs exactly once · no `STRANDS.md` entry has lines beneath it | archive the overflow (§3 steps 2, 4). Lines under a strand entry are relocated to the current `STRANDS-ARCHIVE-{NN}.md` under the strand's name — relocated, never deleted. A missing or duplicated heading is the one failure not to repair (§3 step 4): report it |
+| `L10` | `HISTORY.md` ≤ 30 live entries · `## 완료·졸업` ≤ 10 entries · each of the three `STRANDS.md` heading lines occurs exactly once · no `STRANDS.md` entry has lines beneath it | archive the overflow (§3 steps 2, 4). Lines under a strand entry are relocated to the current `STRANDS-ARCHIVE-{NN}.md` under a heading `## {strand} — relocated progress ({date})`, so the archive keeps graduated entries and relocated detail apart — relocated, never deleted. A missing or duplicated heading is the one failure not to repair (§3 step 4): report it |
 
 **Warn class** — report, never block.
 
@@ -353,5 +353,6 @@ one fails.
   finishing: a missed check is caught by the next pass, a handoff that cannot finish strands the
   session.
 
-A `HANDOFF.md` in a project's own older narrative layout (not the five sections `handoff` writes)
-is not checked against `L04`/`L05` until a `handoff` rewrites it; report it once as unstructured.
+`L04` reads what the document marks as done — checkboxes, a done status, a completion mark in a
+table row. A `ROADMAP.md` written as prose that marks nothing is not guessed at: report it once as
+unchecked under `L04`, and let the next migration that touches it bring it into a checkable shape.
