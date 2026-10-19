@@ -65,7 +65,7 @@ compacted run still holds the whole sequence and can follow the links below for 
 | **0 Re-plan** | always, light (~5 min) | This cycle's scope — **exactly one cycle**, never a cycle-numbered table. Open the log stub first; re-check the Blocked-on-Human ledger, absorb any reverted decision, inherited defects first |
 | **1 Design** | conditional | Skipped for isolated pattern-following change; otherwise survey the codebase, research, pick an approach with a one-line rationale |
 | **2 Execute** | always | The scope, incrementally. Inherited defects before new work. Root cause, not symptom |
-| **3 Verify** | always | Acceptance criteria stated *before* checking them; test/lint/build output as **evidence, not assertion**; drive the real surface when user-facing; fix and re-run failures in-cycle |
+| **3 Verify** | always | Acceptance criteria stated *before* checking them; checks **sized to the change** — build plus the tests it reaches, the full suite only when the change is broad (the full run is owed before a release); output as **evidence, not assertion**; drive the real surface when user-facing; fix and re-run failures in-cycle |
 | **4 Reflect** | always, mandatory | Six dimensions, judged from outside. Defects fixed here; structural improvements are L1 — done and ledgered, not proposed; orphans removed |
 | **5 Derive Next** | always, mandatory | Carry-Forward · both ledgers carried forward · **exactly one frontier token** · Roadmap Revisions · hygiene pass · Next-Cycle Scope for **one** cycle. Then flip the log's `Status:` to `complete` |
 
@@ -302,7 +302,22 @@ Implement the scope. Progress incrementally. **Inherited defects are fixed first
 ### STEP 3: Verify
 
 - **Define "done" before checking it** — restate this cycle's scope as concrete, checkable acceptance criteria (which test passes, which behavior holds, which output appears). Verify against *that*, not against a self-assessed "looks done".
-- Run the project's test suite, linter, and build
+- **Size the checks to the change, not to the cycle.** Re-running the whole suite every cycle buys
+  no evidence the change needed — it is cost, not rigor. Run the build/typecheck and lint, and the
+  tests the change reaches: the changed modules and their direct users, through the runner's filter,
+  path, or related-files option. A text-only change (docs, comments) needs no test run.
+- **Widen when the change is broad.** A public contract (API, schema, serialized format), build
+  configuration, dependency versions, a cross-module refactor, concurrency, or a security path → the
+  full suite of every affected project. When the reach cannot be judged, widen; never guess small.
+  The full suite plus the project's integration/E2E checks is owed before a release (`/iyu:ship`) —
+  that run collects what the cycles left out.
+- **Never buy the same result twice.** Unchanged code gets no re-run. While fixing, re-run the
+  failing tests, then the affected range once. Heavy checks — E2E, browser runs, benchmarks, model or
+  GPU calls, starting a dev stack — run only when their surface changed; a stack already up is reused
+  across cycles, not restarted.
+- Write what was left out and why in the log's Verification section. A suite that cannot run in parts,
+  or a flaky test, is a STEP 4 defect — not a reason to skip. A project's own tiers (its `AGENTS.md` /
+  `CLAUDE.md`) override these defaults.
 - **Drive the real thing when the change is user-facing.** If the cycle touched UI, app flow, or CLI
   output, a green test suite is not the same as the feature working. Exercise it on its actual
   surface — a browser-automation MCP if the session has one, the CLI, the running service — and say
@@ -310,7 +325,7 @@ Implement the scope. Progress incrementally. **Inherited defects are fixed first
   Never add a dependency to satisfy this. STEP 4 asks you to judge user-facing quality; this is
   where you get the evidence to judge it with.
 - **Evidence, not assertion** — completion is proven by actual command output (test/build results), never by claiming it works. The top failure mode of long-running agents is marking work complete without verifying it. If you cannot show the passing evidence, it is not done.
-- On failure: **fix and re-run immediately** within this cycle — do not defer
+- On failure: **fix and re-run immediately** within this cycle — do not defer (the failing tests first, then the affected range)
 - If a failure exposes a trigger-class issue (HARD STOP / RE-PLAN), loop back to STEP 0 rather than forcing progress
 - A verbose suite is a candidate for the `Agent` tool too — have it run and report pass/fail plus
   enough failure detail to fix, rather than letting the raw output sit in this context
@@ -427,7 +442,7 @@ Status: {in-progress | complete}
 {What was tackled, files changed, key design decisions}
 
 ## Verification & Defect Resolution
-{Test/build status, defects discovered and resolved — or "No defects found"}
+{Test/build status and the range run (and what was left out, why), defects discovered and resolved — or "No defects found"}
 
 ## Reflection
 {Scope fit, philosophy drift, roadmap impact — evaluated from an external perspective. User-facing findings (if applicable): usability, flow, convention issues with standards reference.}

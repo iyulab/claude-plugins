@@ -8,6 +8,25 @@ bugs or docs. MAJOR is never bumped automatically.
 > History is reconstructed from git from v1.11.0 onward. Earlier versions live in
 > the git log only.
 
+## [Unreleased]
+
+### Changed
+
+- **`run-cycle` sizes its checks to the change instead of re-running everything each cycle.**
+  STEP 3 used to say "run the project's test suite, linter, and build" — in a long run that is the
+  same few hundred tests every cycle, whatever changed. A cycle now runs the build/lint and the tests
+  the change reaches (none for a text-only change); a broad change — public contract, build
+  configuration, dependency versions, cross-module refactor, concurrency, security path — widens to
+  the affected projects' full suite, and an unclear reach widens too. Unchanged code is not re-run,
+  fixes re-run the failing tests first, and heavy checks (E2E, browser, benchmarks, model calls, a
+  dev stack) run only when their surface changed. The log records the range run and what was left
+  out; a suite that cannot run in parts, or a flaky test, is a defect. "Evidence, not assertion" is
+  unchanged — the evidence is the output of the range the change needed.
+- **`ship` requires the full set before a release.** Step 2 now runs the full suite, build, lint and
+  the project's integration/E2E checks; a scoped run from a cycle does not count. The run's
+  release-readiness block names what no full run has covered since the last one, for `ship` to
+  collect.
+
 ## [1.45.0] — 2026-10-18
 
 ### Added

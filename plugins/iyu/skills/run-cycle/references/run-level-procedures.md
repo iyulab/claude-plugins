@@ -63,7 +63,7 @@ Before the single end-of-run commit, run a **lightweight release-readiness check
 1. **Version consistency** — if any version-bearing file changed this run, confirm all agree (e.g. `plugin.json`, README badges, package manifest, intended tag — a Claude Code plugin's version belongs in `plugin.json` alone, never also on its marketplace entry). A mismatch is a defect: fix it before committing.
 2. **Changelog** — if the project keeps a CHANGELOG / release notes, confirm this run's changes are recorded. A missing entry is additive/low-risk: add it now.
 3. **Docs** — confirm the doc-sync floor (ladder ②) ran and reported consistent, and that continuity docs are lean (no completed items left in `ROADMAP.md`/`HANDOFF.md`; completed work indexed in `HISTORY.md`); do not re-run the sweep here.
-4. **Evidence** — package the actual STEP 3 verification output (test counts, build result, lint status). Assertions are not evidence (rule 7.5); if you cannot show the output, it is not verified.
+4. **Evidence** — package the actual STEP 3 verification output (test counts, build result, lint status). Assertions are not evidence (rule 7.5); if you cannot show the output, it is not verified. Cycles verify the range their change reached, so also name what no full-suite run has covered since the last one — the release's full run (`/iyu:ship`) picks it up there; do not run it here.
 
 Record the outcome as a `## Release Readiness` block in the final cycle log:
 

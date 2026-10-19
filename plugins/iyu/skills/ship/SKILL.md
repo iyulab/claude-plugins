@@ -73,8 +73,10 @@ Items the project does not have are N/A — skip them, do not invent them.
 
 1. **Clean tree, right branch.** `git status`. Uncommitted unrelated work, or sitting on a
    protected branch when the project uses PRs, stops the run — report, do not "helpfully" branch.
-2. **Verification is current.** Run the project's tests/build/lint now, unless this session already
-   ran them after the last change. **Their actual output is the evidence** — never ship on a recalled
+2. **Verification is complete and current.** Run the project's full suite, build, lint and any
+   integration/E2E checks it defines now, unless this session already ran that full set after the
+   last change — a scoped run from a development cycle does not count, since this is the run that
+   collects what cycles left out. **Their actual output is the evidence** — never ship on a recalled
    pass. Failing: stop.
 3. **Version consistency.** Every version-bearing file agrees after the bump (package manifest,
    plugin manifest, README badges, `Directory.Build.props`, whatever the project has).
