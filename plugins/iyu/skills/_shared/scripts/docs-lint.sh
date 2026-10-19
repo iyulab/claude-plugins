@@ -24,9 +24,10 @@
 # one awk formats the report.
 
 set -u
-# length() must count characters, not bytes: the budgets are in characters. Where C.UTF-8 does not
-# exist (stock macOS) awk falls back to bytes, and L01 - a warning only - fires early on non-ASCII.
-LC_ALL=C.UTF-8
+# The budgets are in characters, but whether awk's length() counts characters depends on the awk
+# and the locale: macOS awk counts bytes in every locale, and C.UTF-8 is missing on some systems.
+# So every awk runs on bytes (LC_ALL=C exists everywhere) and clen() counts UTF-8 characters.
+LC_ALL=C
 export LC_ALL
 
 codes='L04 L05 L07 L10 L01 L06 L08'
@@ -63,10 +64,14 @@ tab=$(printf '\t')
 # shellcheck disable=SC2086 # $files is a list of fixed names without spaces
 scan=$(awk -v today="$today" '
 function trim(s) { sub(/^[ \t]+/, "", s); sub(/[ \t]+$/, "", s); return s }
-function snip(s) {
+# Characters in a UTF-8 string read as bytes: every byte that is not a continuation byte.
+function clen(s,    t) { t = s; return length(s) - gsub(/[\200-\277]/, "", t) }
+function snip(s,    i, n) {
     s = trim(s); gsub(/\t/, " ", s)
-    if (length(s) > 80) s = substr(s, 1, 77) "..."
-    return s
+    if (clen(s) <= 80) return s
+    for (i = 1; i <= length(s); i++)  # cut before the 78th character, never inside one
+        if (substr(s, i, 1) !~ /[\200-\277]/ && ++n == 78) break
+    return substr(s, 1, i - 1) "..."
 }
 function fnd(code, loc, msg) { printf "FND\t%s\t%s\t%s\n", code, loc, msg }
 function unc(code, f, why) { printf "UNC\t%s\t%s\t%s\n", code, f, why }
@@ -129,7 +134,7 @@ function flush_block() {
     if (blen > budget_item) fnd("L01", F ":" bstart, "item of " fmt(blen) " characters (budget " fmt(budget_item) "): " bsnip)
     blen = 0; bstart = 0
 }
-function open_block(s) { flush_block(); bstart = FNR; blen = length(s); bsnip = snip(s) }
+function open_block(s) { flush_block(); bstart = FNR; blen = clen(s); bsnip = snip(s) }
 
 function end_entry() { # HANDOFF ## Waiting on you entry
     if (!estart) return
@@ -193,23 +198,23 @@ function end_file() {
 FNR == 1 {
     if (NR > 1) end_file()
     start_file(FILENAME)
-    if (substr($0, 1, 1) == "\xEF\xBB\xBF") $0 = substr($0, 2)
+    if (substr($0, 1, 3) == "\xEF\xBB\xBF") $0 = substr($0, 4)
 }
 {
     sub(/\r$/, "")
     line = $0
-    chars += length(line) + 1
+    chars += clen(line) + 1
 
     if (line ~ /^[ \t]*(```|~~~)/) { infence = !infence; flush_block(); next }
     if (infence) next
 
     # L01 - the Updated line, and item blocks
-    if (line ~ /^(>[ \t]*)?(\*\*)?Updated(\*\*)?[ \t]*:/ && length(line) > 300)
-        fnd("L01", F ":" FNR, "Updated line of " fmt(length(line)) " characters (budget 300)")
+    if (line ~ /^(>[ \t]*)?(\*\*)?Updated(\*\*)?[ \t]*:/ && clen(line) > 300)
+        fnd("L01", F ":" FNR, "Updated line of " fmt(clen(line)) " characters (budget 300)")
     if (line ~ /^[ \t]*$/) flush_block()
     else if (line ~ /^[ \t]*(#+[ \t]|\|)/) { open_block(line); flush_block() }
     else if (line ~ /^[ \t]*([-*+]|[0-9]+[.)])[ \t]/) open_block(line)
-    else if (bstart) { blen += length(line); }
+    else if (bstart) { blen += clen(line); }
     else open_block(line)
 
     scan_links(line)
@@ -259,7 +264,7 @@ FNR == 1 {
         if (line ~ /^[-*+][ \t]/) {
             entry = FNR; beneath_at = 0
             if (sec == "grad") grad++
-            if (length(line) > 800) fnd("L01", F ":" FNR, "strand entry of " fmt(length(line)) " characters (budget 800)")
+            if (clen(line) > 800) fnd("L01", F ":" FNR, "strand entry of " fmt(clen(line)) " characters (budget 800)")
         } else if (entry && line !~ /^[ \t]*$/ && line !~ /^[ \t]*<!--.*-->[ \t]*$/ && !beneath_at) {
             beneath_at = FNR
             fnd("L10", F ":" FNR, "line beneath the strand entry at line " entry " - an entry is its one line: " snip(line))

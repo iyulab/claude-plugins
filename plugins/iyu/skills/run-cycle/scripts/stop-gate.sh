@@ -218,7 +218,7 @@ fi
 today=$(date +%Y-%m-%d)
 
 report_instruction() { # $1 = last completed cycle number
-    printf '%s' "Write the End-of-Run Report before ending: $dir/RUN-SUMMARY-$today.md (if that file exists, append a new block below the existing ones; never overwrite). The block opens with exactly this line: \`Run: cycles $start–$1 · ended $today\`, then three parts: (1) progress, with STEP 3 evidence; (2) deferred L2 decisions, briefed; (3) self-made L1 decisions, each with how to reverse it. Then make the end-of-run commit and invoke /iyu:handoff."
+    printf '%s' "Write the End-of-Run Report before ending: $dir/RUN-SUMMARY-$today.md (if that file exists, append a new block below the existing ones; never overwrite). The block opens with exactly this line: \`Run: cycles ${start}–$1 · ended $today\`, then three parts: (1) progress, with STEP 3 evidence; (2) deferred L2 decisions, briefed; (3) self-made L1 decisions, each with how to reverse it. Then make the end-of-run commit and invoke /iyu:handoff."
 }
 
 finish() { # every allow path that ends a run passes the report check; $1 = optional user note
