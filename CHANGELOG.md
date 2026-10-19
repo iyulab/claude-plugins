@@ -8,7 +8,17 @@ bugs or docs. MAJOR is never bumped automatically.
 > History is reconstructed from git from v1.11.0 onward. Earlier versions live in
 > the git log only.
 
-## [Unreleased]
+## [1.46.0] — 2026-10-20
+
+### Fixed
+
+- **The Stop hook no longer dies when a run ends without its report.** The report instruction wrote
+  `$start–`; under a UTF-8 locale bash read the en dash's first byte as part of the variable name,
+  failed on `set -u`, and the block went out with an empty instruction. The name is braced now.
+- **`docs-lint.sh` counts characters on every awk.** It relied on `C.UTF-8`, which macOS lacks, and
+  macOS awk counts bytes in every locale anyway, so `L01` budgets fired early on non-ASCII text and a
+  leading BOM was never stripped. The script now runs awk on bytes (`LC_ALL=C`) and counts UTF-8
+  characters itself; finding snippets are cut on a character boundary.
 
 ### Changed
 
