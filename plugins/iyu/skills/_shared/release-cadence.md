@@ -42,7 +42,10 @@ Before scheduling a release — or before running one — ask, in order:
    that will require a re-release shortly is close to no release at all.**
 2. **Is what is already finished worth delivering on its own?**
    The mirror of (1). A finished fix that consumers are waiting on outranks a tidy phase boundary.
-   Undelivered value is also a cost.
+   Undelivered value is also a cost. **Name the receiver**: a consumer waiting on the change, a pin
+   it unlocks, a defect in the released version it fixes. "Finished" is not a receiver — finished
+   work with no one waiting stays unreleased until someone is, or until the project's cadence (§3)
+   says it has waited long enough.
 3. **Does the project declare a cadence?** See §3. Follow it.
 4. **Where is the nearest phase boundary?** Place the release there — the point where a coherent
    chunk is done and the next chunk starts somewhere else.
@@ -65,6 +68,12 @@ closes.
 - **A gate already written down is the one to judge against.** A later session or run that finds a
   release marker with its batch reads whether *that* batch is closed; it does not re-cut the gate from
   the current backlog, which would move the line every time something new is found.
+- **The gate is cut before the work it batches, not after.** A gate cut at release time by the run
+  whose work it covers is closed by construction: that run names what it finished as the batch, moves
+  the rest to "the next gate", and releases. So a run fixes its gates at its start — the markers it
+  inherits, or a cut from the backlog for the surfaces it is about to change — and may widen them,
+  never narrow them; dropping or splitting an item out of a fixed batch needs an exception (§5). A
+  gate first cut at a run's end is handed over, not judged by the same review.
 - **Write the batch at the marker**, per §4: `📦 release — after {A, B, C}; same CLI output`.
 
 ---
@@ -78,7 +87,14 @@ A project may state its own release rhythm. Look for it in `CLAUDE.md`, the cont
 Release cadence: publish on every merged phase; push freely.
 Release cadence: batch until a milestone — consumers reinstall manually.
 Release cadence: pre-1.0, release whenever something is worth using.
+Release cadence: at most one regular release per package every 3 days; blocked consumers and defects in the released version go out at once.
 ```
+
+A **minimum interval** is the cadence an automated loop most needs. Each run ends at what looks
+like a release point, so a loop that runs several times a day releases several times a day unless
+something counts the time since the last release. Count it per package, from that package's last
+regular release (exceptions do not reset it). A passed interval does not make a release on its own:
+it only lets one happen when §2 gives a receiver and a closed batch.
 
 **If no declaration exists, infer and say so.** Signals: interval between existing tags, release
 history in `CHANGELOG.md`, whether the package is consumed by other repos, whether upgrading costs
@@ -132,10 +148,17 @@ cadence there is, for consumers and for the people who operate the release. So t
    batch is still open, the last cycle the budget allows picks scope that closes it over scope that
    starts a new surface. A run that ends early ends on an exhausted frontier, so this matters only
    for the budget-bounded end.
-3. **At run end, one release review** over everything the run left undelivered: is the tree at a
-   verified, committed state; and, by §2 with the frozen gate, is the batch closed? Closed → release
-   once, under the grant, and report what went where. Not closed → do not release, and hand the gate
-   over (4).
+3. **At run end, one release review** over everything the run left undelivered, per package. All
+   four must hold, and holding is the default:
+   - the tree is at a verified, committed state;
+   - the gate fixed at run start (§2) is closed — a gate the run cut for itself is not judged here;
+   - §2's question 2 names a receiver;
+   - the project's cadence (§3) allows it — for a declared minimum interval, the time since that
+     package's last regular release.
+
+   All hold → release once, under the grant, and report what went where. Any fails → do not
+   release, and hand the gate over (4) with the check that held it. A consumer blocked on the change
+   or a defect in the released version releases past the interval and the batch; the record names it.
 4. **Hand an open gate over as an order plus an act.** The gate is not a question for the owner —
    the run can see which batch it waits on, so it writes the release marker into `HANDOFF.md`'s
    `## Next` at the boundary it belongs to, with the batch (§4). What the owner holds is only the act:

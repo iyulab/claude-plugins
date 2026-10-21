@@ -97,7 +97,7 @@ copies of a rule become four rules the moment one is edited:
 | File | Defines | Read by |
 |---|---|---|
 | `continuity-docs.md` | root resolution · what belongs in each doc · one home per fact · hygiene pass · next-scope derivation · structural checks (`L01`–`L10`) | run-cycle, handoff, resume, backlog-discover, telemetry-az |
-| `release-cadence.md` | three stages/three costs · the placement test · the frozen-batch gate · cadence declaration · reorder-don't-explain · a run's release grant (permission, read once at run end) | run-cycle, handoff, ship |
+| `release-cadence.md` | three stages/three costs · the placement test (with a named receiver) · the frozen-batch gate, fixed before the work · cadence declaration incl. minimum interval · reorder-don't-explain · a run's release grant (permission, read once at run end) | run-cycle, handoff, ship |
 | `decision-briefing.md` | the entry shapes (resource-blocked incl. owner-gated act · decision-class · criterion request) · the four parts of a briefing · the guards (decide ≠ act; ask for resources and criteria, never a pick) | run-cycle, resume, ship |
 | `decision-lenses.md` | the five co-equal lenses (근본/정석/표준/세련/철학) · what is *not* a lens (scope size, request count, pre-1.0 breaking) · reversibility belongs to the act, not the edit · the four causes a pick won't form — (b)/(c) trigger bounded research, (a)/(d) turn into a criterion request | run-cycle (self-decide), resume (brief), mindset, philosophy-alignment-guide |
 | `scripts/docs-lint.sh` | the §7 structural checks of `continuity-docs.md` as a read-only script — verdict per code, exit 1 only on an error-class violation, `UNCHECKED` whenever no verdict is reached | handoff, run-cycle (through `continuity-docs.md` §3 step 7) |

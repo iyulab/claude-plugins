@@ -8,6 +8,23 @@ bugs or docs. MAJOR is never bumped automatically.
 > History is reconstructed from git from v1.11.0 onward. Earlier versions live in
 > the git log only.
 
+## [Unreleased]
+
+### Changed
+
+- **A run's release review no longer releases on every run.** It judged one thing — is the batch
+  closed — and when no gate stood it cut one at run end from the run's own work, which is closed by
+  construction. A loop running several times a day therefore released several times a day. Now:
+  - the gate is fixed at run start (the inherited marker, or a cut for the surfaces the run is about
+    to change) and recorded in the first cycle's Re-plan; the run may widen it, not narrow it, and a
+    gate first cut at run end is handed over instead of judged;
+  - the change needs a named receiver — a waiting consumer, a pin it unlocks, a defect in the
+    released version; "finished" is not one;
+  - a declared minimum interval is counted per package from its last regular release. A blocked
+    consumer or a defect in the released version releases past the interval and the batch.
+  The review records which check held a release, and `handoff` carries it into the marker (with the
+  earliest date for an interval). `ship`'s Step 0 checks the interval and the receiver too.
+
 ## [1.46.0] — 2026-10-20
 
 ### Fixed

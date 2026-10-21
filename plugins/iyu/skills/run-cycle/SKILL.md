@@ -118,7 +118,9 @@ Run-specific on top of it:
 **One parameter: the cycle budget.** `$0` = total cycles (default: **10**). Anything else in
 `$ARGUMENTS`, and anything the user wrote alongside the invocation, is **scope context** — it feeds
 Preparation step 1, not a flag parser. There are no flags: a run always executes, and always commits.
-A release grant there is recorded in the first cycle log's Re-plan, where the run end finds it.
+A release grant there is recorded in the first cycle log's Re-plan, where the run end finds it —
+together with each package's release gate as fixed at run start (release-cadence §2), since the run
+end judges that gate and not one it cuts for itself.
 
 **The starting cycle number is derived, not passed.** Preparation reads the existing
 `<root>/cycle-logs/cycle-*.md`, takes the highest index, and starts at *that + 1* (1 when none

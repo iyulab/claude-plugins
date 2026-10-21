@@ -99,17 +99,22 @@ A grant recorded in the first cycle log's Re-plan is permission, read here once
 1. **Gather what the run left undelivered** — the commits since the last release, and any release
    the run already made under a §5 exception (those are delivered; they are not a reason to release
    again).
-2. **Find the gate.** A release marker already in `HANDOFF.md`/`ROADMAP.md` with its batch is the
-   gate — judge against it. No marker → cut one now by §2: the remaining items, as known now, that
-   touch the same consumer-facing surface.
-3. **Decide.** The tree must be at a verified, committed state (an in-progress scope is not), and
-   the batch must be closed. Both hold → release once, by the project's own release path or
-   `/iyu:ship`'s stages, under the grant; the grant replaces `ship`'s Step 0 question, not its CI
-   watch. Either fails → do not release.
+2. **Find the gate.** The gate is the one the first cycle log's Re-plan fixed at run start — the
+   marker the run inherited, or the cut it made for the surfaces it was about to change (§2, «cut
+   before the work»). Judge against that batch, widened by anything added during the run. No gate
+   fixed at run start → cut one now for the handoff and hold: a gate cut over the run's own finished
+   work is closed by construction.
+3. **Decide, per package.** All must hold: the tree is at a verified, committed state (an
+   in-progress scope is not); the batch is closed; a receiver is named (§2 question 2); the
+   project's cadence allows it (§3 — for a minimum interval, the date of that package's last regular
+   release from its tags or changelog). All hold → release once, by the project's own release path
+   or `/iyu:ship`'s stages, under the grant; the grant replaces `ship`'s Step 0 question, not its CI
+   watch. Any fails → do not release. A blocked consumer or a defect in the released version
+   releases past the batch and the interval; name which.
 4. **Record.** Append one line to this run's block in `RUN-SUMMARY-{date}.md`: `Release review:
-   released {what → where}` or `Release review: held — gate {batch} open`. An open gate goes to
-   `/iyu:handoff` as the release marker in `## Next` plus a one-line owner-gated act — §5(4); write
-   both there, not here.
+   released {what → where} — receiver {who}` or `Release review: held — {gate {batch} open | no
+   receiver | interval: last {date}}`. A held release goes to `/iyu:handoff` as the release marker
+   in `## Next` plus a one-line owner-gated act — §5(4); write both there, not here.
 
 The End-of-Run Report, written before this review, lists in its progress part each mid-run release
 with the exception it used; the review's line completes the count. More than one release in a run is

@@ -38,7 +38,9 @@ asks for a release now.
 **[release-cadence.md](${CLAUDE_SKILL_DIR}/../_shared/release-cadence.md) §2**: read the remaining
 backlog, and check whether unfinished work would touch the same consumer-facing surface this release
 would expose. If `HANDOFF.md`/`ROADMAP.md` already carries a release marker with its batch, that
-batch is the gate — judge whether it is closed rather than re-reading the whole backlog.
+batch is the gate — judge whether it is closed rather than re-reading the whole backlog. A declared
+minimum interval (§3) that has not passed since the package's last regular release, or no receiver
+for the change (§2 question 2), is part of the same test.
 
 If the test clears, say nothing and proceed — there is no question to ask.
 
