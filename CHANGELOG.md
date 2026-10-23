@@ -8,6 +8,15 @@ bugs or docs. MAJOR is never bumped automatically.
 > History is reconstructed from git from v1.11.0 onward. Earlier versions live in
 > the git log only.
 
+## [1.47.1] — 2026-10-23
+
+### Fixed
+
+- Reference files follow the skill authoring guidance: the two long references without a table of
+  contents (`run-cycle/references/run-level-procedures.md`, `_shared/release-cadence.md`) now open
+  with one, and `backlog-discover`'s scoring rubric no longer links on to another skill's reference
+  (references stay one level deep from `SKILL.md`) — it names the P5 score it reuses instead.
+
 ## [1.47.0] — 2026-10-21
 
 ### Changed

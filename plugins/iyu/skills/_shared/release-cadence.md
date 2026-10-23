@@ -1,5 +1,7 @@
 # Release cadence — when publishing belongs in the order
 
+**Contents** — 1. Three stages, three costs · 2. The placement test · 3. Project cadence declaration · 4. Reordering is an edit, not an opinion · 5. A release grant inside a run
+
 **This file is the single definition** of how release work is *placed* relative to remaining work.
 `handoff` (deriving next scope), `run-cycle` (STEP 5, and its run-end release review — §5), and
 `ship` (its precondition check) all read

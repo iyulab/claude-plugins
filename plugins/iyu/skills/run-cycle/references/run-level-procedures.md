@@ -1,5 +1,7 @@
 # Run-level procedures — the value ladder, the end-of-run report, and the commit
 
+**Contents** — Surplus-Cycle Value Ladder · End-of-Run Report · Commit · Release Readiness · Release review (only with a release grant) · Handoff
+
 **`SKILL.md` owns the per-cycle loop; this file owns what happens once per *run*.** The split is
 deliberate: auto-compaction re-attaches only the first 5,000 tokens of a skill, so the procedures a
 run needs once — at its end — are the ones that can safely live a file away, while the loop a cycle
