@@ -13,8 +13,8 @@
        applies `fill` and `touch` from expect.json;
     2. writes the fixture's `transcript` beside the tree and pipes a Stop hook input whose `cwd` is
        the temp tree into the script, under the same sh that Claude Code uses (Git Bash on Windows);
-    3. asserts the verdict, reason or message substrings, whether the auditor was called, and that
-       no file in the tree changed.
+    3. asserts the verdict, reason or message substrings, whether the auditor was called, what the
+       auditor was asked (`promptContains`), and that no file in the tree changed.
 
   The one model call the hook can make, auditing a FRONTIER-EXHAUSTED claim, is replaced by a stub
   that returns the fixture's `auditor` verdict (IYU_RUN_CYCLE_AUDITOR). -LiveAudit instead runs the
@@ -102,8 +102,9 @@ function Invoke-GateRun($fx, $expect, [string]$sh, [string]$gate, [bool]$live) {
         '^fail: (.*)$' { (@{ ok = $false; reason = $Matches[1] } | ConvertTo-Json -Compress) }
         default { 'no verdict here' }
     }
+    $prompt = Join-Path $meta 'auditor-prompt.txt'
     $stub = Join-Path $meta 'auditor.sh'
-    Set-Content -LiteralPath $stub -Encoding utf8 -Value @('cat > /dev/null', "echo called >> '$callsSh'", "printf '%s\n' '$verdict'")
+    Set-Content -LiteralPath $stub -Encoding utf8 -Value @("cat > '$($prompt -replace '\\', '/')'", "echo called >> '$callsSh'", "printf '%s\n' '$verdict'")
 
     $hookInput = [ordered]@{
         session_id = 'dryrun'; transcript_path = $transcript; cwd = $root; hook_event_name = 'Stop'
@@ -136,6 +137,8 @@ function Invoke-GateRun($fx, $expect, [string]$sh, [string]$gate, [bool]$live) {
         $audited = Test-Path -LiteralPath $calls
         $wantAudit = $null -ne $expect.auditor -and $(if ($null -ne $expect.audited) { [bool]$expect.audited } else { $true })
         if ($audited -ne $wantAudit) { $problems += "auditor called=$audited, expected $wantAudit" }
+        $promptText = if (Test-Path -LiteralPath $prompt) { Get-Content -LiteralPath $prompt -Raw } else { '' }
+        foreach ($s in @($expect.promptContains)) { if ($s -and $promptText -notlike "*$s*") { $problems += "auditor prompt lacks '$s'" } }
     }
     $after = Get-TreeHashes $root
     $changed = @($before.Keys | Where-Object { $after[$_] -ne $before[$_] }) + @($after.Keys | Where-Object { -not $before.ContainsKey($_) })

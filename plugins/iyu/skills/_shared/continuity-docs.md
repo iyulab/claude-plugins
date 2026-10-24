@@ -250,6 +250,17 @@ Both `run-cycle`'s STEP 5 and `handoff` answer "what comes next?". The sources, 
    leave brittle, duplicated, or untested?), **operator** (what does running this now require?).
 4. **The phase backlog** — the next-most-valuable unblocked phase.
 
+**Order is not a gate.** `ROADMAP.md` order says which startable phase goes first; it never makes a
+later phase wait. Each remaining phase is exactly one of: **done** · **blocked**, naming what it
+waits on (a person, an external party, or an unfinished phase it builds on) · **a design question**
+for a human, its level and the question stated · **startable**. «Later in the order» or «the owner
+set the order» is none of the first three. A phase stated only as a direction is startable — its
+first task is decomposing it — not empty. Why: [design-rationale.md](../run-cycle/references/design-rationale.md#why-order-is-not-a-gate).
+
+So `## Next` is not a prefix of `ROADMAP.md`: when the front phases are blocked, keep descending the
+order and add startable phases until they fill one session or run, and keep the blocked ones listed
+above them as waiting. The order is kept; only independent work stops waiting behind a blocked item.
+
 `STRANDS.md`'s `## 중단됨` section is a fifth, narrower source: a strand interrupted recently enough
 to still be worth a quick "resume this now?" check belongs here, surfaced the same way as any other
 known-but-reordered work — it is not new discovery. A strand that has stayed interrupted for a long

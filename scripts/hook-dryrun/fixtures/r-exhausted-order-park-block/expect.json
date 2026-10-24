@@ -1,0 +1,87 @@
+{
+  "ok": false,
+  "why": "cycle 3 of 10 claims FRONTIER-EXHAUSTED after relabelling two phases as pending decisions only because they come later in the roadmap order; the auditor is told order is not a dependency and the reason names them",
+  "auditor": "fail: Phase 3 (CSV export) and Phase 4 (Reporting) are parked only for their place in the roadmap order",
+  "reasonContains": [
+    "CSV export",
+    "Reporting",
+    "FRONTIER-EXHAUSTED",
+    "not a reason"
+  ],
+  "liveReasonContains": [
+    "CSV"
+  ],
+  "reasonNotContains": [
+    "RUN-SUMMARY"
+  ],
+  "transcript": [
+    {
+      "type": "user",
+      "userType": "external",
+      "origin": {
+        "kind": "human"
+      },
+      "message": {
+        "role": "user",
+        "content": "<command-message>iyu:run-cycle</command-message>\n<command-name>/iyu:run-cycle</command-name>\n<command-args>10</command-args>"
+      }
+    },
+    {
+      "type": "user",
+      "userType": "external",
+      "isMeta": true,
+      "message": {
+        "role": "user",
+        "content": [
+          {
+            "type": "text",
+            "text": "Base directory for this skill: …\n# Development Cycle Runner"
+          }
+        ]
+      }
+    },
+    {
+      "type": "assistant",
+      "message": {
+        "role": "assistant",
+        "content": [
+          {
+            "type": "text",
+            "text": "Cycle 03 done; frontier exhausted, report written."
+          }
+        ]
+      }
+    },
+    {
+      "type": "user",
+      "userType": "external",
+      "isMeta": true,
+      "message": {
+        "role": "user",
+        "content": [
+          {
+            "type": "text",
+            "text": "Stop hook feedback:\nUnblocked autonomous work remains."
+          }
+        ]
+      }
+    },
+    {
+      "type": "assistant",
+      "message": {
+        "role": "assistant",
+        "content": [
+          {
+            "type": "text",
+            "text": "Report and handoff are done."
+          }
+        ]
+      }
+    }
+  ],
+  "promptContains": [
+    "is not a dependency",
+    "Judge the reason a phase is parked, not its label",
+    "reclassified in answer to an earlier audit finding"
+  ]
+}

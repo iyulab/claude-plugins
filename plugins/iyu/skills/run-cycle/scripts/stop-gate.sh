@@ -304,7 +304,7 @@ A development run stopped early: cycle log $latest ends with FRONTIER-EXHAUSTED:
 The claim FAILS only if one of these is plainly true:
 1. The latest log itself still names unblocked autonomous work: a Next-Cycle Scope that is not "None", an actionable Carry-Forward item, an autonomous-eligible candidate, or an actionable value-ladder signal.
 2. An entry in the previous log's Blocked-on-Human or Decisions ledger is neither carried forward in the latest log nor recorded there as resolved (silently dropped).
-3. The roadmap holds a phase that is plainly neither completed, nor parked in the latest log's Blocked-on-Human ledger, nor recorded under its Pending Human Decisions as discussion-class. Human-gated phases never count against the claim.
+3. The roadmap holds a phase that is plainly not completed and that the latest log does not account for as either blocked (in its Blocked-on-Human ledger, naming the person, external party or unfinished item the phase waits on) or a design question for a human (under its Pending Human Decisions, stating the question). Coming later in the roadmap order, or the owner having set that order, is not a dependency: a phase parked or deferred for that reason alone is not accounted for. Judge the reason a phase is parked, not its label, including a phase reclassified in answer to an earlier audit finding. A phase blocked or questioned for a stated reason never counts against the claim.
 
 Judge only what is plain; you are spotting obviously remaining autonomous work, not adjudicating wording. A missing file, an empty roadmap, or a genuinely ambiguous case passes.
 
@@ -340,7 +340,7 @@ EOF
 
 case $audit_ok in
     false)
-        block "$progress Cycle $latest_n claims FRONTIER-EXHAUSTED:, but an audit of the logs and roadmap found unblocked work: ${why:-see the roadmap}. Continue with it: $next_step. If an item is in fact human-gated, park it in the Blocked-on-Human ledger or record it under Pending Human Decisions, then re-derive STEP 5. $token_shapes" ;;
+        block "$progress Cycle $latest_n claims FRONTIER-EXHAUSTED:, but an audit of the logs and roadmap found unblocked work: ${why:-see the roadmap}. Continue with it: $next_step. If an item is in fact blocked, park it in the Blocked-on-Human ledger naming what it waits on, or record the design question it raises under Pending Human Decisions, then re-derive STEP 5; its place in the roadmap order is not a reason. $token_shapes" ;;
     true) ;;
     *) [ -n "$audit_note" ] || audit_note="run-cycle: the FRONTIER-EXHAUSTED claim in $latest could not be audited (the auditor gave no verdict); the stop was allowed." ;;
 esac

@@ -8,6 +8,31 @@ bugs or docs. MAJOR is never bumped automatically.
 > History is reconstructed from git from v1.11.0 onward. Earlier versions live in
 > the git log only.
 
+## [Unreleased]
+
+### Fixed
+
+- **Roadmap order is no longer read as blocking.** A front phase waiting on a person or an outside
+  party used to hold every later phase back: a later, independent phase could be parked as a pending
+  decision only for coming later in the order, the run ended on `FRONTIER-EXHAUSTED:` with budget
+  left, `handoff` copied only the blocked front of the roadmap into `## Next`, and `resume` then
+  recommended discovering new phases. Now:
+  - `_shared/continuity-docs.md` §4 states it once: each remaining phase is done, blocked (what it
+    waits on named), a design question (level and question stated) or startable, and «later in the
+    order» is none of the first three. A phase that is only a direction is startable as decomposition;
+  - `## Next` descends the roadmap past blocked phases until it holds startable work, keeping the
+    blocked ones listed as waiting (`handoff`); a run's Preparation falls through to the roadmap when
+    every `## Next` item is blocked;
+  - `run-cycle`'s termination test and the Stop hook's exhaustion audit require that classification
+    and judge a parked phase by its reason, so a cycle that only relabels a phase to answer an audit
+    finding no longer passes; the hook's block reason says the order is not a reason to park;
+  - `resume` scans the roadmap for startable phases when `## Next` is empty or wholly blocked, flags
+    their absence from `## Next`, and names `/iyu:backlog-discover` only when none is left;
+  - `backlog-discover` decomposes a not-started direction-level phase (`roadmap-decomposition`)
+    ahead of proposing new phases.
+- `scripts/hook-dryrun/` asserts what the stub auditor is asked (`promptContains`); new fixture
+  `r-exhausted-order-park-block`.
+
 ## [1.47.1] — 2026-10-23
 
 ### Fixed

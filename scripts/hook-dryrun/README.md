@@ -18,8 +18,8 @@ Claude Code uses for hooks (`CLAUDE_CODE_GIT_BASH_PATH`, else the one beside `gi
 
 For each fixture the script copies `fixtures/<name>/tree` to a temp directory, writes the fixture's
 `transcript` beside it, pipes a Stop hook input whose `cwd` is that directory into `stop-gate.sh`,
-and checks the verdict, substrings of the reason or user message, whether the auditor was asked,
-and that **no file in the tree changed** — the hook is an auditor and must never write.
+and checks the verdict, substrings of the reason or user message, whether the auditor was asked
+and with what prompt, and that **no file in the tree changed** — the hook is an auditor and must never write.
 
 The hook asks a model one thing: whether a `FRONTIER-EXHAUSTED:` claim with budget left holds up
 against the roadmap and the ledgers. By default that auditor is a stub (`IYU_RUN_CYCLE_AUDITOR`)
@@ -55,6 +55,7 @@ hook and by continuity-root resolution, both of which look for `cycle-logs/cycle
 | `o-headerless-newest-unknown-allow` | ALLOW | Nothing shows a run is driving and the newest log has no header: fail toward allowing |
 | `p-first-cycle-in-progress-block` | BLOCK | This run's only log is its in-progress stub; the previous run's report covers a different `Start:` |
 | `q-human-needed-report-block` | BLOCK | A run-fatal `HUMAN-NEEDED:` ends the run with budget left, but the report is missing |
+| `r-exhausted-order-park-block` | BLOCK | Phases parked as pending decisions only for their place in the roadmap order fail the audit; the auditor is told that order is not a dependency and to judge a reclassification by its reason |
 
 Add a fixture as a new directory with a `tree/` and an `expect.json`:
 
@@ -68,6 +69,7 @@ Add a fixture as a new directory with a `tree/` and an `expect.json`:
   "messageContains": ["…"],
   "auditor": "pass | fail: <reason> | none",
   "audited": false,
+  "promptContains": ["…"],
   "liveReasonContains": ["…"],
   "fill": { "dir": "claudedocs/_cycle-logs_", "from": 11, "to": 201 },
   "touch": { "claudedocs/_cycle-logs_/cycle-111.md": 10 },
@@ -77,6 +79,8 @@ Add a fixture as a new directory with a `tree/` and an `expect.json`:
 
 - `auditor` is the stub's verdict (`none` prints no verdict). A fixture with `auditor` expects the
   auditor to be asked unless `audited` is `false`; a fixture without it expects it never to be.
+- `promptContains` asserts substrings of what the stub auditor was asked, so a clause of the audit
+  prompt has a fixture that fails when the clause is removed. Not checked under `-LiveAudit`.
 - `liveReasonContains` replaces `reasonContains` under `-LiveAudit`, where the reason is the model's.
 - `fill` generates complete logs from earlier runs, so a fixture can hold more logs than a
   file-listing tool returns.

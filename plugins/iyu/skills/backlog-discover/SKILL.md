@@ -96,6 +96,11 @@ due = elapsedDays >= cadenceIntervalDays(activity.cadence)
 Mark `due = true` unconditionally for any activity named in `--modes` (bypasses the
 elapsed check). Collect the due set — this is what P3 executes.
 
+**A direction-level phase comes before new phases.** If `ROADMAP.md` holds a not-started phase
+stated only as a direction (no tasks), the backlog is under-decomposed, not empty
+([continuity-docs.md §4](${CLAUDE_SKILL_DIR}/../_shared/continuity-docs.md)): mark
+`roadmap-decomposition` due, and P6 ranks its decomposition of that phase above new-phase items.
+
 **Thin/empty due-set is a deepen-signal, not a done-signal.** If cadence leaves few or no
 activities due (e.g. this ran recently), do **not** return an empty proposal.
 
@@ -244,7 +249,7 @@ never fabricate the missing signal (mindset "no invention").
 | `code-audit` | Grep/Glob static scan for TODO/FIXME/deprecated markers + the project's own lint tooling via `Bash`. **Dependency currency belongs to `stewardship-check`; CVE/vulnerability to `security-compliance`** — this lane is about the shape of the code the team wrote |
 | `security-compliance` | Dependency audit via `Bash` (e.g. `npm audit`, `dotnet list package --vulnerable`) + WebSearch for CVEs affecting declared dependencies |
 | `tooling-development` | Mine the project's own history for **repeated manual work**: scan cycle logs / `git log` / CI config / scripts dir for procedures done by hand more than twice (release steps, fixture generation, log comparison, repro setup), slow or flaky verification loops, and one-off scripts rewritten each time. Each recurrence is a candidate to asset-ize as a script/harness/generator. Targets team throughput, not product durability — do not file refactoring items here |
-| `roadmap-decomposition` | Re-derive epics/stories from any stated milestones/KPIs in CLAUDE.md/README against current `ROADMAP.md` phases |
+| `roadmap-decomposition` | Re-derive epics/stories from any stated milestones/KPIs in CLAUDE.md/README against current `ROADMAP.md` phases, and decompose each not-started direction-level phase into tasks, with the technical survey each task needs |
 | `sunset-review` | Grep for deprecated/legacy markers; compare the current feature list against the declared vision for "would not build today" candidates |
 | `premortem` | Author a failure-mode narrative ("this project failed in 2 years because...") from the current architecture, worked backward into preventive tasks |
 | `sf-prototyping` | Author a 5–10 year forward-looking domain scenario, backcast to near-term extension points worth seeding now |

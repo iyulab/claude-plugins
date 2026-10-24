@@ -59,6 +59,30 @@ weigh is routed to proposals; a reversible trade-off inside the declared role is
 
 The distinction is not size. It is whether the project has already committed to the pattern.
 
+## Why order is not a gate
+
+Defined in [continuity-docs.md §4](../../_shared/continuity-docs.md). The failure it closes takes
+four small steps, each locally reasonable. The owner says «proceed in order». The first phases then
+all wait on people or outside parties. A later, independent phase is read as unable to start
+«because it comes later», so it is filed as a pending decision — which satisfies «done or parked»,
+lets `FRONTIER-EXHAUSTED:` through the audit, and ends the run with budget left. `handoff` then
+copies only the front of the roadmap into `## Next`; a run's Preparation and `resume` read `## Next`
+first, so the startable phases disappear from every ledger and the next session concludes there is
+no work and sends the user to discover new phases.
+
+The roots, and the rule that answers each:
+
+- **Order read as blocking.** «A then B» fixes which goes first when both can start; it says nothing
+  about B being able to start while A waits on someone else. A dependency has to be named, so the
+  four-way classification has no «later in the order» class.
+- **`## Next` as a prefix of the roadmap.** When the prefix is all blocked, the slice a session
+  reads holds no startable work. Next is derived by descending the order past blocked items.
+- **Parking without a named dependency.** A label (`discussion`, pending) costs nothing to write, so
+  the auditor checks the reason behind it, and a reclassification made to answer an audit finding is
+  judged the same way — a cycle that only relabels cannot pass.
+- **A direction mistaken for an empty backlog.** A phase that is only a direction is under-decomposed;
+  its next step is decomposition (with whatever technical survey it needs), not new-phase discovery.
+
 ## Why decisions are leveled L0–L3
 
 The levels key on **two axes — stakes × reversibility (two-way vs. one-way door)**. A capable

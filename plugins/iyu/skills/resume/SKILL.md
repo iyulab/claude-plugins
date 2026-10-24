@@ -82,11 +82,16 @@ issue draft, a roadmap edit, a release or external-communication step. The prese
 carries the real payload to step 4 — that's where it's read to spot owner-gated acts, which live in
 the non-code bucket — so a bucket with nothing in it just reads "None" rather than being dropped.
 
-**`## Next` empty → say so and recommend `/iyu:backlog-discover`.** Same closing move `run-cycle`'s
+**`## Next` empty, or every item in it blocked → scan `ROADMAP.md` first.** Each startable phase
+there (classified per [continuity-docs.md §4](${CLAUDE_SKILL_DIR}/../_shared/continuity-docs.md) —
+order is not a gate; a direction-only phase is startable as decomposition) is a staleness flag on
+`## Next` and goes to step 4 as a reorder or prerequisite insertion.
+
+**No startable phase in `ROADMAP.md` either → say so and recommend `/iyu:backlog-discover`.** Same closing move `run-cycle`'s
 End-of-Run Report makes when a run ends on `FRONTIER-EXHAUSTED:` with budget left: an empty backlog
 isn't this skill's gap to fill — step 3's synthesis reorders and extends what's already scoped, it
 does not discover unscoped work from nothing (rule 9) — it's a pointer to the skill that does. A
-pointer only: name the recommendation, do not invoke it. Only say this when `## Next` itself is empty;
+pointer only: name the recommendation, do not invoke it. Only say this when no startable work is left;
 an empty `## Waiting on you` with items still in `## Next` is step 4's good outcome, not this one.
 
 ### 4. Settle what needs deciding — decide it, don't hand it back
@@ -252,4 +257,4 @@ the owner answers with feedback instead, handle it per step 5's feedback rules, 
 9. **Synthesis is judgment over known work, not discovery of new work.** Step 3 and step 4's
    grounding pass operate on what is already on the table — the boundary is what the work is aimed
    at, not whether reading or searching happens. Scoping work nobody has identified yet stays
-   `/iyu:backlog-discover`'s job; an empty `## Next` gets that skill *named*, never invoked.
+   `/iyu:backlog-discover`'s job; a roadmap with no startable phase gets that skill *named*, never invoked.

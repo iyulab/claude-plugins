@@ -118,7 +118,9 @@ migrates the phase to `HISTORY.md`, instead of leaving the entry orphaned.
 
 Per [continuity-docs.md](${CLAUDE_SKILL_DIR}/../_shared/continuity-docs.md) §4 — carry-forward
 defects, then mid-session discoveries, then emergent scope across the user / developer / operator
-lenses, then the backlog. Tag each candidate **autonomous-eligible** or **discussion**.
+lenses, then the backlog. Tag each candidate **autonomous-eligible** or **discussion**. When the
+front of `ROADMAP.md` is blocked, `## Next` descends the order to the startable phases behind it
+(§4, order is not a gate) — never only its first few items.
 
 Scope concretely for *one* next session, not five. Anything further out stays a phase-level
 direction in `ROADMAP.md`. Concrete scope for sessions you cannot yet know about is the same failure
