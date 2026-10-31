@@ -259,6 +259,7 @@ A capable delegate does not hand back a task the moment it looks blocked — the
 2. **Is the decision already made?** A "user-only decision" is not open if CLAUDE.md / README / an architecture doc / an accepted issue / a prior Decisions-Ledger entry already answers it. Follow the existing decision instead of re-asking it.
 3. **Can a useful slice proceed?** Split the scope: implement and verify the part that does not touch the blocker (the logic behind an unavailable credential, the offline path, the interface plus a test double). Park only the residue, not the whole scope.
 4. **Is it really L2?** If the "decision only the user can make" turns out reversible, it is **L1** — decide it, record it `provisional`, and keep going (in dubio, pro autonomy).
+5. **Is the reason one the rules accept?** How much work the scope is, that it brings no user-visible benefit, and a breaking change below 1.0 never make a scope L2 or a blocker. A check or approval that only *closes* the work (a person looking at the result, a sign-off to call it done) does not block *starting* it: do the work, and ledger the pending check as the residue. The Stop hook's auditor judges parked phases by these same reasons.
 
 Record what was tried in the ledger entry. An entry that cannot say what was attempted is an *assumed* blocker, not a proven one — and assumed blockers are how a run stalls with budget left.
 

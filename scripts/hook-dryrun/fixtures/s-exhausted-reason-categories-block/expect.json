@@ -1,0 +1,86 @@
+{
+  "ok": false,
+  "why": "cycle 3 of 10 claims FRONTIER-EXHAUSTED after parking two startable phases as pending decisions for their size and lack of user benefit, and for a person's approval of the finished result; the auditor is told these are not reasons and the reason names the phases",
+  "auditor": "fail: Phase 3 (CSV export) is parked for its size and lack of user benefit, and Phase 4 (Reporting) only for the owner approving the finished result; neither blocks starting it",
+  "reasonContains": [
+    "CSV export",
+    "Reporting",
+    "FRONTIER-EXHAUSTED"
+  ],
+  "liveReasonContains": [
+    "CSV"
+  ],
+  "reasonNotContains": [
+    "RUN-SUMMARY"
+  ],
+  "transcript": [
+    {
+      "type": "user",
+      "userType": "external",
+      "origin": {
+        "kind": "human"
+      },
+      "message": {
+        "role": "user",
+        "content": "<command-message>iyu:run-cycle</command-message>\n<command-name>/iyu:run-cycle</command-name>\n<command-args>10</command-args>"
+      }
+    },
+    {
+      "type": "user",
+      "userType": "external",
+      "isMeta": true,
+      "message": {
+        "role": "user",
+        "content": [
+          {
+            "type": "text",
+            "text": "Base directory for this skill: …\n# Development Cycle Runner"
+          }
+        ]
+      }
+    },
+    {
+      "type": "assistant",
+      "message": {
+        "role": "assistant",
+        "content": [
+          {
+            "type": "text",
+            "text": "Cycle 03 done; frontier exhausted, report written."
+          }
+        ]
+      }
+    },
+    {
+      "type": "user",
+      "userType": "external",
+      "isMeta": true,
+      "message": {
+        "role": "user",
+        "content": [
+          {
+            "type": "text",
+            "text": "Stop hook feedback:\nUnblocked autonomous work remains."
+          }
+        ]
+      }
+    },
+    {
+      "type": "assistant",
+      "message": {
+        "role": "assistant",
+        "content": [
+          {
+            "type": "text",
+            "text": "Report and handoff are done."
+          }
+        ]
+      }
+    }
+  ],
+  "promptContains": [
+    "how much work it is",
+    "no user-visible benefit",
+    "A condition on closing or approving the work does not block starting it"
+  ]
+}

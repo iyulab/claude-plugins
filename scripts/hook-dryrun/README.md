@@ -56,6 +56,7 @@ hook and by continuity-root resolution, both of which look for `cycle-logs/cycle
 | `p-first-cycle-in-progress-block` | BLOCK | This run's only log is its in-progress stub; the previous run's report covers a different `Start:` |
 | `q-human-needed-report-block` | BLOCK | A run-fatal `HUMAN-NEEDED:` ends the run with budget left, but the report is missing |
 | `r-exhausted-order-park-block` | BLOCK | Phases parked as pending decisions only for their place in the roadmap order fail the audit; the auditor is told that order is not a dependency and to judge a reclassification by its reason |
+| `s-exhausted-reason-categories-block` | BLOCK | Phases parked as pending decisions for their size, lack of user benefit, or a person's approval of the finished result fail the audit; the auditor is told these reasons never account for a phase and that a condition on closing the work does not block starting it |
 
 Add a fixture as a new directory with a `tree/` and an `expect.json`:
 

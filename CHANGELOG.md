@@ -8,6 +8,19 @@ bugs or docs. MAJOR is never bumped automatically.
 > History is reconstructed from git from v1.11.0 onward. Earlier versions live in
 > the git log only.
 
+## [Unreleased]
+
+### Fixed
+
+- **The `FRONTIER-EXHAUSTED:` audit judges which reasons count for parking a phase.** The auditor was
+  told to judge the reason, not the label, but not which reasons are not reasons, so a run could park
+  startable work as a pending decision for its size or lack of user benefit, or as blocked on a
+  person's check of the finished result, and pass; only the next `resume` caught it. The audit prompt
+  now names them: how much work it is, no user-visible benefit, a breaking change below 1.0, and a
+  condition on closing or approving the work (as opposed to what its start waits on) never account
+  for a phase. `run-cycle`'s self-unblock check (step 5) says the same from the run's side. New
+  hook-dryrun fixture `s-exhausted-reason-categories-block`.
+
 ## [1.47.2] — 2026-10-25
 
 ### Fixed
