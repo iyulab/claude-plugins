@@ -70,7 +70,7 @@ Traps worth restating, all hit this plugin before:
 
 ## Current Plugins
 
-### iyu (v1.47.2)
+### iyu (v1.47.3)
 
 Productivity toolkit for open-source maintainers. **Design principle**: teach Claude what is
 *different* about a project, not how to develop software — skills supply decision frameworks, Claude
