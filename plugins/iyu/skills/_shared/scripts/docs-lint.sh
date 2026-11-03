@@ -17,7 +17,7 @@
 #
 # It only reads. Nothing in the root is written, created or moved.
 #
-# DOCS_LINT_TODAY (YYYY-MM-DD), when set, replaces today's date for L08; the fixture suite uses it.
+# DOCS_LINT_TODAY (YYYY-MM-DD), when set, replaces today's date for L08 and L11; the fixture suite uses it.
 #
 # Processes are few on purpose: under Git Bash on Windows each one costs a tenth of a second or
 # more. One awk scans every document, the shell tests link targets with its builtin `[ -e ]`, and
@@ -30,7 +30,7 @@ set -u
 LC_ALL=C
 export LC_ALL
 
-codes='L04 L05 L07 L10 L01 L06 L08'
+codes='L04 L05 L07 L10 L01 L06 L08 L11'
 
 all_unchecked() {
     for c in $codes; do
@@ -81,6 +81,18 @@ function days(d,    y, m, dd) { # days since a fixed epoch; only differences are
     y = substr(d, 1, 4) + 0; m = substr(d, 6, 2) + 0; dd = substr(d, 9, 2) + 0
     if (m <= 2) { y--; m += 12 }
     return 365 * y + int(y / 4) - int(y / 100) + int(y / 400) + int((153 * (m - 3) + 2) / 5) + dd
+}
+# The age of a ## 진행 중 entry counts from the newest of its 최근 date (a unit advanced it) and its
+# 확인 date (someone looked and kept it) - never from an edit, which the file cannot tell.
+function strand_age(l, at,    m, a, b, newest) {
+    a = ""; b = ""
+    if (match(l, /최근: [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]/)) { m = substr(l, RSTART, RLENGTH); a = substr(m, length(m) - 9) }
+    if (match(l, /확인: [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]/)) { m = substr(l, RSTART, RLENGTH); b = substr(m, length(m) - 9) }
+    newest = a
+    if (b != "" && (a == "" || days(b) > days(a))) newest = b
+    if (!isdate(newest)) { unc("L11", F ":" at, "entry has no 최근 date: " snip(l)); return }
+    if (isdate(today) && days(today) - days(newest) > 14)
+        fnd("L11", F ":" at, "last advanced or confirmed " newest ", " (days(today) - days(newest)) " days ago (over 14): " snip(l))
 }
 function fmt(n,    s, r) { # 61234 -> 61,234
     s = n ""; r = ""
@@ -188,6 +200,7 @@ function end_file() {
         if (h_grad != 1) fnd("L10", F, "heading \"## 완료·졸업\" occurs " h_grad " times (expected 1) - report it, do not repair")
         else if (grad > 10) fnd("L10", F, grad " entries under ## 완료·졸업 (cap 10) - archive the oldest " (grad - 10))
         chk("L10", F)
+        if (isdate(today)) chk("L11", F); else unc("L11", F, "today'"'"'s date unknown")
     } else if (T == "HISTORY") {
         if (dated > 30) fnd("L10", F, dated " live entries (cap 30) - archive the oldest " (dated - 30))
         if (dated || !other) chk("L10", F)
@@ -264,6 +277,7 @@ FNR == 1 {
         if (line ~ /^[-*+][ \t]/) {
             entry = FNR; beneath_at = 0
             if (sec == "grad") grad++
+            if (sec == "run") strand_age(line, FNR)
             if (clen(line) > 800) fnd("L01", F ":" FNR, "strand entry of " fmt(clen(line)) " characters (budget 800)")
         } else if (entry && line !~ /^[ \t]*$/ && line !~ /^[ \t]*<!--.*-->[ \t]*$/ && !beneath_at) {
             beneath_at = FNR
@@ -309,6 +323,7 @@ BEGIN {
     title["L01"] = "character budgets"
     title["L06"] = "a restated fact agrees with its home"
     title["L08"] = "no ## Waiting on you entry older than 14 days"
+    title["L11"] = "no ## 진행 중 strand entry untouched for more than 14 days"
     unc_n["L06"] = 1
     unc_l["L06", 1] = "needs reading, not matching: the hygiene pass judges it"
     cap = 25

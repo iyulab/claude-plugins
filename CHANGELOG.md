@@ -8,6 +8,21 @@ bugs or docs. MAJOR is never bumped automatically.
 > History is reconstructed from git from v1.11.0 onward. Earlier versions live in
 > the git log only.
 
+## [Unreleased]
+
+### Added
+
+- **A strand that nothing advances leaves `## 진행 중`.** `STRANDS.md` moved an entry out of
+  `## 진행 중` only when a later unit named a different strand, so a strand that ran once and was
+  never named again stayed there for good — and the two `backlog-discover` symptom rows that read it
+  (`strand-deepening`, `dormant-strand-review`) had nothing to compare against or never fired.
+  `handoff` now settles every entry that has been untouched for more than 14 days (the newer of its
+  `최근` date and the new optional `확인` date): graduate it, stop it into `## 중단됨` with a
+  `재개 조건`, or keep it with a dated one-line reason. The age counts from that act of looking, not
+  from an edit, so a bulk rewrite of the file does not restart it. `docs-lint.sh` reports the
+  entries that hit the threshold as `L11` (warn class); new dryrun fixtures `l11-stale-strand-warn`
+  and `l11-confirmed-strand-pass`.
+
 ## [1.47.3] — 2026-10-31
 
 ### Fixed

@@ -19,7 +19,7 @@ is often first on `PATH`.
 
 For each fixture the script copies `fixtures/<name>/tree` to a temp directory, runs the lint on it
 with `DOCS_LINT_TODAY` fixed (default `2026-10-18`), and checks the exit code, **every code's verdict**
-(so a fixture about one code is also clean on the other six), substrings the report must and must
+(so a fixture about one code is also clean on the other codes), substrings the report must and must
 not contain, and that **no file in the tree changed** — the lint only reads.
 
 A failing run keeps its temp tree and prints the report and where the tree is.
@@ -54,6 +54,8 @@ a single sub-check. Removing a check from the script fails the fixture named for
 | `l01-updated-line-warn` | L01 WARN | An `Updated` line over 300 characters |
 | `l01-file-size-warn` | L01 WARN | `STRANDS.md` over 12,000 characters |
 | `l08-stale-gate-warn` | L08 WARN | A gate registered more than 14 days before `today` |
+| `l11-stale-strand-warn` | L11 WARN | A `## 진행 중` entry whose newest date (`최근`, `확인`) is more than 14 days before `today` |
+| `l11-confirmed-strand-pass` | PASS | The same entry with a recent `확인` date: age counts from the act of looking |
 
 Add a fixture as a new directory with a `tree/` and an `expect.json`:
 

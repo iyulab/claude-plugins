@@ -128,10 +128,10 @@ docs cycle. `STRANDS.md` format:
 > Archive: [STRANDS-ARCHIVE-01.md](STRANDS-ARCHIVE-01.md)  <!-- omit this line until an archive exists -->
 
 ## 진행 중
-- {strand} — 시작: {date} ({unit}), 최근: {date} ({unit}) (누적 {k}회)
+- {strand} — 시작: {date} ({unit}), 최근: {date} ({unit}) (누적 {k}회) — 확인: {date} — {한 줄 사유}  <!-- 확인 part only on a strand kept by step 4 f -->
 
 ## 중단됨 (복귀 검토 후보)
-- {strand} — 마지막: {date} ({unit}) — 전환 사유: "{한 줄: 무엇으로 전환했는지}"
+- {strand} — 마지막: {date} ({unit}) — 전환 사유: "{한 줄: 무엇으로 전환했는지}" — 재개 조건: "{한 줄}"
 
 ## 완료·졸업 (최근 10건 — 이전 이력은 archive 참조)
 - {strand} — {date range}
@@ -144,7 +144,8 @@ docs cycle. `STRANDS.md` format:
 tally of what each run did. That is a chronology, and its home is the cycle logs and `HISTORY.md`;
 appended under a strand, it is how a ledger grows to tens of kilobytes while still holding only a
 handful of strands. The entry's own fields (`시작`, `최근`, `누적`) are the whole record a strand
-needs here. STRANDS takes no "current" or "next" field either — that is `HANDOFF.md`'s snapshot.
+needs here. The one optional addition is `확인` (step 4 f): a dated one-line reason a strand is kept,
+written only after someone actually looked at it. STRANDS takes no "current" or "next" field either — that is `HANDOFF.md`'s snapshot.
 
 Every other reference to these sections, in any file, uses the short prefix shown above without
 the parenthetical (`## 진행 중` / `## 중단됨` / `## 완료·졸업`) — this is the established
@@ -213,6 +214,20 @@ Apply whenever continuity docs are written — every `run-cycle` STEP 5, every `
       places. This is what closes the gap a `handoff`-only session used to leave open: a phase
       finished without ever running `run-cycle` now graduates its strand in the same pass that
       migrates it to `HISTORY.md`, not never.
+   f. **Settle the stale** (`handoff` only, once per closing session, after a–e). Steps b–e move an
+      entry only when a unit names it, so a strand that ran once and was never named again would
+      stay under `## 진행 중` forever. For every `## 진행 중` entry this unit did not advance, take
+      the newer of its `최근` and `확인` dates; when that is more than **14 days** before today (the
+      figure `L11` warns at; a project's own instructions may set another), settle the entry — one of
+      three ways, chosen from evidence and never put to the owner: **graduate** it when its work is
+      done (its phase already sits in `HISTORY.md`) as in step e; **stop** it — move it to
+      `## 중단됨` with the one-line transition reason and a `재개 조건` — when nothing is working on
+      it; **keep** it only when the strand was looked at this session and is still the intended next
+      work (its phase is open in `ROADMAP.md`, or `HANDOFF.md` `## Next` names it), by appending
+      `확인: {today} — {one line: why it stands}`. In doubt, stop: `## 중단됨` is never archived or
+      dropped, so nothing is forgotten, and `dormant-strand-review` judges it later. The age counts
+      from that act of looking and from nothing else, so a mechanical rewrite or bulk move of the file
+      does not restart the clock. Report which entries were settled and how in `## State of play`.
 
    Create `STRANDS.md` with just the `# STRANDS` header and empty sections if it does not exist yet.
 
@@ -363,6 +378,7 @@ one fails.
 | `L01` | Character budgets: an item or entry 1,200 · a `STRANDS.md` entry 800 · the `Updated` line 300 · `ROADMAP.md` 60,000 · `HANDOFF.md` 30,000 · `STRANDS.md` 12,000 |
 | `L06` | A document restates a fact whose home (§2) is another document, and the two differ. Telling a restatement from a citation takes reading, so the script always reports this one `UNCHECKED` and the pass judges it |
 | `L08` | A `## Waiting on you` entry registered more than 14 days ago — the gate is going stale; say so where the owner reads it first |
+| `L11` | A `## 진행 중` entry whose newer of `최근` and `확인` is more than 14 days before today — a strand nothing advanced and nobody confirmed; step 4 f settles it. A `handoff` that ran step 4 f leaves none |
 
 **What a failure means where:**
 

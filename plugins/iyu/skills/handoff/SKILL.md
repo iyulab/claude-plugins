@@ -100,7 +100,9 @@ every completed item out of `ROADMAP.md` (including pre-existing leftovers) into
 (archiving overflow past its live window), rewrite `HANDOFF.md` to current + next only, **update**
 `STRANDS.md` (the same transition procedure `run-cycle` applies per cycle, applied here per this
 closing session — record the unit as `session-{YYYY-MM-DD}`, counted once per the rule in §3 step 4,
-so a second handoff the same day and a handoff at the end of a run add nothing) then compress it (archiving overflow
+so a second handoff the same day and a handoff at the end of a run add nothing), settle the entries under
+`## 진행 중` that nothing advanced for over 14 days (step 4 f: graduate, stop with a resume condition, or
+keep with a dated reason), then compress it (archiving overflow
 past its live window; `## 진행 중`/`## 중단됨` are never archived), keep the `> History:` link —
 then run the structural checks (continuity-docs.md §7) on the result by running the script:
 `sh "${CLAUDE_SKILL_DIR}/../_shared/scripts/docs-lint.sh" <root>`. Run it again after steps 5–6

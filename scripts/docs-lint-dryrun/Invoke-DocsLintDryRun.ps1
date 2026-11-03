@@ -71,7 +71,7 @@ function Invoke-LintRun($fx, $expect, [string]$sh, [string]$lint) {
     if ($exit -ne [int]$expect.exit) { $problems += "exit $exit, expected $($expect.exit)" }
     if ($out -notmatch '(?m)^Result: ') { $problems += 'no Result line' }
     # Every code's verdict is asserted, so a fixture is also clean on the codes it is not about.
-    foreach ($code in 'L04', 'L05', 'L07', 'L10', 'L01', 'L06', 'L08') {
+    foreach ($code in 'L04', 'L05', 'L07', 'L10', 'L01', 'L06', 'L08', 'L11') {
         $want = if ($expect.verdicts.$code) { $expect.verdicts.$code } elseif ($code -eq 'L06') { 'UNCHECKED' } else { 'PASS' }
         if ($out -notmatch "(?m)^$code $want ") { $problems += "$code is not $want" }
     }

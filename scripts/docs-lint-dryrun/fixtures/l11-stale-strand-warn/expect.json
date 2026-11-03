@@ -1,0 +1,10 @@
+{
+  "why": "a ## 진행 중 entry whose newest date is more than 14 days before today is a warning - nothing advanced it and nobody confirmed it",
+  "exit": 0,
+  "verdicts": {
+    "L11": "WARN"
+  },
+  "contains": [
+    "last advanced or confirmed 2026-09-20, 28 days ago (over 14): - Phase 2"
+  ]
+}
