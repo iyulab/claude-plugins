@@ -8,7 +8,7 @@ bugs or docs. MAJOR is never bumped automatically.
 > History is reconstructed from git from v1.11.0 onward. Earlier versions live in
 > the git log only.
 
-## [Unreleased]
+## [1.49.0] — 2026-11-06
 
 ### Added
 
@@ -29,6 +29,16 @@ bugs or docs. MAJOR is never bumped automatically.
   evals (tag `stages`) cover the guard paths — no contract, and charter interviewing rather than
   building. **Known gaps:** `drive` has no Stop hook in this version, and the evaluator-on-a-running-
   build path and the full `drive` loop have no eval yet.
+
+### Fixed
+
+- **Stale facts the skills contradicted themselves on.** References to skills and flags that no
+  longer exist (`issue`, `pr`, `run`, `--no-research`, `--quick`, `Bash(gh *)`) are gone; activity
+  and row counts that no longer matched the `backlog-discover` schema and symptom table are no
+  longer stated as numbers; the same-day `telemetry-az` report rule and the sections `resume`
+  writes now match their definitions; a dangling step reference in `handoff`, a borrowed status
+  label in `backlog-discover` and an off-scale alignment level in a `mindset` example are fixed;
+  `handoff` states current behavior instead of comparing with an earlier version.
 
 ## [1.48.0] — 2026-11-04
 
