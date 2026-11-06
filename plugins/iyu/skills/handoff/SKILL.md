@@ -79,6 +79,11 @@ The conversation may already be compacted, and it is not the record. Read the ac
   `RUN-SUMMARY-*.md` block: its deferred (L2) decisions feed step 6's "Waiting on you", and its
   self-made (L1) decisions feed "Decided this session"
 - Any `<root>/issues/` drafts written this session
+- `<root>/stages/stages.json` and its newest `evidence/` file, if a stage contract exists
+  ([stages.md](${CLAUDE_SKILL_DIR}/../_shared/stages.md)). Record the open stage and its progress
+  (scenarios passing x/y, latest verdict) under `## In flight`; record any `owner_decisions` still
+  `open` under `## Waiting on you` with the stage each one opens. Never copy scenario text into the
+  handoff, and never edit the contract — it is not a continuity doc.
 - The project's external inbox, if it defines one
   ([continuity-docs.md §6](${CLAUDE_SKILL_DIR}/../_shared/continuity-docs.md)) — an item that arrived
   during the session belongs in the handoff even though nothing in git mentions it

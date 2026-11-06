@@ -45,6 +45,14 @@ last handoff is part of current state. This is not `/iyu:handoff`'s evidence rec
 hygiene pass, no migrating anything to `HISTORY.md`. Those stay `/iyu:handoff`'s job; this read grounds
 step 3's judgment in what changed since, it does not redo the archaeology.
 
+**A stage contract changes what "where things stand" means.** If `<root>/stages/stages.json` has an
+`open` stage ([stages.md](${CLAUDE_SKILL_DIR}/../_shared/stages.md)), read it and its newest
+`evidence/` file, and lead the synthesis with the open stage: its id, scenarios passing x/y, the latest
+verdict, and every `owner_decisions` entry still `open` — each with the stage it opens, the one that
+unlocks the most first. The next step it proposes is `/iyu:drive` (or `/iyu:charter` when the stage is
+`passed` and the next is `upcoming`). A stage whose newest evidence is `fail`/`unverified` with
+`status: open` is an interrupted drive; say so.
+
 No `HANDOFF.md` → say so, point at `ROADMAP.md` or `/iyu:backlog-discover` if neither exists, and
 stop — there is nothing to resume.
 

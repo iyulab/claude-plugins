@@ -16,6 +16,13 @@ periodically to keep it fed. This skill is **fully independent of `run-cycle`**:
 `run-cycle` only ever *consumes* `ROADMAP.md`; this skill only ever *proposes additions*
 to it, and never writes `ROADMAP.md` directly.
 
+## While a stage is open
+
+If `<root>/stages/stages.json` has an `open` stage ([stages.md](${CLAUDE_SKILL_DIR}/../_shared/stages.md)),
+this skill is not the way to feed work: `drive` takes its work from the stage's scenarios. When it is
+run anyway, classify every candidate it produces as *closes the open stage*, *a later stage*, or
+*parking*, and propose only the first kind for the roadmap.
+
 ## Why this shape
 
 `run-cycle` is the capable **employee** — given a scope, it executes, verifies, reports back. This
