@@ -47,9 +47,9 @@ next scope is derived, and
 where release work sits in the order. Read both first — this file only adds what is specific to
 closing a session.
 
-**This skill used to also brief pending decisions — it no longer does.** A briefing is analysis aimed
-at whoever resumes; producing it here means it is written once at close and then sits, possibly
-staling, until someone actually acts on it. That is `/iyu:resume`'s job now: it grounds the same
+**Briefing pending decisions is `/iyu:resume`'s job, not this skill's.** A briefing is analysis aimed
+at whoever resumes; produced here it would be written once at close and then sit, possibly staling,
+until someone acts on it. `/iyu:resume` grounds the same
 decision in the repo as it stands the moment someone is about to act on it, and it is the one place a
 decision gets written back the instant it is made. This skill's job stops at *naming* what is
 undecided (step 6) — cleanup and continuity-doc upkeep, nothing more.
@@ -106,7 +106,7 @@ every completed item out of `ROADMAP.md` (including pre-existing leftovers) into
 `STRANDS.md` (the same transition procedure `run-cycle` applies per cycle, applied here per this
 closing session — record the unit as `session-{YYYY-MM-DD}`, counted once per the rule in §3 step 4,
 so a second handoff the same day and a handoff at the end of a run add nothing), settle the entries under
-`## 진행 중` that nothing advanced for over 14 days (step 4 f: graduate, stop with a resume condition, or
+`## 진행 중` that nothing advanced for over 14 days ([continuity-docs.md](${CLAUDE_SKILL_DIR}/../_shared/continuity-docs.md) §3 step 4 f: graduate, stop with a resume condition, or
 keep with a dated reason), then compress it (archiving overflow
 past its live window; `## 진행 중`/`## 중단됨` are never archived), keep the `> History:` link —
 then run the structural checks (continuity-docs.md §7) on the result by running the script:
@@ -118,8 +118,8 @@ committed. Its `WARN` and `UNCHECKED` lines, and any failure the rules forbid re
 This is the step that makes the skill worth running repeatedly. The docs converge toward
 remaining-work-only on their own, without anyone scheduling a cleanup. It is also what keeps
 `STRANDS.md` accurate on the majority of sessions, which close via this skill rather than
-`run-cycle` — a session that finishes a phase now graduates its strand in the same pass that
-migrates the phase to `HISTORY.md`, instead of leaving the entry orphaned.
+`run-cycle` — a session that finishes a phase graduates its strand in the same pass that
+migrates the phase to `HISTORY.md`.
 
 ### 4. Derive the next scope
 

@@ -109,8 +109,8 @@ direction the project has not committed to.
 ## Why `allowed-tools` includes unscoped Bash
 
 Development execution requires arbitrary build/test/lint/git commands across unknown projects;
-scoping would require per-project edits. Accepted deliberately. Narrow-surface skills use a scoped
-form (`Bash(gh *)`) instead.
+scoping would require per-project edits. Accepted deliberately. A narrow-surface skill scopes it
+instead (`telemetry-az`: `Bash(az *)`).
 
 ## Why the logs are the memory
 

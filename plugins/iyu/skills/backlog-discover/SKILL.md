@@ -123,7 +123,7 @@ are never descended at all.
 (backlog running dry) is exactly the case where search should widen, not narrow — so on
 engagement, force **all four lanes below, plus `vision-gap`, due for this run regardless of
 their individual cadence.** This deliberately differs from steady-state behavior (cadence governs
-alone, per the schema note above): the "twenty shallow lanes" cost concern that governs steady
+alone, per the schema note above): the "every lane, each shallow" cost concern that governs steady
 state does not apply here, because this mode only engages on the documented dry-backlog trigger,
 not on every invocation.
 
@@ -185,9 +185,9 @@ one anyway (and say so in the proposal).
 
 Without this, the table is decorative. Row 1's condition — zero removal/deprecation entries
 across 8 logs — is true of almost every growing project, it is checked first, and
-first-match-wins means it would win every run forever, leaving rows 2–7 and the 14-item
-rotation pool as dead code. A one-run window is not enough either: rows 1 and 2 would simply
-alternate while 3–7 still starve. `history[]` keeps 12 entries, so a 3-run window is free.
+first-match-wins means it would win every run forever, leaving every later row and the
+rotation pool as dead code. A one-run window is not enough either: the first two rows would simply
+alternate while the rest still starve. `history[]` keeps 12 entries, so a 3-run window is free.
 
 | Symptom | Heuristic (what to check) | Prescription (from playbook) |
 |---|---|---|
@@ -331,7 +331,7 @@ requirement, not a suggestion; an activity added to P3 later must also be added 
 ### P5: Philosophy alignment
 
 Score each item using [philosophy-alignment-guide.md](${CLAUDE_SKILL_DIR}/../mindset/references/philosophy-alignment-guide.md)
-(the same guide `issue`/`pr`/`telemetry-az` use). Low-scoring items are **kept but
+(the same guide `issue-triage`, `mindset`, `run-cycle`, `resume` and `telemetry-az` use). Low-scoring items are **kept but
 flagged** "정렬 미흡" in the proposal — this skill never silently drops an item; exclusion
 is a human call made when reviewing the proposal.
 
@@ -435,7 +435,7 @@ retires a strand (see `continuity-docs.md` §3).
 4. **Breaking is not major — and never framed as one.** Read the version stage from the
    project's manifest. Before 1.0, a breaking item is an ordinary minor-scale change: rank
    and stage it like any other. At 1.0+, an item that changes a published contract is
-   marked "Pending Human Decision" as a version decision, with a non-breaking decomposition
+   marked `Discussion 필요` as a version decision, with a non-breaking decomposition
    offered alongside where one exists — never phrased as an implied major bump.
 5. **Thin layer over telemetry.** This skill never re-implements `telemetry-az`'s
    Azure/KQL machinery; it only reads that skill's own output files.

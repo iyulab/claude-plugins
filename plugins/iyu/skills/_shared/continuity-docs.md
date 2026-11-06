@@ -18,7 +18,7 @@ Every artifact below lives **together in one directory**, the *continuity root* 
 | Artifact | Path | Written by |
 |---|---|---|
 | Phase backlog (remaining work) | `<root>/ROADMAP.md` | run-cycle, handoff |
-| Handoff (current + next) | `<root>/HANDOFF.md` | run-cycle, handoff — plus `resume`, which writes only its `## Decided this session` entry and the `## Next` order that entry decides |
+| Handoff (current + next) | `<root>/HANDOFF.md` | run-cycle, handoff — plus `resume`, which writes only `## Decided this session`, the `## Next` order and criterion-persistence item its decisions imply, and `## Waiting on you` as its step 4 leaves it |
 | Cross-session thread ledger | `<root>/STRANDS.md` | run-cycle, handoff |
 | Thread-ledger archive (cold storage, created lazily) | `<root>/STRANDS-ARCHIVE-{NN}.md` | run-cycle, handoff |
 | Completed-work index | `<root>/HISTORY.md` | run-cycle, handoff |

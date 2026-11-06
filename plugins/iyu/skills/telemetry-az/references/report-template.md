@@ -5,8 +5,7 @@
 Write to `<root>/telemetry/report-YYYY-MM-DD.md` (`-{k}` suffix for a later same-day run — SKILL.md P6). The report is the **full ledger** of a
 run: it **leads with a run-over-run Trend section** (both purposes), then carries every finding
 at every risk level, the triage summary, dedup/recurrence notes, and links to any issue files
-created. If multiple runs happen on one day, append a new `## Run` section rather than
-overwriting.
+created. A later run on the same day writes its own `-{k}` file; the template below is one run.
 
 ```markdown
 # Telemetry Report — {YYYY-MM-DD}

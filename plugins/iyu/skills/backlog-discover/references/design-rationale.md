@@ -52,7 +52,7 @@ rule 9); P2.5 + P4 extend the same discipline to ordinary items.
 
 The original ladder stopped at the first lane producing material, reasoning that deeper lanes cost
 more and recoup slower. That reasoning is still correct **in steady state** — most invocations are
-cadence-gated and should not touch all twenty activities. It stopped being correct specifically at
+cadence-gated and should not touch every activity. It stopped being correct specifically at
 the dry-backlog trigger, because that trigger *is* the signal that the shallow, cheap lanes
 (dogfooding's always-floor, whatever cadence happens to be due) already came back thin — continuing
 to optimize for "cheapest lane that satisfies" at that exact point converts the deepen-signal into a

@@ -190,7 +190,7 @@ item is blocked: then the roadmap's startable phases are (order is not a gate, [
 
 ### 4. Philosophy Alignment (high-level only)
 
-Evaluate the overall goal — not every future cycle — against CLAUDE.md / README.md, using the **four canonical dimensions** of [philosophy-alignment-guide.md](${CLAUDE_SKILL_DIR}/../mindset/references/philosophy-alignment-guide.md) (Core Mission Fit · Scope Alignment · Pattern Consistency · User Base Impact). That guide is the single definition of "the four dimensions" across this plugin — `issue`, `pr`, and `backlog-discover` score against the same four, so do not maintain a divergent set here.
+Evaluate the overall goal — not every future cycle — against CLAUDE.md / README.md, using the **four canonical dimensions** of [philosophy-alignment-guide.md](${CLAUDE_SKILL_DIR}/../mindset/references/philosophy-alignment-guide.md) (Core Mission Fit · Scope Alignment · Pattern Consistency · User Base Impact). That guide is the single definition of "the four dimensions" across this plugin — `issue-triage`, `backlog-discover` and `telemetry-az` weigh against the same four, so do not maintain a divergent set here.
 
 One **run-specific** check rides alongside them, and it is not one of the four: **Dependency Direction** — no upstream→downstream leakage (a consuming project's domain concept must not be pushed into a library it consumes).
 

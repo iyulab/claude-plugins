@@ -16,8 +16,6 @@ Auto-trigger research when ANY of these conditions are met:
 | **Performance Critical** | Performance-critical code path |
 
 Skip research when:
-- `--no-research` flag is set
-- `--quick` flag is set
 - Issue is straightforward with clear solution in codebase
 
 ## Output Format

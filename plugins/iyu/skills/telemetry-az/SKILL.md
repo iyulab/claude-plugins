@@ -34,8 +34,7 @@ The skill serves **two purposes**, kept distinct in the report:
 
 `allowed-tools` scopes Bash to `az *`. The current UTC watermark is captured in-band via
 KQL `now()` inside the query, so no `date`/shell arithmetic is needed. This keeps the
-surface narrow — consistent with `issue`/`pr` (`Bash(gh *)`), unlike the deliberately
-unscoped `run`/`run-cycle` skills.
+surface narrow, unlike `run-cycle`, which leaves Bash unscoped on purpose.
 
 ## Input
 

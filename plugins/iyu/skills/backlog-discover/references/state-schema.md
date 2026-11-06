@@ -84,8 +84,8 @@ special-cased as unconditional; it goes through the same due-check as every othe
 activity (elapsed ≥ interval), it simply always satisfies that check.
 
 On first run (no `state.json` file), every activity has `lastRunUtc: null`, which counts as
-infinite elapsed time — **all 20 are due at once**. Running twenty lanes in one invocation
-does not produce twenty findings; it produces twenty shallow passes, or a context wall.
+infinite elapsed time — **every activity is due at once**. Running them all in one invocation
+does not produce a finding per lane; it produces a shallow pass each, or a context wall.
 
 **First-run split (applies only when `state.json` did not exist).** Run this ordered core of
 convergent activities to completion and stop there (P2's one emergent session still runs on
@@ -109,5 +109,5 @@ advances `lastRunUtc`** — a split-deferred activity was never attempted, so ad
 clock would silently swallow it for a whole cadence period. P8 restates this distinction.
 
 The first proposal is still larger than a steady-state one (a genuine cold-start backlog
-seed) — note that in the summary. What it must not be is twenty lanes touched and none
+seed) — note that in the summary. What it must not be is every lane touched and none
 finished.

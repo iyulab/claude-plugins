@@ -73,7 +73,7 @@ not before.
 
 | Step | Reference |
 |---|---|
-| Drafting the reply to a contributor | [response-templates.md](${CLAUDE_SKILL_DIR}/references/response-templates.md) — one template per verdict |
+| Drafting the reply to a contributor | [response-templates.md](${CLAUDE_SKILL_DIR}/references/response-templates.md) — one template per issue verdict; PR replies follow the severity format above |
 | Wording review feedback | [tone-rules.md](${CLAUDE_SKILL_DIR}/references/tone-rules.md) — direct, few emojis, no AI-assistant register |
 | A bug that needs investigation before a verdict | [research-methodology.md](${CLAUDE_SKILL_DIR}/references/research-methodology.md) |
 | Finding the same bug pattern elsewhere | [pattern-detection-guide.md](${CLAUDE_SKILL_DIR}/../mindset/references/pattern-detection-guide.md) |

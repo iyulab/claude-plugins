@@ -82,7 +82,7 @@ throw new LibraryError({ code: "USER_NOT_FOUND", context: { id } });
 - Underlying Need: Same developer experience for GraphQL
 - Job to be Done: Query GraphQL APIs with familiar patterns
 
-**Philosophy Alignment**: 3.75/5 (Medium-High)
+**Philosophy Alignment**: 3.75/5 (Medium)
 - Core Mission: 4 - Query building is our focus
 - Scope: 4 - Natural extension to other query languages
 - Patterns: 3 - Would require new patterns
