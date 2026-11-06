@@ -1,9 +1,10 @@
 # Decision lenses — the five axes an option is judged on
 
-**This file is the single definition** of the lenses used to compare options. Two consumers read it
+**This file is the single definition** of the lenses used to compare options. Its consumers read it
 for two different purposes, and the lenses are the same in both:
 
-- `run-cycle` rule 2.5 — to **self-decide** a reversible (L1) choice and proceed without asking.
+- `run-cycle` rule 2.5, and `charter` / `drive` — to **self-decide** a reversible (L1) choice and
+  proceed without asking.
 - `resume` step 4 — to **brief and decide** a choice that `handoff` flagged or step 3 raised: the
   options, how each reads across the lenses, and the recommendation that becomes the provisional
   decision (only a gated act behind it waits on the owner).

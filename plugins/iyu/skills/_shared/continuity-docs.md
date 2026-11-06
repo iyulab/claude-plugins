@@ -3,7 +3,8 @@
 **Contents** — 1. Resolving the continuity root · 2. What belongs in each document · 3. Hygiene pass · 4. Deriving next scope · 5. Output language · 6. Session-boundary inbox check · 7. Structural checks
 
 **This file is the single definition** of where a project's dev-tracking documents live and what
-belongs in each. `run-cycle`, `handoff`, `resume`, `backlog-discover`, and `telemetry-az` all read it.
+belongs in each. `run-cycle`, `handoff`, `resume`, `backlog-discover`, `telemetry-az`, `charter`, `drive` and `accept` all
+read it.
 Copies of these rules inside individual skills drift apart; keep the definition here and link to it.
 
 (`_shared/` holds no `SKILL.md`, so it is reference material, not a skill.)
@@ -27,6 +28,7 @@ Every artifact below lives **together in one directory**, the *continuity root* 
 | Backlog proposals | `<root>/backlog-discovery/proposal-{YYYY-MM-DD}.md` + `state.json`, `INDEX.md` | backlog-discover |
 | Telemetry reports | `<root>/telemetry/report-{YYYY-MM-DD}.md` + `config.json`, `TREND.md` | telemetry-az |
 | Issue drafts | `<root>/issues/` | any |
+| Stage contract + evidence (a **contract artifact**, not a continuity doc — see `stages.md`) | `<root>/stages/` | charter, drive, accept |
 
 **A dated artifact written a second time on the same date never overwrites the first.** Each run
 of `backlog-discover` and `telemetry-az` gets its own file: the first run of the day takes the plain
@@ -96,6 +98,8 @@ grow monotonically until "what's left?" is buried under "what's done".
 | `HANDOFF.md` | What is in flight and what comes next, anchored to backlog phases | Past-session narrative. Anything already done |
 | `HISTORY.md` | A pure index, newest first, one compressed entry per completed phase | Detail — cycle logs and git history are the record |
 | `STRANDS.md` | Which dominant strand each cycle or session served, and interruption/resume transitions | Task detail (cycle logs own that), issues (issues/ owns that), completed-work narrative (HISTORY.md owns that), a session's current-vs-next snapshot (HANDOFF.md owns that — STRANDS.md is the cumulative cross-session record HANDOFF.md deliberately does not keep) |
+
+**Not in this table: `<root>/stages/`.** The stage contract keeps passed scenarios on purpose — that is what "done" is made of — so the completed-work invariant above does not apply to it, and `docs-lint` does not read it. Definition: [stages.md](stages.md).
 
 **Every fact has one home.** The documents above overlap in subject, so each kind of fact is
 written in exactly one place; every other document cites its ID or links to it and never restates
