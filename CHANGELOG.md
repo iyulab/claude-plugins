@@ -8,6 +8,17 @@ bugs or docs. MAJOR is never bumped automatically.
 > History is reconstructed from git from v1.11.0 onward. Earlier versions live in
 > the git log only.
 
+## [Unreleased]
+
+### Changed
+
+- **`issue-triage` describes what it does and when, instead of listing trigger phrases.** The list
+  overlapped `mindset` ("is this in scope") and invited matching on wording. Trigger evals pass on
+  sonnet and haiku, including a new `issue-triage-fires-short` case that uses a phrase the old list
+  carried.
+- **`resume` no longer reads as discouraging research.** "not new research" meant "not discovering
+  new work"; it now says so, since its own grounding step researches.
+
 ## [1.49.0] — 2026-11-06
 
 ### Added

@@ -80,7 +80,7 @@ Don't just replay `## In flight` / `## Next` as written — apply judgment to wh
 - **Object** to anything in `## Next` that no longer looks reasonable given current state — say why,
   and what you'd do instead.
 
-This is judgment over what the continuity docs and current state already contain — not new research.
+This is judgment over what the continuity docs and current state already contain — not discovery of new work.
 Discovering work nobody has scoped yet stays `/iyu:backlog-discover`'s job (rule 9); if that's what's
 actually needed, recommend it, don't attempt it here.
 
