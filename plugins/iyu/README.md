@@ -30,6 +30,9 @@ Productivity toolkit for open-source library maintainers and developers.
 | `/iyu:resume` | Skill | Manual + model-invoked | Session opener — reads the continuity docs and current state, synthesizes/reprioritizes, briefs flagged and derived decisions with options + a recommendation, records the pick immediately, stops before execution |
 | `/iyu:ship` | Skill | Manual | Version bump → commit → push → CI watch, gated on whether now is the moment |
 | `/iyu:telemetry-az` | Skill | Manual | Azure App Insights telemetry triage, issue discovery + run-over-run user analytics |
+| `/iyu:charter` | Skill | Manual | Interview the owner and write the stage contract (ladder of self-contained stages, scenarios, bar, decisions) |
+| `/iyu:drive` | Skill | Manual | Push the open stage to its agreed bar with an independent evaluator each round; stops only on pass or a real blocker |
+| `/iyu:accept` | Skill | Manual | Independent verdict on the open stage from the running build — judgment only |
 | `/iyu:backlog-discover` | Skill | Manual | Playbook-driven backlog discovery + diagnose/rank/stage — proposal only, never auto-merges |
 
 ## Commands
@@ -324,8 +327,8 @@ scenario* on its real runnable surface (CLI / library consumer-script / service 
 observing feature/UI/UX/app-flow gaps first-hand. This makes an **empty or recently-run
 backlog a deepen-signal, not a done-signal** — and when the floor comes up thin, a
 **deepen ladder** digs successively into stewardship → tech health & tooling → theory &
-domain practice → benchmarking & positioning. (The floor is not a ladder rung: dogfooding
-runs every invocation regardless, so counting it as the first rung would make the deeper
+domain practice → benchmarking & positioning. (The floor is not a ladder stage: dogfooding
+runs every invocation regardless, so counting it as the first stage would make the deeper
 lanes unreachable.) Findings must carry **run-evidence** (commands run + behavior observed +
 steps walked) or they're dropped as guesses; concrete defects route to `<root>/issues/`,
 only systemic/UX/vision gaps become proposal items.

@@ -8,6 +8,28 @@ bugs or docs. MAJOR is never bumped automatically.
 > History is reconstructed from git from v1.11.0 onward. Earlier versions live in
 > the git log only.
 
+## [Unreleased]
+
+### Added
+
+- **Goal-bound delivery: `charter`, `drive`, `accept`.** `run-cycle` derives each cycle's scope from
+  the last cycle's output and may end when nothing is left, so a product could reach "backlog
+  exhausted" without ever reaching a state anyone had defined as done. Three new manual skills add a
+  goal-bound path and leave `run-cycle` untouched. `/iyu:charter` interviews the owner and writes a
+  **stage contract** — an ordered ladder of stages that each work on their own, with scenarios an
+  observer can watch, a rubric with thresholds calibrated on the owner's own scores, a claims ledger
+  (`goal → first → works`), the owner decisions that could block each stage (collected up front), and
+  the seam between mock/UI and core. `/iyu:drive` pushes the open stage to that bar one failing
+  scenario at a time and ends only when the stage passes or needs something only the owner can supply
+  (a measured stall rule; one question with evidence). `/iyu:accept` dispatches an independent
+  evaluator subagent that drives the running build; only the evaluator writes `passes`, claim states
+  and `status`, and `drive` calls it when a round claims a new pass rather than after every edit. The contract (`<root>/stages/`) is defined once in `_shared/stages.md`; it is a
+  contract artifact, not a continuity doc, so `docs-lint` does not read it. `resume`, `handoff` and
+  `backlog-discover` gained a short clause each that applies only while a stage is open. Behavior
+  evals (tag `stages`) cover the guard paths — no contract, and charter interviewing rather than
+  building. **Known gaps:** `drive` has no Stop hook in this version, and the evaluator-on-a-running-
+  build path and the full `drive` loop have no eval yet.
+
 ## [1.48.0] — 2026-11-04
 
 ### Added
