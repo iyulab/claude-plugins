@@ -135,6 +135,13 @@ needed") is **permission, not an instruction**: the run *may* release when the g
 not obliged to release at all. Someone who wants a release to happen invokes `/iyu:ship` — that is
 the explicit instruction, and it still runs its own §2 check.
 
+**A grant covers what it names, and nothing wider.** "push" (integration) and "ship" (a version
+bump and a publish) are different acts. A grant that names only the push — typed with the
+invocation, or declared as standing in the project's instructions — lets the run push its verified
+commits at its end and stops there: the release review below holds every package and hands the gate
+over (4). Only a grant that names the release opens the review's "release once". A standing
+declaration is read by its own words; when they do not say which, it is push-only.
+
 Each cycle of a run is self-contained, so each cycle's end looks like a phase boundary (§2's
 question 4). A grant read cycle by cycle therefore releases once per cycle — the most expensive
 cadence there is, for consumers and for the people who operate the release. So the grant is read

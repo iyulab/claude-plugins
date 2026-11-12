@@ -125,13 +125,12 @@ Run-specific on top of it:
 `$ARGUMENTS`, and anything the user wrote alongside the invocation, is **scope context** — it feeds
 Preparation step 1, not a flag parser. There are no flags: a run always executes, and always commits.
 A release grant — given there, or declared as standing in the project's own instructions — is
-recorded in the first cycle log's Re-plan, where the run end finds it —
+recorded with the acts it names (push only, or push and ship) in the first cycle log's Re-plan —
 together with each package's release gate as fixed at run start (release-cadence §2), since the run
 end judges that gate and not one it cuts for itself.
 
-**The starting cycle number is derived, not passed.** Preparation reads the existing
-`<root>/cycle-logs/cycle-*.md`, takes the highest index, and starts at *that + 1* (1 when none
-exist). The repo already knows where the last run stopped; asking the caller to restate it only
+**The starting cycle number is derived, not passed**: the highest existing
+`<root>/cycle-logs/cycle-*.md` index *+ 1* (1 when none exist). The repo already knows where the last run stopped; asking the caller to restate it only
 creates a way to get it wrong.
 
 **Record both in every cycle log header** (`Budget:` / `Start:` — see Cycle Log). The Stop hook has

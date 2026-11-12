@@ -150,7 +150,9 @@ Then:
 ## Release review (only with a release grant)
 
 A grant recorded in the first cycle log's Re-plan is permission, read here once
-([release-cadence.md §5](../../_shared/release-cadence.md)). After the commit, before the handoff:
+([release-cadence.md §5](../../_shared/release-cadence.md)) — **for the acts it names**. A grant that
+names only the push: push the verified commits, release nothing, and record `Release review: pushed
+— grant covers push only`; steps 2–4 then run only to place the held gate for the handoff. After the commit, before the handoff:
 
 1. **Gather what the run left undelivered** — the commits since the last release, and any release
    the run already made under a §5 exception (those are delivered; they are not a reason to release

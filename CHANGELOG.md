@@ -8,6 +8,17 @@ bugs or docs. MAJOR is never bumped automatically.
 > History is reconstructed from git from v1.11.0 onward. Earlier versions live in
 > the git log only.
 
+## [1.50.1] — 2026-11-12
+
+### Fixed
+
+- **A release grant covers the acts it names.** 1.50.0 let a run read a standing declaration in the
+  project's instructions as a release grant, and a grant opened the run-end release review, which
+  can publish. A project that declares only a standing *push* would have had that read as
+  permission to release. `release-cadence.md` §5 now separates the two: a push-only grant — typed or
+  standing — pushes the run's verified commits and holds every package; only a grant that names the
+  release opens "release once", and a declaration that does not say which is push-only.
+
 ## [1.50.0] — 2026-11-12
 
 ### Added
