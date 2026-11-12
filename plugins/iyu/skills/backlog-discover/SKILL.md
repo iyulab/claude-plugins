@@ -1,8 +1,8 @@
 ---
 name: backlog-discover
-description: Discovers and judges new backlog phases for a project's ROADMAP.md like an owner-manager — runs a convergent/emergent research playbook (vision-gap, trend/competitive research, domain-practice and academic scans, stewardship inspection of dependencies/config/docs/repo hygiene, telemetry reuse, active dogfooding, plus emergent sessions rotated in by symptom) on a persistent per-activity cadence, then synthesizes the findings into a state-of-the-product diagnosis, an evidence-grounded importance ranking, and a dependency-ordered now/next/later staging toward the vision. Always produces a proposal document for human review; never merges into ROADMAP.md automatically.
+description: Discovers and judges new backlog phases for a project's ROADMAP.md like an owner-manager — runs a convergent/emergent research playbook (vision-gap, trend/competitive research, domain-practice and academic scans, stewardship inspection of dependencies/config/docs/repo hygiene, telemetry reuse, active dogfooding, plus emergent sessions rotated in by symptom) on a persistent per-activity cadence, then synthesizes the findings into a state-of-the-product diagnosis, an evidence-grounded importance ranking, and a dependency-ordered now/next/later staging toward the vision. Always produces a proposal document; adopts into ROADMAP.md only the items the project's own evidence grounds and that stay inside its declared role, and leaves everything else in the proposal for a human.
 when_to_use: Use when the backlog is running dry, when run-cycle reports the feature frontier exhausted, when dependencies or project configuration may have gone stale, or periodically to keep the roadmap fed with philosophy-aligned candidates. An empty or already-recently-run backlog is a deepen-signal — use the product, inspect what you own, then dig into tech-health, research, and positioning in that order — never a done-signal. Fully independent of run-cycle — run-cycle only consumes ROADMAP.md, this skill only feeds it.
-argument-hint: "[--modes <comma-list>] [--symptom <name>] [--dry-run]"
+argument-hint: "[--modes <comma-list>] [--symptom <name>] [--propose-only] [--dry-run]"
 disable-model-invocation: true
 allowed-tools: Read, Glob, Grep, Write, Edit, WebSearch, WebFetch, TodoWrite, Bash
 ---
@@ -12,16 +12,17 @@ allowed-tools: Read, Glob, Grep, Write, Edit, WebSearch, WebFetch, TodoWrite, Ba
 Run the [Backlog Generation Playbook](${CLAUDE_SKILL_DIR}/references/playbook.md) — a menu of convergent
 (observe existing signals) and emergent (manufacture new signals) activities — to
 discover new phase-level backlog candidates when a project's `ROADMAP.md` runs dry, or
-periodically to keep it fed. This skill is **fully independent of `run-cycle`**:
-`run-cycle` only ever *consumes* `ROADMAP.md`; this skill only ever *proposes additions*
-to it, and never writes `ROADMAP.md` directly.
+periodically to keep it fed. This skill is **independent of `run-cycle`** — neither invokes the
+other: `run-cycle` *consumes* `ROADMAP.md`; this skill *feeds* it, adopting what the project's own
+evidence grounds inside its declared role (P9) and proposing the rest for a human.
 
 ## While a stage is open
 
 If `<root>/stages/stages.json` has an `open` stage ([stages.md](${CLAUDE_SKILL_DIR}/../_shared/stages.md)),
 this skill is not the way to feed work: `drive` takes its work from the stage's scenarios. When it is
 run anyway, classify every candidate it produces as *closes the open stage*, *a later stage*, or
-*parking*, and propose only the first kind for the roadmap.
+*parking*: only the first kind is eligible for adoption (P9), and the other two are appended to
+`<root>/stages/parking.md` for the stage boundary.
 
 ## Why this shape
 
@@ -30,8 +31,8 @@ skill is the capable **owner-manager**: it decides *what deserves attention next
 already exists in good order**. That second half is the one a forward-only discovery skill loses,
 which is why `stewardship-check` (관리 점검) is a short-cadence lane and the first rung of the
 deepen ladder. Six properties follow — fixed named menu, per-activity cadence, symptom
-self-diagnosis, never auto-merges, inspects rather than only imagines, judges rather than only
-collects. Full rationale: [design-rationale.md](${CLAUDE_SKILL_DIR}/references/design-rationale.md).
+self-diagnosis, adopts only what is grounded and in role, inspects rather than only imagines, judges
+rather than only collects. Full rationale: [design-rationale.md](${CLAUDE_SKILL_DIR}/references/design-rationale.md).
 
 ## Parameters
 
@@ -40,6 +41,8 @@ collects. Full rationale: [design-rationale.md](${CLAUDE_SKILL_DIR}/references/d
   automatic due-checking (Preparation step 2 below).
 - `--symptom <name>` — override the P2 self-diagnosis and force a specific emergent
   session by name, bypassing symptom detection.
+- `--propose-only` — write the proposal and state as usual but adopt nothing (skip P9's write to
+  `ROADMAP.md`). For a project whose owner wants to review every addition.
 - `--dry-run` — run through proposal generation (through P7) and print the proposal to
   chat; write no files and do not advance `state.json`. **This also bounds P3's active
   lanes**: `dogfooding` and `stewardship-check` drive the real project via `Bash`, so under
@@ -65,7 +68,7 @@ wrote. A divergent root turns both into silent no-ops.
 └── INDEX.md                      # thin timeline index, one line per run (mirrors telemetry-az's TREND.md)
 <root>/issues/
 └── ISSUE-<target>-<timestamp>-<slug>.md   # incidental defects found during discovery — global issue-draft convention, unchanged
-<root>/ROADMAP.md                 # read-only here — proposals never write it
+<root>/ROADMAP.md                 # written only by P9: adopted items, as phases tagged with their BD id
 ```
 
 **`state.json` — schema and cadence semantics:
@@ -359,8 +362,8 @@ tables and constraints. Three outputs, in order:
 
 **These horizons are an ordering, not a schedule.** No cycle numbers, no dates, no
 durations — the same rule that keeps `run-cycle`'s roadmap a phase backlog applies here,
-one layer further upstream. And ranking is not merging: rule 1 still holds for every item
-in 지금.
+one layer further upstream. And ranking is not adopting: an item in 지금 still has to meet every
+condition of P9.
 
 If discovery produced no items at all (all four deepen-ladder lanes came up empty), output
 ① and the ladder record anyway — "무엇을 확인했고 왜 비어 있는가"는 그 자체로 보고할 내용이다.
@@ -370,9 +373,11 @@ If discovery produced no items at all (all four deepen-ladder lanes came up empt
 Write `<root>/backlog-discovery/proposal-YYYY-MM-DD.md` — or, when that file already exists, the
 next unused `proposal-YYYY-MM-DD-{k}.md` (k ≥ 2), never overwriting an earlier run's proposal
 ([continuity-docs.md](${CLAUDE_SKILL_DIR}/../_shared/continuity-docs.md) §1) — using
-[proposal-template.md](${CLAUDE_SKILL_DIR}/references/proposal-template.md). This is the **terminal output**
-of this skill — `ROADMAP.md` is never written here. List skipped activities explicitly
-with their skip reason (never silent).
+[proposal-template.md](${CLAUDE_SKILL_DIR}/references/proposal-template.md). The proposal is the
+**record of everything this run found and judged**, adopted or not — P9 adopts from it; nothing
+reaches `ROADMAP.md` without appearing here first. Fill each item's 반영 field and the 채택됨(잠정)
+section by applying P9's conditions now; P9 then makes exactly those writes. List skipped activities
+explicitly with their skip reason (never silent).
 
 Skip file writes entirely under `--dry-run`; print the filled template to chat instead.
 
@@ -403,21 +408,51 @@ assumed value.
   + a link to this run's proposal file. Create `INDEX.md` with a one-line header if it
   doesn't exist yet.
 
-### P9: Merge — explicitly NOT part of this skill's automated flow
+### P9: Adopt what is grounded and in role — propose the rest (skip if `--dry-run` or `--propose-only`)
 
-This skill's work ends at P8. When a human reviews this run's proposal file and asks for
-specific items to be adopted, add them to `ROADMAP.md`'s phase backlog by hand in that
-follow-up turn, following `run-cycle`'s "phase backlog, not cycle-numbered" format. Do
-not perform this step as part of a `/iyu:backlog-discover` invocation itself.
+An owner-manager who has walked the product and found that it does not keep one of its own promises
+does not write a memo and wait; they put it on the list. The same person does not commit the company
+to a new market on the strength of a trend report. This step draws that line.
 
-If a proposal carries a `dormant-strand-review` verdict of `폐기` and the human accepts it, remove
-that `STRANDS.md` `## 중단됨` entry by hand in the same follow-up turn — this is the only path that
-retires a strand (see `continuity-docs.md` §3).
+**An item is adopted when all of these hold:**
+
+1. **Its evidence is an observation of this project** — a command run, a flow walked, the project's
+   own code, docs, telemetry, or the published status of a dependency it already uses — with 증거
+   강도 ≥ 3. A comparison table, a paper, a trend or a thought experiment alone never qualifies,
+   whatever it scores.
+2. **It stays inside the declared role**: 철학 정렬 is not flagged "정렬 미흡", its 분류 is
+   *Autonomous-eligible* by the derivation gate of
+   [continuity-docs.md §4](${CLAUDE_SKILL_DIR}/../_shared/continuity-docs.md) — no new product
+   direction, interaction paradigm, dependency or surface, no trade-off only the owner can weigh —
+   and it is not marked `Discussion 필요`.
+3. **P6 placed it in 지금**, or it is the decomposition of a direction-level phase already in
+   `ROADMAP.md`.
+4. With a stage open, it *closes the open stage*.
+
+**Adopting an item** means: write it into `ROADMAP.md` as a phase (phase-level, no cycle numbers,
+its `BD-` id in the title line so it can be traced and removed), in the position its dependencies
+allow; mark it `채택됨(잠정)` in the proposal with a one-line **to correct** (`remove phase «…» from
+ROADMAP.md`); and, when the project keeps a decision ledger, add one entry for the batch. Report the
+adopted items in chat, apart from the proposed ones, each with its to-correct line — they entered
+the backlog without the owner, and this is where the owner sees them.
+
+**Everything else stays in the proposal** and enters `ROADMAP.md` only when a human asks for it, in
+a follow-up turn: outward-looking findings (trends, alternatives, research, positioning, technology
+candidates even with a `채택` verdict), emergent thought experiments, 증거 강도 1–2, later horizons,
+and every `Discussion 필요` item.
+
+If a proposal carries a `dormant-strand-review` verdict of `폐기`, it takes effect only when the
+human accepts it and the `STRANDS.md` `## 중단됨` entry is removed by hand in that follow-up turn —
+retiring a strand is never adopted automatically (see `continuity-docs.md` §3).
 
 ## Execution rules
 
-1. **No auto-merge, ever.** No invocation of this skill writes to `ROADMAP.md`. This is
-   a deliberate, permanent asymmetry with `run-cycle`'s autonomous-eligible fast path.
+1. **Adopt only what is grounded and in role; propose everything else.** P9 writes to
+   `ROADMAP.md` only an item whose evidence is an observation of this project, that the derivation
+   gate classes autonomous-eligible, and that P6 placed in 지금 — the same bar `run-cycle` applies
+   to work it derives itself, so discovery cannot widen the project where a cycle could not.
+   Outward-looking and speculative findings are never adopted, however well argued. Every adoption
+   is provisional and reported with how to reverse it.
 2. **No invention — but active use is grounding, not invention.** A skipped activity's
    reason is always recorded in the proposal's "스킵된 활동" section — never backfilled with
    a guess. Actively *driving* the product and reporting what you observed is the opposite

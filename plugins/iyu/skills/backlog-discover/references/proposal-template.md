@@ -5,9 +5,10 @@
 Fill this structure and write it to `<root>/backlog-discovery/proposal-YYYY-MM-DD.md` (or
 `proposal-YYYY-MM-DD-{k}.md` for a later same-day run — SKILL.md P7) in the
 consumer repo — `<root>` being the docs root resolved in SKILL.md's "File layout" section
-(default `claudedocs/`). This document is the **terminal output** of a
-`/iyu:backlog-discover` run — `ROADMAP.md` is never touched by this skill; a human
-reviews this file and asks explicitly for selected items to be merged.
+(default `claudedocs/`). This document is the **record of everything a
+`/iyu:backlog-discover` run found and judged**. P9 adopts into `ROADMAP.md` only the items that are
+grounded in the project's own evidence and inside its declared role, and marks them here; a human
+reviews the rest and asks explicitly for selected items to be merged.
 
 ```markdown
 # Backlog Discovery Proposal — {date}
@@ -34,7 +35,7 @@ reviews this file and asks explicitly for selected items to be merged.
 
 ## 우선순위 및 단계 구성
 
-지평은 **순서**이며 일정이 아니다 — 사이클 번호·날짜·기간을 붙이지 않는다. 어떤 지평도 자동으로 `ROADMAP.md`에 반영되지 않는다.
+지평은 **순서**이며 일정이 아니다 — 사이클 번호·날짜·기간을 붙이지 않는다. 지평만으로 `ROADMAP.md`에 반영되지 않는다 — 반영은 P9의 채택 조건을 모두 채운 항목뿐이다.
 
 | 지평 | 항목 | 가치 점수 | 비용·리스크 | 선행 의존 | 비고 |
 |---|---|---|---|---|---|
@@ -48,6 +49,12 @@ reviews this file and asks explicitly for selected items to be merged.
 - 배치를 덮어쓴 제약: {의존 우선 / 증거 하한(강도 1~2) / 되돌리기 불가 → Discussion / 축 편중(가치·탐구·시간·규모) / 지평 미채움 사유 — 적용된 것만}
 - 순환 의존으로 새로 세운 항목: {있으면 항목명, 없으면 "없음"}
 
+## 채택됨(잠정) — `ROADMAP.md`에 반영한 항목
+
+{P9의 조건(이 프로젝트를 관찰한 증거 · 선언된 역할 안 · 지금 지평)을 모두 채워 반영한 항목. 없으면 "없음" — `--propose-only`였다면 그렇게 적는다.}
+
+- `{BD-…}` {제목} — 근거: {관찰한 것 한 줄} · to correct: `ROADMAP.md`에서 phase «{제목}» 제거
+
 ## 발굴 항목
 
 ### `{BD-YYYYMMDD-nn}` [{value-axis}·{inquiry-axis}] {제목}
@@ -59,7 +66,8 @@ reviews this file and asks explicitly for selected items to be merged.
 - 판정: 비전 기여도 {1~5} / 철학 정렬 {1~5} / 증거 강도 {1~5} → **가치 {n.n}**, 비용·리스크 {1~5} — {각 점수를 정당화하는 신호를 한 줄로 인용}
 - 배치: {지금|다음|나중} · 선행 의존: {항목 또는 없음}
 - 예상 규모: {phase-level 방향성 설명만. 구체 사이클 수·일정은 산정하지 않음}
-- 분류: {Autonomous-eligible로 보이는 확장 | Discussion 필요 — 새 방향/의존성/트레이드오프}
+- 분류: {Autonomous-eligible — 선언된 역할·기존 패턴 안의 확장 | Discussion 필요 — 새 방향/의존성/트레이드오프}
+- 반영: {채택됨(잠정) | 제안 — 채택 조건 중 채우지 못한 것: {증거가 이 프로젝트의 관찰이 아님 / 역할 밖 / 지금 지평 아님 / 열린 단계를 닫지 않음}}
 
 {... 항목별로 반복 ...}
 
@@ -88,8 +96,8 @@ reviews this file and asks explicitly for selected items to be merged.
   cites the observed signal behind it — an uncited number is invention wearing a number.
   `증거 강도` 1–2 items cannot be placed in `지금`; propose the work that would produce the
   evidence instead.
-- The 단계 구성 horizons (`지금`/`다음`/`나중`) are an **ordering**, never a schedule, and
-  never grant merge eligibility — see the note below on 분류.
+- The 단계 구성 horizons (`지금`/`다음`/`나중`) are an **ordering**, never a schedule. A horizon
+  alone never adopts an item — see the note below on 분류 and 반영.
 - Every horizon must be non-empty or carry a one-line reason why not — see synthesis-rubric.md §③
   제약 6. 지금 stays concrete; 다음/나중 may be stated as direction rather than scoped work.
 - 시간축(과거/현재/미래) is derived automatically from source activity (SKILL.md P4) — do not ask
@@ -97,9 +105,10 @@ reviews this file and asks explicitly for selected items to be merged.
 - "예상 규모" must stay phase-level (a direction, not a cycle count) — this mirrors
   `run-cycle`'s rule that only the *current* cycle is ever concretely scoped; a discovery
   proposal is even further upstream than that.
-- "분류" is advisory triage for whoever reviews the proposal — it does **not** grant
-  auto-merge eligibility. Every item in this document requires human approval before
-  entering `ROADMAP.md`, regardless of this tag.
+- "분류" applies the derivation gate (continuity-docs.md §4); "반영" records what P9 did with the
+  item. An item is adopted only when it meets every P9 condition — otherwise name the condition it
+  missed, so the reviewer sees why it is waiting. Outward-looking and speculative items always wait
+  for human approval, regardless of score.
 - "실행 증거" is mandatory for any item sourced from an activity that actively drives the
   product (dogfooding, and the emergent lenses that walk a real flow). The trace is what
   distinguishes observed friction from invented friction — an item lacking one is dropped,

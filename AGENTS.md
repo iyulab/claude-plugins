@@ -91,7 +91,7 @@ the user-facing description. Read the skill file before changing a skill.
 | `/iyu:drive` | Pushes the one open stage to its bar: pick one failing scenario → build through the seam → independent evaluator → repeat; ends on pass (owner sees a demo) or on a measured stall (one question with evidence). No `backlog-discover`, no release. **No Stop hook yet** | capable **employee** |
 | `/iyu:accept` | Dispatches the evaluator subagent (`accept/references/evaluator.md`); the only writer of `passes`, claim `state`, `status` | independent **QA** |
 | `/iyu:ship` | Bump → commit → push → watch CI → publish, each stage stoppable | — |
-| `/iyu:backlog-discover` | Research playbook → diagnosis, ranking, staged proposal (never auto-merged) | capable **owner-manager** |
+| `/iyu:backlog-discover` | Research playbook → diagnosis, ranking, staged proposal; adopts into `ROADMAP.md` only items grounded in the project's own evidence and inside its declared role, proposes the rest | capable **owner-manager** |
 | `/iyu:telemetry-az` | App Insights triage: defect issues + report-only usage trends | capable **analyst** |
 
 **Shared definitions live in `plugins/iyu/skills/_shared/` and are linked, never restated** — four

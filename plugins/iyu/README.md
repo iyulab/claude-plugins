@@ -33,7 +33,7 @@ Productivity toolkit for open-source library maintainers and developers.
 | `/iyu:charter` | Skill | Manual | Interview the owner and write the stage contract (ladder of self-contained stages, scenarios, bar, decisions) |
 | `/iyu:drive` | Skill | Manual | Push the open stage to its agreed bar with an independent evaluator each round; stops only on pass or a real blocker |
 | `/iyu:accept` | Skill | Manual | Independent verdict on the open stage from the running build — judgment only |
-| `/iyu:backlog-discover` | Skill | Manual | Playbook-driven backlog discovery + diagnose/rank/stage — proposal only, never auto-merges |
+| `/iyu:backlog-discover` | Skill | Manual | Playbook-driven backlog discovery + diagnose/rank/stage — adopts only grounded, in-role items; proposes the rest |
 
 ## Commands
 
@@ -343,16 +343,19 @@ observation should raise evidence strength, not multiply near-duplicates.
 /iyu:backlog-discover                          # Run all cadence-due activities + diagnosed emergent session(s)
 /iyu:backlog-discover --modes vision-gap,web-trend  # Force specific activities regardless of cadence
 /iyu:backlog-discover --symptom onboarding-friction # Force a specific emergent session
+/iyu:backlog-discover --propose-only           # Write the proposal, adopt nothing into ROADMAP.md
 /iyu:backlog-discover --dry-run                # Report to chat only, no files, state unchanged
 ```
 
 Fully independent of `/iyu:run-cycle` — `run-cycle` only *consumes* `ROADMAP.md`, this
 command only *feeds* it. Every discovered item lands in a proposal document
 (`backlog-discovery/proposal-YYYY-MM-DD.md`, under the same docs root `run-cycle`
-resolves — default `claudedocs/`); **nothing merges into
-`ROADMAP.md` automatically** — a human reviews the proposal and asks explicitly for
-selected items to be adopted, per the mindset principle that new product direction is
-never self-decided — ranking an item is not merging it. Cadence state
+resolves — default `claudedocs/`). **Only what the project's own evidence grounds, inside its
+declared role, is adopted into `ROADMAP.md`** — a promise the product does not keep, a dependency
+past end of life, a quickstart that fails on a clean clone — provisionally, each reported with how
+to undo it. Everything outward-looking or speculative (trends, alternatives, research, new
+directions) waits in the proposal until a human asks for it, per the mindset principle that new
+product direction is never self-decided; `--propose-only` makes every item wait. Cadence state
 (`backlog-discovery/state.json`) tracks each of the playbook's 34 activities
 independently against a clock read once per run (`date -u`, never assumed), so a quarterly
 activity doesn't re-run every invocation and a stale half-yearly one doesn't get silently

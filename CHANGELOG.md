@@ -29,6 +29,15 @@ bugs or docs. MAJOR is never bumped automatically.
 
 ### Changed
 
+- **`backlog-discover` adopts what is grounded and in role, and proposes the rest.** It used to
+  write every finding to a proposal and never touch `ROADMAP.md`, on the grounds that discovery is
+  external and speculative. Part of what it finds is neither: a promise the product does not keep, a
+  dependency past end of life, a quickstart that fails on a clean clone. P9 now adopts an item when
+  its evidence is an observation of this project (증거 강도 ≥ 3), the derivation gate classes it
+  autonomous-eligible, and P6 placed it in 지금 — the bar `run-cycle` already applies to work it
+  derives itself. Adoptions are provisional and reported with how to undo them; outward-looking and
+  speculative findings still wait for a human. `--propose-only` restores review-everything. This
+  replaces the former rule 1 ("No auto-merge, ever").
 - `handoff` and `resume` scope the goal-gap review as the next step when nothing startable is left,
   and still name `backlog-discover` for the outward-looking lanes.
 

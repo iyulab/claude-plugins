@@ -25,11 +25,18 @@ autonomous new product direction). This skill instead:
    doesn't re-run every invocation and a stale half-yearly one doesn't get forgotten.
 3. **Self-diagnoses** which emergent (deliberately provocative) session to run from
    observable symptoms in the project's own history — not a random pick.
-4. **Never auto-merges.** Every discovered item — however well-argued — lands in a
-   proposal document. A human decides what enters `ROADMAP.md`. This is a stricter bar
-   than `run-cycle`'s in-cycle "autonomous-eligible" fast path, because this skill's
-   discoveries are external and speculative (web trends, competitor features, deliberately
-   engineered provocations) rather than a narrow "what does the diff I just wrote imply."
+4. **Adopts only what is grounded and in role.** Every discovered item lands in the proposal
+   document. Most stop there: this skill's outward-looking discoveries are external and
+   speculative (web trends, competitor features, deliberately engineered provocations), and a
+   human decides whether they enter `ROADMAP.md`. But part of what it finds is neither — a
+   promise the product does not keep, a dependency past end of life, a quickstart that fails on
+   a clean clone. That is the project's own evidence about its own declared role, the same
+   material `run-cycle` may act on when a cycle derives it. Holding it for review bought
+   nothing: where the proposal was reviewed, such items were accepted as a matter of course,
+   and where it was not, they sat. So P9 adopts an item exactly when it passes the bar
+   `run-cycle`'s derivation gate sets — observed in this project, inside the declared role,
+   reversible — and never on score alone. The owner sees each adoption with how to undo it, and
+   `--propose-only` restores review-everything for a project that wants it.
 5. **Inspects, not only imagines.** `stewardship-check` actively runs the project's own
    dependency, config, doc, and repo-hygiene checks each sprint. Forward-looking research and
    backward-looking upkeep are both the owner's job, and the upkeep half is the one that
@@ -38,12 +45,12 @@ autonomous new product direction). This skill instead:
    it moves the whole burden of "what matters, in what order, and why" onto the reader.
    P6 closes that gap: a state-of-the-product **diagnosis**, an evidence-grounded
    **importance ranking**, and a dependency-ordered **staging** toward the vision. Judgment
-   is still a proposal, never a decision — ranking an item is not merging it (rule 1).
+   is still judgment, not a decision — ranking an item is not adopting it (rule 1, P9).
 
 ## Why P2.5 loads prior proposals
 
-P9 merge is manual, so most proposed items are *never adopted* — they are neither in `ROADMAP.md`
-nor retired. Without a dedupe basis, every run rediscovers the same gaps from scratch and the
+P9 adopts only grounded, in-role items, so most proposed items are *not adopted* — they are neither
+in `ROADMAP.md` nor retired. Without a dedupe basis, every run rediscovers the same gaps from scratch and the
 proposal pile grows without any of the documents referring to each other. The skill already solved
 that problem once, for technology candidates (`appropriate-tech`'s recorded `기각`/`보류` verdicts,
 rule 9); P2.5 + P4 extend the same discipline to ordinary items.
@@ -83,7 +90,7 @@ require per-project edits. This skill is read-mostly, so the blast radius is sma
 
 ## Relationship to `run-cycle`
 
-The two skills are deliberately independent. `run-cycle` only ever *consumes* `ROADMAP.md`; this
-skill only ever *proposes additions* to it and never writes it. Neither invokes the other — when a
+The two skills are deliberately independent. `run-cycle` *consumes* `ROADMAP.md`; this skill
+*feeds* it — by adoption for what P9 allows, by proposal for the rest. Neither invokes the other — when a
 run terminates on `FRONTIER-EXHAUSTED:` with budget left, its report *recommends* this skill to the
 human, which is a pointer, not a call.
