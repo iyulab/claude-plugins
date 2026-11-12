@@ -8,6 +8,21 @@ bugs or docs. MAJOR is never bumped automatically.
 > History is reconstructed from git from v1.11.0 onward. Earlier versions live in
 > the git log only.
 
+## [Unreleased]
+
+### Fixed
+
+- **The Stop hook counts a run across every `cycle-logs/` directory it wrote to.** In an umbrella
+  whose submodules number their cycles independently, one run leaves logs in several directories;
+  the hook read the directory holding the newest log only, so a run that had spent its budget was
+  told "0 of N complete" (or N-minus-some) and sent back to work. A log now belongs to the run when
+  it sits in the newest directory at or above `Start:`, or when its own header carries the run's
+  `Start:` and `Budget:`; completed logs are summed over all directories, and a `RUN-SUMMARY-*.md`
+  beside any of them satisfies the report check. When the run's completed cycles sit only in other
+  directories, the latest of them is the most recently modified one (and there is no "previous" log
+  for the audit). Two fixtures pin this (`v-` budget reached, `w-` mid-run count). A single-directory
+  repository behaves as before.
+
 ## [1.50.1] — 2026-11-12
 
 ### Fixed

@@ -1,0 +1,9 @@
+{
+  "ok": true,
+  "why": "an umbrella run (Start 227, Budget 6) logged three cycles in one submodule's cycle-logs (227-229) and three in another's (100-102, independent numbering); the newest log is in the second directory, whose own indexes are below Start - the run's cycles are counted across both, the budget is reached, and the report sitting in the first directory satisfies the check",
+  "touch": {
+    "claudedocs/lib-b/_cycle-logs_/cycle-100.md": 10,
+    "claudedocs/lib-b/_cycle-logs_/cycle-101.md": 10,
+    "claudedocs/lib-b/_cycle-logs_/cycle-102.md": 10
+  }
+}

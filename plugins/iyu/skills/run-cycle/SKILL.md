@@ -137,6 +137,11 @@ creates a way to get it wrong.
 no session context and receives no invocation arguments, so the logs are the only place it can read
 them; omit the lines and it cannot tell this run from an earlier one.
 
+In an umbrella whose submodules keep their own `cycle-logs/` with independent numbering, one run
+writes logs into several directories. Every one of them carries the run's own `Budget:` and
+`Start:` (the number the run started at — not that directory's), and the hook counts the run's
+completed logs across all of them; the report may sit in any of those directories.
+
 **`N` is a ceiling, not a target.** It bounds how many cycles *may* run — it is not a quota of scopes to fill in advance. Do not pre-partition `N` into `N` scopes. If the work runs dry before `N`, rule 9 decides when to terminate early. If more work surfaces than `N` can hold, stop at `N` and carry the rest forward. The right mental model is "I have up to `N` turns," never "I must plan `N` things now."
 
 ---

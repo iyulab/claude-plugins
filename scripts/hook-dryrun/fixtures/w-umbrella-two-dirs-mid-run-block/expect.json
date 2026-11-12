@@ -1,0 +1,15 @@
+{
+  "ok": false,
+  "why": "the same umbrella run with five of six cycles done (three in one directory, two in the other whose indexes are below Start): the count is 5 of 6 and the run keeps working on its open frontier; it must not read the second directory alone as 0 of 6",
+  "reasonContains": [
+    "5 of 6"
+  ],
+  "reasonNotContains": [
+    "no cycle of this run is complete yet",
+    "RUN-SUMMARY"
+  ],
+  "touch": {
+    "claudedocs/lib-b/_cycle-logs_/cycle-100.md": 10,
+    "claudedocs/lib-b/_cycle-logs_/cycle-101.md": 10
+  }
+}

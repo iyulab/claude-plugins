@@ -118,13 +118,29 @@ $logs
 EOF
 dir=${newest%/*}
 
-# One pass over the directory's logs. The newest log is the highest index; its header gives this
-# run's Budget:/Start:. Cycles completed = logs at or above Start whose Status: is complete. Also
-# finds the latest complete log of this run and the complete log before it.
+# One pass over every cycle log under the working directory. The newest log of the newest directory
+# (the highest index there) gives this run's Budget:/Start:. A log belongs to the run when it sits in
+# that directory at or above Start, or, in an umbrella whose submodules number their cycles
+# independently, when its own header carries the same Start: and Budget:. Cycles completed = member
+# logs whose Status: is complete, summed over every directory. Also finds the latest complete log of
+# the run and the complete log before it: both by index in the newest directory; a run whose
+# completed cycles sit only in other directories falls back to the most recently modified of those
+# (and has no "previous" log). Lines after the nine values: "D:" a directory holding a member log
+# (the report may sit in any of them), "O:" a complete member log outside the newest directory.
+run_dirs=
+others=
 {
     IFS= read -r top_n; IFS= read -r top_log; IFS= read -r budget; IFS= read -r start
     IFS= read -r top_status; IFS= read -r completed; IFS= read -r latest_n; IFS= read -r latest
     IFS= read -r prev
+    while IFS= read -r extra; do
+        case $extra in
+            D:*) run_dirs="$run_dirs
+${extra#D:}" ;;
+            O:*) others="$others
+${extra#O:}" ;;
+        esac
+    done
 } <<EOF
 $(printf '%s\n' "$logs" | awk -v d="$dir" '
     function field(f, key,   line, c, v) {
@@ -142,29 +158,54 @@ $(printf '%s\n' "$logs" | awk -v d="$dir" '
         if (v ~ /^[0-9]+$/) v = v + 0
         return memo[f, key] = v
     }
+    function member(i, s, b) {
+        return (pdir[i] == d && num[i] + 0 >= s + 0) || (field(all[i], "Start") == s + 0 && field(all[i], "Budget") == b + 0)
+    }
     {
-        p = $0; sub(/\/[^\/]*$/, "", p); if (p != d) next
+        p = $0; sub(/\/[^\/]*$/, "", p)
         k = $0; sub(/.*\/cycle-/, "", k); sub(/\.md$/, "", k); k = k + 0
-        path[k] = $0
-        if (top == "" || k > top) top = k
+        n++; all[n] = $0; pdir[n] = p; num[n] = k
+        if (p == d) {
+            path[k] = $0
+            if (top == "" || k > top) top = k
+        }
     }
     END {
         b = field(path[top], "Budget"); s = field(path[top], "Start")
         print top; print path[top]; print b; print s; print field(path[top], "Status")
         if (b !~ /^[0-9]+$/ || s !~ /^[0-9]+$/) exit
-        done = 0; latest = ""; prev = ""
-        for (k in path)
-            if (k + 0 >= s + 0 && field(path[k], "Status") == "complete") {
-                done++
-                if (latest == "" || k + 0 > latest + 0) latest = k
-            }
+        done = 0; latest = ""; prev = ""; m = 0; dirs[d] = 1
+        for (i = 1; i <= n; i++) {
+            if (!member(i, s, b)) continue
+            dirs[pdir[i]] = 1
+            if (field(all[i], "Status") != "complete") continue
+            done++
+            if (pdir[i] == d) {
+                if (latest == "" || num[i] + 0 > latest + 0) latest = num[i]
+            } else outside[++m] = all[i]
+        }
         if (latest != "")
-            for (k in path)
-                if (k + 0 < latest + 0 && (prev == "" || k + 0 > prev + 0) && field(path[k], "Status") == "complete")
-                    prev = k
+            for (i = 1; i <= n; i++)
+                if (pdir[i] == d && num[i] + 0 < latest + 0 && (prev == "" || num[i] + 0 > prev + 0) \
+                    && member(i, s, b) && field(all[i], "Status") == "complete")
+                    prev = num[i]
         print done; print latest; print (latest == "" ? "" : path[latest]); print (prev == "" ? "" : path[prev])
+        for (x in dirs) print "D:" x
+        for (i = 1; i <= m; i++) print "O:" outside[i]
     }')
 EOF
+
+# No complete member log in the newest directory, but other directories hold some: the latest is the
+# most recently modified of those.
+if [ -z "$latest" ] && [ -n "$others" ]; then
+    while IFS= read -r f; do
+        [ -n "$f" ] || continue
+        if [ -z "$latest" ] || [ "$f" -nt "$latest" ]; then latest=$f; fi
+    done <<EOF
+$others
+EOF
+    latest_n=${latest##*/cycle-}; latest_n=${latest_n%.md}; latest_n=$((latest_n + 0))
+fi
 
 if [ -z "$budget" ] || [ -z "$start" ]; then
     # The newest log predates the Budget:/Start: header, so this run has written nothing yet.
@@ -176,7 +217,10 @@ fi
 # A run ends by writing its report, whose block opens "Run: cycles {Start}-{last}". A report line
 # whose range covers this run's Start, with the newest log complete, means the run is over.
 
-reports=$(find "$dir" -maxdepth 1 -type f -name 'RUN-SUMMARY-*.md' 2>/dev/null)
+reports=$(printf '%s\n' "${run_dirs:-
+$dir}" | while IFS= read -r rd; do
+    [ -n "$rd" ] && find "$rd" -maxdepth 1 -type f -name 'RUN-SUMMARY-*.md' 2>/dev/null
+done)
 covered=no
 any_run_line=no
 if [ -n "$reports" ]; then
@@ -269,7 +313,7 @@ EOF
 token_shapes="Write exactly one of these literal tokens on the log's Emergent Next Capability line: \`FRONTIER-OPEN: <candidate> [autonomous|discussion]\` when STEP 5 derived a follow-on, or \`FRONTIER-EXHAUSTED: <why, across all three lenses> | goal-gap: cycle <NN of this run's goal-gap review> — <what it found> | ladder: <rung acted on, or \"no actionable signal — why\">\` when derivation across all three lenses produced nothing autonomous-eligible and the run's goal-gap review is done."
 
 progress="run-cycle is mid-run: $completed of $budget cycles complete since cycle $start, budget remaining."
-if [ "$top_n" != "$latest_n" ]; then
+if [ "$top_log" != "$latest" ]; then
     next_step="continue cycle $top_n, whose log is already open as an in-progress stub"
 else
     next_step="open the next cycle log as a stub (Budget: $budget / Start: $start / Status: in-progress) and run that cycle from STEP 0"
