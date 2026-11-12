@@ -58,6 +58,7 @@ hook and by continuity-root resolution, both of which look for `cycle-logs/cycle
 | `r-exhausted-order-park-block` | BLOCK | Phases parked as pending decisions only for their place in the roadmap order fail the audit; the auditor is told that order is not a dependency and to judge a reclassification by its reason |
 | `s-exhausted-reason-categories-block` | BLOCK | Phases parked as pending decisions for their size, lack of user benefit, or a person's approval of the finished result fail the audit; the auditor is told these reasons never account for a phase and that a condition on closing the work does not block starting it |
 | `t-exhausted-handoff-next-block` | BLOCK | A project with no roadmap keeps its work list in the handoff's `## Next`; the auditor is handed that file, told to read only that section, and an unstarted, unparked item there fails the claim |
+| `u-exhausted-no-goal-gap-block` | BLOCK | `FRONTIER-EXHAUSTED:` with budget left and no `goal-gap:` note: the run is sent to compare its stated goal with the running product before it may stop; decided by the script, the auditor is not asked |
 
 Add a fixture as a new directory with a `tree/` and an `expect.json`:
 

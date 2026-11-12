@@ -10,6 +10,28 @@ bugs or docs. MAJOR is never bumped automatically.
 
 ## [Unreleased]
 
+### Added
+
+- **Goal-gap review: a run looks from the goal back to the product before it calls the frontier
+  exhausted.** STEP 5 derives the next scope from what the cycle just built, so it only ever finds
+  the neighbours of recent work; runs ended on `FRONTIER-EXHAUSTED:` with budget left while the
+  product still fell short of what it is for, and the gap came back by hand as a new prompt. Now the
+  first dry STEP 5 of a run writes `FRONTIER-OPEN: goal-gap review [autonomous]`, and the next cycle
+  reads the goal in the project's own words (the stage contract when there is one, else scope
+  document, README, roadmap direction, mock), walks the running product as a first-time user, and
+  lists the observed gaps. Gaps inside the declared role become `ROADMAP.md` phases (L1,
+  provisional, listed in the End-of-Run Report with how to reverse); new directions stay proposals.
+  The exhaustion token gains a `goal-gap: cycle <NN> — …` note and the Stop hook sends back a claim
+  without it. New dry-run fixture `u-exhausted-no-goal-gap-block`.
+- **Standing tracks in `ROADMAP.md`** (`continuity-docs.md` §4): work measured against a gate rather
+  than finished — a benchmark level, lifecycle coverage, site quality. A track below its gate is a
+  remaining phase, and an empty startable list means "refill it", not "done".
+
+### Changed
+
+- `handoff` and `resume` scope the goal-gap review as the next step when nothing startable is left,
+  and still name `backlog-discover` for the outward-looking lanes.
+
 ### Fixed
 
 - **The early-termination audit reads the handoff's `## Next`, not only the roadmap.** A run takes

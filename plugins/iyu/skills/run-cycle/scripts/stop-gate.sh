@@ -236,6 +236,7 @@ fi
 # three lines after it); only when that has none is the whole log searched.
 {
     IFS= read -r human_needed; IFS= read -r token; IFS= read -r candidate; IFS= read -r next_scope
+    IFS= read -r goal_gap
 } <<EOF
 $(awk -v latest="$latest" '
     function kind(s) {
@@ -256,6 +257,7 @@ $(awk -v latest="$latest" '
         t = kind(line); print (t == "" ? "none" : t)
         c = line; sub(/\n.*$/, "", c); sub(/.*FRONTIER-OPEN:[` \t]*/, "", c); sub(/`[ \t]*$/, "", c); print c
         sub(/^[ \t*-]+/, "", scope); sub(/[. \t]+$/, "", scope); print scope
+        print (index(line, "goal-gap:") > 0 ? "yes" : "no")
     }' "$latest" "$top_log")
 EOF
 
@@ -264,7 +266,7 @@ EOF
 
 # --- 5. Budget remains: the frontier token decides -----------------------------------------------
 
-token_shapes="Write exactly one of these literal tokens on the log's Emergent Next Capability line: \`FRONTIER-OPEN: <candidate> [autonomous|discussion]\` when STEP 5 derived a follow-on, or \`FRONTIER-EXHAUSTED: <why, across all three lenses> | ladder: <rung acted on, or \"no actionable signal — why\">\` when derivation across all three lenses produced nothing autonomous-eligible."
+token_shapes="Write exactly one of these literal tokens on the log's Emergent Next Capability line: \`FRONTIER-OPEN: <candidate> [autonomous|discussion]\` when STEP 5 derived a follow-on, or \`FRONTIER-EXHAUSTED: <why, across all three lenses> | goal-gap: cycle <NN of this run's goal-gap review> — <what it found> | ladder: <rung acted on, or \"no actionable signal — why\">\` when derivation across all three lenses produced nothing autonomous-eligible and the run's goal-gap review is done."
 
 progress="run-cycle is mid-run: $completed of $budget cycles complete since cycle $start, budget remaining."
 if [ "$top_n" != "$latest_n" ]; then
@@ -281,6 +283,14 @@ case $token in
     open)
         block "$progress Cycle $latest_n ended on FRONTIER-OPEN: $candidate — unblocked work remains. Keep working: $next_step, scoped by cycle $latest_n's ${next_scope:-Next-Cycle Scope}. Do not end the turn between cycles; end it only when the run itself ends." ;;
 esac
+
+# FRONTIER-EXHAUSTED with budget remaining needs the run's goal-gap review first. STEP 5 derives only
+# from what the cycle just built; the review looks from the stated goal back to the running product,
+# once per run, and its procedure sits in a reference file that compaction can drop. So the token
+# line must say which cycle ran it, and this reason restates what the review is.
+if [ "$goal_gap" != yes ]; then
+    block "$progress Cycle $latest_n claims FRONTIER-EXHAUSTED: without a goal-gap review. STEP 5 derives only the neighbours of what was just built; before a run stops with budget left it compares, once, what the project says it is for with the product as it runs. If this run has not done that: change the line to \`FRONTIER-OPEN: goal-gap review [autonomous]\`, then $next_step as that review. Read the goal in the project's own words (the stage contract under stages/ if there is one, else the scope document, README and roadmap direction, and any mock), start the product and walk its main flows as a first-time user, list each gap with what you observed, fix defects, write gaps that stay inside the declared role into the roadmap as provisional phases (Decisions Ledger, with how to reverse), and put new directions under Pending Human Decisions. Full procedure: references/run-level-procedures.md, Goal-gap review. If this run already did the review, add \`| goal-gap: cycle <NN> — <what it found>\` to the token line. $token_shapes"
+fi
 
 # --- 6. FRONTIER-EXHAUSTED with budget remaining: audit the claim --------------------------------
 # The token is the run's own claim that nothing unblocked remains. A token the same agent writes

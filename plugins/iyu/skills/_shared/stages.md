@@ -3,7 +3,7 @@
 **Contents** — 1. What a stage is · 2. Where it lives · 3. The contract file · 4. Who may write what · 5. Passing a stage · 6. The claims ledger · 7. The seam · 8. Parking · 9. Budget defaults
 
 **This file is the single definition** of the stage contract. `charter` writes it, `drive` works against
-it, `accept` evaluates it, and `resume` / `handoff` / `backlog-discover` read it. Copies drift; link here.
+it, `accept` evaluates it, and `resume` / `handoff` / `backlog-discover` / `run-cycle` read it. Copies drift; link here.
 
 Terms used the same way everywhere: **stage** (one step of the product, usable on its own), **ladder**
 (the ordered list of stages), **scenario** (a script an observer follows), **bar** (the rubric and its
@@ -19,7 +19,9 @@ never a half-built car. The test for a stage is whether someone could use it for
 see that it works with their own eyes. The ladder carries **order only**: no dates, durations or cycle
 numbers, because those turn a ladder into a schedule that the next session re-plans.
 
-`run-cycle` asks "what does the latest output imply next?" and may end when nothing is left. `drive`
+`run-cycle` asks "what does the latest output imply next?" — and, when that runs dry, reads this
+contract as the goal its goal-gap review measures the running product against — and may end when
+nothing inside the declared role is left. `drive`
 asks "is the open stage done yet?" and ends only when it is, or when it needs something only the owner
 can supply. Keep them in separate runs.
 

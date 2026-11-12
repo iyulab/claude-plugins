@@ -137,7 +137,9 @@ Step 5 then decides where the *rest* sits — deriving the next item and orderin
 different jobs, and skipping the second is how a release ends up scheduled mid-phase.
 
 **`## Next` still empty after this** — carry-forward, mid-session discoveries, and the backlog all
-came up empty. Say so, and name `/iyu:backlog-discover` by name as the pointer — nothing more. Do
+came up empty. Write the **goal-gap review** (§4) as the next session's scope — one line; the
+review itself is the next run's work, not this skill's — and name `/iyu:backlog-discover` as the
+pointer for the wider, outward-looking lanes. Do
 not generate options, a cross-lens read, or a recommendation here; that four-part briefing is
 `resume`'s job (rule 5 already reserves it for `resume`, never `handoff`). This mirrors the closing
 line `run-cycle`'s End-of-Run Report and `resume` rule 9 already carry, so all three skills
@@ -336,5 +338,6 @@ session that never got committed) are in scope, not just this session's own edit
    (`/iyu:handoff`) — including when `/iyu:run-cycle` invokes it at the end of a run — say in one line
    that a handoff is running and why, *before* touching any file —
    the rewrite is reversible, but a silent one still surprises whoever is reading the conversation.
-8. **Point, don't brief, when `## Next` is empty.** Name `/iyu:backlog-discover`; do not produce
+8. **Point, don't brief, when `## Next` is empty.** Scope the goal-gap review as next and name
+   `/iyu:backlog-discover`; do not produce
    options, a cross-lens read, or a recommendation — see step 4. That stays `resume`'s job.

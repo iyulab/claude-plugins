@@ -95,7 +95,9 @@ there (classified per [continuity-docs.md §4](${CLAUDE_SKILL_DIR}/../_shared/co
 order is not a gate; a direction-only phase is startable as decomposition) is a staleness flag on
 `## Next` and goes to step 4 as a reorder or prerequisite insertion.
 
-**No startable phase in `ROADMAP.md` either → say so and recommend `/iyu:backlog-discover`.** Same closing move `run-cycle`'s
+**No startable phase in `ROADMAP.md` either → say so, put the goal-gap review
+([continuity-docs.md §4](${CLAUDE_SKILL_DIR}/../_shared/continuity-docs.md)) first in `## Next`, and
+recommend `/iyu:backlog-discover` for the wider lanes.** Same closing move `run-cycle`'s
 End-of-Run Report makes when a run ends on `FRONTIER-EXHAUSTED:` with budget left: an empty backlog
 isn't this skill's gap to fill — step 3's synthesis reorders and extends what's already scoped, it
 does not discover unscoped work from nothing (rule 9) — it's a pointer to the skill that does. A

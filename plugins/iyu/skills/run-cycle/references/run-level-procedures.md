@@ -1,17 +1,71 @@
-# Run-level procedures — the value ladder, the end-of-run report, and the commit
+# Run-level procedures — the goal-gap review, the value ladder, the end-of-run report, and the commit
 
-**Contents** — Surplus-Cycle Value Ladder · End-of-Run Report · Commit · Release Readiness · Release review (only with a release grant) · Handoff
+**Contents** — Goal-gap review · Surplus-Cycle Value Ladder · End-of-Run Report · Commit · Release Readiness · Release review (only with a release grant) · Handoff
 
 **`SKILL.md` owns the per-cycle loop; this file owns what happens once per *run*.** The split is
 deliberate: auto-compaction re-attaches only the first 5,000 tokens of a skill, so the procedures a
 run needs once — at its end — are the ones that can safely live a file away, while the loop a cycle
-needs every time stays inline. Read this file when a run reaches its end (any termination path), or
+needs every time stays inline. Read this file when STEP 5 comes up dry, when a run reaches its end
+(any termination path), or
 when a compacted context has lost the detail behind `SKILL.md`'s pointers.
 
 Everything here is normative. `SKILL.md` keeps the one-line obligations and links here for the
 procedure.
 
 ---
+
+## Goal-gap review — before the frontier is called exhausted
+
+STEP 5 derives the next scope from what the cycle just built, so on its own it finds only the
+neighbours of recent work. A product runs out of neighbours long before it does what it is for, and
+a run that stops there leaves the owner to notice the gap and feed it back by hand. So before a run
+writes `FRONTIER-EXHAUSTED:` with budget left, one cycle looks from the other end: from the stated
+goal back to the product as it runs.
+
+**When.** STEP 5 finds no carry-forward, no discovery, no autonomous-eligible emergent candidate and
+no startable backlog phase or standing-track item, and this run has not yet done the review. Write
+`FRONTIER-OPEN: goal-gap review [autonomous]`; the review is the next cycle's scope. Once per run —
+a later dry STEP 5 goes to the ladder below.
+
+**Read the goal in the project's own words.** The stage contract when there is one
+([stages.md](../../_shared/stages.md): the goal, the ladder's sketches, claims below `works`,
+`parking.md`); otherwise the scope or constitution document, the README, the roadmap's stated
+direction, and any mock or landing page. Do not restate the goal from memory of the code.
+
+**Then look at the product, not at its description.** Start it and walk its main flows on the real
+surface as a first-time user would (STEP 3's "drive the real thing"); where a design document
+describes structure, read it against the code.
+
+**List the gaps, each with what was observed** (the command, the screen, the file) — a gap nobody
+observed is not listed (rule 7.5):
+
+- a promise the goal or the mock makes that the running product does not keep;
+- a flow a user cannot finish, or can finish only with knowledge the product never gives them;
+- a user-facing surface below its design target or calibration samples;
+- structure the next stage or phase needs and the current design cannot carry — a refactor worth
+  doing before that work, not after it;
+- a standing track below its gate with nothing startable listed
+  ([continuity-docs.md §4](../../_shared/continuity-docs.md)).
+
+**Route each gap through the STEP 5 derivation gate, unchanged:**
+
+- a defect → fixed in this cycle (STEP 4);
+- inside the declared role and established patterns, and reversible → written into `ROADMAP.md` as
+  a phase or a standing-track item and recorded in the Decisions Ledger (L1, `provisional`, to
+  correct: remove the phase). It is then eligible as the next cycle's scope like any other phase;
+- a new direction, dependency, paradigm or surface, or a trade-off only the owner can weigh →
+  Pending Human Decisions, briefed in the End-of-Run Report. With an open stage, a gap that belongs
+  to a later stage goes to `parking.md` instead, and an open stage whose failing scenarios are
+  unblocked is itself the finding: say so and recommend `/iyu:drive` rather than building its
+  scenarios here.
+
+The review cycle ends on `FRONTIER-OPEN:` when it adopted at least one gap. When it adopted none, and
+whenever a later cycle of the run comes up dry, the `FRONTIER-EXHAUSTED:` line carries
+`goal-gap: cycle <NN> — <what was compared and what it found>` between the reason and `ladder:`. The
+Stop hook reads that literal: a claim without it is sent back to do the review.
+
+Phases adopted this way entered the backlog without the owner. The End-of-Run Report lists each one
+under self-made decisions with its to-correct line — that list is where the owner sees them.
 
 ## Surplus-Cycle Value Ladder
 
@@ -23,7 +77,7 @@ This is the project-specific judgment a generic harness cannot supply, and it is
 
 | Track | Rungs (in order) | Signal that justifies a rung |
 |-------|------------------|------------------------------|
-| **① Main loop** *(always first)* | plan → execute → verify → cleanup | Open roadmap items, inherited Carry-Forward, **or an autonomous-eligible Emergent Next Capability (STEP 5)** remain |
+| **① Main loop** *(always first)* | plan → execute → verify → cleanup | Open roadmap items or standing-track items, inherited Carry-Forward, **an autonomous-eligible Emergent Next Capability (STEP 5), or a gap the goal-gap review adopted** remain |
 | **② 내공 / Durable value** | research/learning capture → structural refactoring → documentation & asset-ization | Undocumented surface, drifted docs, repeated patterns begging extraction, lessons worth recording |
 | **③ 방어선 / Stability** | test/coverage & monitoring gaps → security & compliance → error-handling & resilience | Untested critical path, missing input validation, unhandled failure mode, no observability hook |
 | **④ 가속기 / Efficiency** | CI/DevOps/platform → DX improvements | Manual repetitive steps, slow/flaky pipeline, awkward local setup |
@@ -50,7 +104,7 @@ Three parts follow — draw them straight from the ledgers the cycles already ma
 
 1. **Progress / achievements** — what shipped this run, with STEP 3 evidence (test counts, build/lint result). Assertions are not evidence (rule 7.5).
 2. **Deferred decisions (L2 — escalated, awaiting you)** — the Pending Human Decisions plus the full Blocked-on-Human ledger. Present them per **[decision-briefing.md](../../_shared/decision-briefing.md)**: a *resource-blocked* entry keeps the short blocked · what-was-tried · what-would-unblock form (§1), while a *decision-class* entry is **briefed** (§2) — the decision in one line, ≥2 observed options (one usually "defer"), the cross-lens read of how the leading ones differ, and a named recommendation with **what it locks in**. These are the decisions the run did not *act* on because the act was irreversible or yours alone; handing them over as bare questions puts the analysis back on the person furthest from the work. State the recommendation as the run's provisional decision, not as a question (§3: the owner is asked for resources and criteria, never for a pick) — what waits on you is the act, or, for an irreducible lens conflict, the **criterion** to decide it by (§1's criterion request). This is a *report-time* synthesis of ledgers that already exist — the per-cycle `BLOCKED-ITEM:` entry format is unchanged (§3), since those entries govern termination and must stay cheap to write. Nothing to defer is a valid and good outcome: write "None" rather than promoting an L1 decision to fill the section.
-3. **Self-made decisions (L1 — done, reversible, confirm or correct)** — the Decisions Ledger: each `provisional` decision with its trade-off and a one-line **"to correct: <the reverse action>"**. The human confirms (→ `confirmed`) or reverts (→ `reverted`, picked up by next run's STEP 0). Presenting these — not hiding them — is what makes proceed-first-correct-later safe.
+3. **Self-made decisions (L1 — done, reversible, confirm or correct)** — the Decisions Ledger: each `provisional` decision with its trade-off and a one-line **"to correct: <the reverse action>"**, and, listed apart, every phase the goal-gap review added to `ROADMAP.md`. The human confirms (→ `confirmed`) or reverts (→ `reverted`, picked up by next run's STEP 0). Presenting these — not hiding them — is what makes proceed-first-correct-later safe.
 
 One closing line, **only when the run ended on `FRONTIER-EXHAUSTED:` with budget still unspent**: the run stopped because the backlog is dry, not because the budget ran out — recommend running `/iyu:backlog-discover` to refill it before the next run. This is a pointer for the human, not an invocation: the two skills stay independent (`run-cycle` only consumes `ROADMAP.md`, `backlog-discover` only feeds it), and nothing here merges anything.
 

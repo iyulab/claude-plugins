@@ -23,6 +23,6 @@ Scope met; no drift.
 - Blocked-on-Human (ledger): None
 - Structural Improvements: None
 - Pending Human Decisions: None
-- Emergent Next Capability: `FRONTIER-EXHAUSTED: user, developer and operator lenses produce no autonomous follow-on | ladder: ② doc-sync done, no further signal`
+- Emergent Next Capability: `FRONTIER-EXHAUSTED: user, developer and operator lenses produce no autonomous follow-on | goal-gap: cycle 204 — goal and running product compared, nothing in role left | ladder: ② doc-sync done, no further signal`
 - Roadmap Revisions: None
 - Next-Cycle Scope: None

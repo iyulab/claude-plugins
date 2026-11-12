@@ -94,7 +94,7 @@ grow monotonically until "what's left?" is buried under "what's done".
 
 | Document | Holds | Never holds |
 |---|---|---|
-| `ROADMAP.md` | Phase-level directions, remaining only. Known unknowns and investigation needs | Completed phases. **Cycle numbers** — it is a backlog, not an itinerary |
+| `ROADMAP.md` | Phase-level directions, remaining only. Known unknowns and investigation needs. Standing tracks (§4) | Completed phases. **Cycle numbers** — it is a backlog, not an itinerary |
 | `HANDOFF.md` | What is in flight and what comes next, anchored to backlog phases | Past-session narrative. Anything already done |
 | `HISTORY.md` | A pure index, newest first, one compressed entry per completed phase | Detail — cycle logs and git history are the record |
 | `STRANDS.md` | Which dominant strand each cycle or session served, and interruption/resume transitions | Task detail (cycle logs own that), issues (issues/ owns that), completed-work narrative (HISTORY.md owns that), a session's current-vs-next snapshot (HANDOFF.md owns that — STRANDS.md is the cumulative cross-session record HANDOFF.md deliberately does not keep) |
@@ -267,7 +267,9 @@ Both `run-cycle`'s STEP 5 and `handoff` answer "what comes next?". The sources, 
 3. **Emergent scope** — what the work just done *naturally implies next*, derived across three
    lenses: **user** (what would they now expect or hit?), **developer/maintainer** (what did it
    leave brittle, duplicated, or untested?), **operator** (what does running this now require?).
-4. **The phase backlog** — the next-most-valuable unblocked phase.
+4. **The phase backlog** — the next-most-valuable unblocked phase or standing-track item.
+5. **The goal gap** — when the four above are empty: what the project says it is for, set against
+   the product as it runs (below).
 
 **Order is not a gate.** `ROADMAP.md` order says which startable phase goes first; it never makes a
 later phase wait. Each remaining phase is exactly one of: **done** · **blocked**, naming what it
@@ -280,7 +282,25 @@ So `## Next` is not a prefix of `ROADMAP.md`: when the front phases are blocked,
 order and add startable phases until they fill one session or run, and keep the blocked ones listed
 above them as waiting. The order is kept; only independent work stops waiting behind a blocked item.
 
-`STRANDS.md`'s `## 중단됨` section is a fifth, narrower source: a strand interrupted recently enough
+**Standing tracks.** Some work is not a phase that finishes but a level to reach and hold — parity
+with a named alternative on a benchmark, coverage of a lifecycle, the quality of a public site.
+`ROADMAP.md` carries it as a *standing track*: its **gate** (the measurable level that counts as
+reached), its **current level** with the evidence, and its **next startable items**. A track below
+its gate is a remaining phase like any other — and when its startable list is empty, the next step
+is to refill the list from the distance between level and gate; an empty list is not "done". A
+track at its gate is quiet until the reopen condition it states (a regression, a new release of the
+alternative). Tracks carry order only, never dates or cycle numbers.
+
+**The goal gap.** Sources 1–3 look outward from the work just done, and source 4 only at what
+someone already wrote down. None of them asks whether the product yet does what it is for. When all
+four are empty, that question is the next scope: read the goal in the project's own words — the
+stage contract ([stages.md](stages.md)) when there is one, otherwise the scope document, README and
+roadmap direction — walk the running product as a first-time user, and treat each observed
+shortfall as a candidate under the classification below. `run-cycle` does this as a cycle of its own,
+once per run ([run-level-procedures.md](../run-cycle/references/run-level-procedures.md)); `handoff`
+does not perform it — with nothing else left it names the review as the next session's scope.
+
+`STRANDS.md`'s `## 중단됨` section is one more, narrower source: a strand interrupted recently enough
 to still be worth a quick "resume this now?" check belongs here, surfaced the same way as any other
 known-but-reordered work — it is not new discovery. A strand that has stayed interrupted for a long
 time (multiple `backlog-discover` cadences) is no longer this section's concern; it is
@@ -295,8 +315,8 @@ Classify every emergent candidate before proposing it:
 - **Discussion / proposal-only** — it opens a new product direction, a new dependency or paradigm,
   or a trade-off only a human should weigh. Propose with rationale; never self-decide.
 
-"Nothing left" is a legitimate outcome, but it must be a **stated judgment** across all three
-lenses, never an empty section.
+"Nothing left" is a legitimate outcome, but only after the goal gap was looked at, and it must be a
+**stated judgment** across all three lenses, never an empty section.
 
 ---
 

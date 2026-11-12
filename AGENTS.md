@@ -84,7 +84,7 @@ the user-facing description. Read the skill file before changing a skill.
 |---|---|---|
 | `mindset` | Auto-activating "critical but constructive" maintenance philosophy | — |
 | `issue-triage` | Auto-activating decision matrices for issue/PR triage discussions | — |
-| `/iyu:run-cycle [N]` | Adaptive cycles: re-plan → design → execute → verify → reflect → derive-next, `N` a ceiling; early termination is audited against the backlog, not self-declared | capable **employee** |
+| `/iyu:run-cycle [N]` | Adaptive cycles: re-plan → design → execute → verify → reflect → derive-next, `N` a ceiling; a dry frontier first triggers one goal-gap review (stated goal vs. running product), and early termination is audited against the backlog and handoff, not self-declared | capable **employee** |
 | `/iyu:handoff` | Session checkpoint — at close (main use), mid-session before `/clear`, and as `run-cycle`'s last step: continuity docs, next scope, re-ordering, decisions *flagged* (not briefed) | capable **team lead** |
 | `/iyu:resume` | Session opener: reads what handoff left, synthesizes/reprioritizes against current state, *briefs and pre-decides* flagged and derived decisions — researching, bounded, to reach a recommendation that becomes the provisional decision — records it immediately (applying a reorder to `## Next`), leaves the owner only blockers, owner-gated acts, and criterion requests, turns an override into a criterion question, then stops short of execution | capable **employee opening the session** |
 | `/iyu:charter` | Interview → **stage contract** (`<root>/stages/`, defined in `_shared/stages.md`): ladder of self-contained stages, scenarios, calibrated bar, claims ledger, owner decisions collected up front. Builds nothing | capable **product owner's partner** |
@@ -100,7 +100,7 @@ copies of a rule become four rules the moment one is edited:
 | File | Defines | Read by |
 |---|---|---|
 | `continuity-docs.md` | root resolution · what belongs in each doc · one home per fact · hygiene pass · next-scope derivation · structural checks (`L01`–`L11`) | run-cycle, handoff, resume, backlog-discover, telemetry-az |
-| `stages.md` | the stage contract: what a stage is · `<root>/stages/` layout · `stages.json` fields · who may write which field · what "passed" means · the claims ledger · the seam · parking | charter, drive, accept, resume, handoff, backlog-discover |
+| `stages.md` | the stage contract: what a stage is · `<root>/stages/` layout · `stages.json` fields · who may write which field · what "passed" means · the claims ledger · the seam · parking | charter, drive, accept, resume, handoff, backlog-discover, run-cycle (goal-gap review) |
 | `release-cadence.md` | three stages/three costs · the placement test (with a named receiver) · the frozen-batch gate, fixed before the work · cadence declaration incl. minimum interval · reorder-don't-explain · a run's release grant (permission, read once at run end) | run-cycle, handoff, ship |
 | `decision-briefing.md` | the entry shapes (resource-blocked incl. owner-gated act · decision-class · criterion request) · the four parts of a briefing · the guards (decide ≠ act; ask for resources and criteria, never a pick) | run-cycle, resume, ship |
 | `decision-lenses.md` | the five co-equal lenses (근본/정석/표준/세련/철학) · what is *not* a lens (scope size, request count, pre-1.0 breaking) · reversibility belongs to the act, not the edit · the four causes a pick won't form — (b)/(c) trigger bounded research, (a)/(d) turn into a criterion request | run-cycle (self-decide), resume (brief), mindset, philosophy-alignment-guide |
@@ -112,7 +112,7 @@ The four canonical philosophy dimensions live only in
 **Invariants — easy to break while editing a skill, expensive to notice later:**
 
 1. **The Stop hook is the only enforcement surface, and it matches literal tokens.**
-   `HUMAN-NEEDED:` · `FRONTIER-OPEN:` · `FRONTIER-EXHAUSTED:` and the header lines `Budget:` ·
+   `HUMAN-NEEDED:` · `FRONTIER-OPEN:` · `FRONTIER-EXHAUSTED:` (with its `goal-gap:` note) and the header lines `Budget:` ·
    `Start:` · `Status:` · `Run: cycles a–b` are strings the hook parses. Rewording one silently
    disables the check it gates. The hook has no session context — anything it needs must be written
    into a header. On the exhaustion path it hands `FRONTIER-EXHAUSTED:` to a separate read-only
