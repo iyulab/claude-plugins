@@ -10,6 +10,8 @@ bugs or docs. MAJOR is never bumped automatically.
 
 ## [Unreleased]
 
+## [1.51.0] — 2026-11-12
+
 ### Added
 
 - **`/iyu:walk` — measure a product from its users' purposes, not its feature list.** Stage
