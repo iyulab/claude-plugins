@@ -11,6 +11,13 @@ down by someone who owns it, in a form a different agent can test.
 a recommendation, is what lets `drive` run without stopping. Reversible choices are still made by the
 agent and recorded, not asked.
 
+**Why the draft comes before the questions.** Asked one topic at a time with a recommendation
+attached, an owner takes the recommendation nearly every time — which says less about agreement than
+about the form: a question with a marked answer is a request for confirmation. A whole draft puts
+the same recommendations where they can be read against each other and corrected, and leaves the
+questions for what no draft can supply. Calibration is the exception that proves it: there the
+owner's unprompted score is the data, so the options carry no recommendation.
+
 **Why the owner signs.** The contract is what stops an implementer from passing a stage by moving
 the line. The agent that builds may not edit scenarios, thresholds or non-goals (stages.md §4), so
 the people who set them have to be in the room once.

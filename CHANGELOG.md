@@ -38,6 +38,14 @@ bugs or docs. MAJOR is never bumped automatically.
   derives itself. Adoptions are provisional and reported with how to undo them; outward-looking and
   speculative findings still wait for a human. `--propose-only` restores review-everything. This
   replaces the former rule 1 ("No auto-merge, ever").
+- **`charter` drafts the whole contract before it asks, and gives a UI stage a design target.**
+  Asked topic by topic with a recommendation attached, an owner takes the recommendation nearly
+  every time, so the interview was confirming more than eliciting. `charter` now writes the draft
+  `stages.json` first and asks only what the owner alone has: the draft's guesses, the calibration
+  scores (offered on the plain scale, no option marked recommended), irreversible or externally
+  owned decisions, and what they want changed. A stage with a user-facing surface and no mock gets
+  its target screens made first — as the finished product should look, not as the build can manage
+  today — and they serve as the calibration samples. The owner still signs.
 - **`run-cycle` opens the session itself when no `resume` ran.** A run started cold applies
   `resume`'s steps 2–5 in Preparation — grounding the handoff, reordering, settling flagged decisions
   as provisional — and continues, so one command starts the work. A release grant may also be

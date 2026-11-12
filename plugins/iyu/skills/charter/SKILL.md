@@ -40,7 +40,24 @@ any question the repo already answers. Research what can be researched (comparab
 standards, parts the project or its organisation already has) so each question arrives with options
 and a recommendation.
 
-### 3. Interview — up to three rounds of `AskUserQuestion`, four questions each, recommendation first
+**Draft the whole contract before the first question.** Write the draft `stages.json` from what you
+read — goal, ladder, the open stage's scenarios, non-goals, seam, `run`, budget, each owner decision
+with your recommendation — taking your own recommendation wherever the repo or a reversible choice
+settles it, and marking as a *guess* whatever it does not. The owner then corrects a draft instead
+of filling in a questionnaire.
+
+**A stage with a user-facing surface needs a design target.** With no mock, landing page or earlier
+stage to hold it to, make one first: the open stage's screens as they should look when the product
+is finished and good, not limited by what the build can do today, saved under
+`<root>/stages/evidence/` as files the owner can open. They are the calibration samples of step 3
+and the source of the stage's claims.
+
+### 3. Interview — about the draft, up to three rounds of `AskUserQuestion`, four questions each
+
+Show the draft, then ask only what the owner alone has: each *guess*; the calibration scores; the
+decisions that are irreversible or externally owned; and what they want changed. A question whose
+recommended answer the owner would plainly take is a line in the draft, not a question. The seven
+topics below are what the draft has to cover — the checklist, not the question list.
 
 1. **Goal and ladder** — what the finished product is for, who uses it, the stages in order. Test each
    stage: *could someone use this today, on its own?* Merge a stage that is only a layer of the next.
@@ -48,7 +65,8 @@ and a recommendation.
    scenarios as scripts with the expected *visible* result (see the example in stages.md §3), and the
    non-goals.
 3. **The bar** — a rubric with a threshold per item, and **calibration**: show the owner two or three
-   real or sketched outputs and record their scores, so the evaluator's eye matches theirs. With no
+   real or sketched outputs and record their scores, so the evaluator's eye matches theirs. This is
+   the one place a recommendation is wrong: list the scale in order and mark no option recommended. With no
    output yet, record `"calibration": "pending"`; `drive` asks the owner to score the first real output
    before its first evaluation.
 4. **Promises and gaps** — the claims the mock makes for this stage (stages.md §6), and for each gap:
