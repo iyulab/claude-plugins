@@ -38,6 +38,10 @@ bugs or docs. MAJOR is never bumped automatically.
   derives itself. Adoptions are provisional and reported with how to undo them; outward-looking and
   speculative findings still wait for a human. `--propose-only` restores review-everything. This
   replaces the former rule 1 ("No auto-merge, ever").
+- **`run-cycle` opens the session itself when no `resume` ran.** A run started cold applies
+  `resume`'s steps 2–5 in Preparation — grounding the handoff, reordering, settling flagged decisions
+  as provisional — and continues, so one command starts the work. A release grant may also be
+  declared as standing in the project's own instructions instead of being retyped per run.
 - `handoff` and `resume` scope the goal-gap review as the next step when nothing startable is left,
   and still name `backlog-discover` for the outward-looking lanes.
 

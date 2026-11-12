@@ -124,7 +124,8 @@ Run-specific on top of it:
 **One parameter: the cycle budget.** `$0` = total cycles (default: **10**). Anything else in
 `$ARGUMENTS`, and anything the user wrote alongside the invocation, is **scope context** — it feeds
 Preparation step 1, not a flag parser. There are no flags: a run always executes, and always commits.
-A release grant there is recorded in the first cycle log's Re-plan, where the run end finds it —
+A release grant — given there, or declared as standing in the project's own instructions — is
+recorded in the first cycle log's Re-plan, where the run end finds it —
 together with each package's release gate as fixed at run start (release-cadence §2), since the run
 end judges that gate and not one it cuts for itself.
 
@@ -147,7 +148,7 @@ The preparation phase is **thin by design**. Deep analysis belongs to each cycle
 
 ### 0. Resolve the continuity root
 
-Apply the resolution rule in **Continuity root** above. Every `<root>/…` path in the rest of this skill is relative to what you resolve here — resolve it before reading or writing anything.
+Apply the resolution rule in **Continuity root** above, before reading or writing anything; every `<root>/…` path below is relative to it.
 
 **One-time migration, here and nowhere else**: if resolution found a continuity doc (`ROADMAP.md` / `HANDOFF.md` / `HISTORY.md`) sitting *inside* `cycle-logs/`, move it up to `<root>/` now and note the move in this cycle's Roadmap Revisions. Resolution is what discovers the misplacement, so it is also what corrects it — re-checking every cycle would buy nothing.
 
@@ -158,6 +159,12 @@ Check the preceding conversation for scope — explicit tasks, agreed-upon next 
 Also absorb **corrections to prior self-decisions**: if the human has said an earlier L1 decision was wrong (in this conversation or a prior run's report), capture it now and write it durably into the Decisions Ledger (status → `reverted`) so STEP 0 acts on it and a compaction cannot lose it. Conversation is the fastest channel; the ledger is what makes the correction survive.
 
 Then run the project's external inbox check, if it defines one ([continuity-docs.md §6](${CLAUDE_SKILL_DIR}/../_shared/continuity-docs.md)): an item that arrived since the last session is scope context of the same standing as the conversation, and a run that skips it hands off a `HANDOFF.md` that never mentions it. Record the result (even "nothing new") in the first cycle log's Re-plan.
+
+**No `/iyu:resume` earlier in this session → open the session here.** Apply steps 2–5 of
+[resume](${CLAUDE_SKILL_DIR}/../resume/SKILL.md): ground `HANDOFF.md` in current state, reorder what
+no longer fits, settle each flagged decision as provisional and record it. Then continue — resume's
+closing stop is for a session that asked only for the briefing. What it settled goes in the
+End-of-Run Report.
 
 ### 2. Previous Cycle Logs
 
@@ -196,7 +203,7 @@ item is blocked: then the roadmap's startable phases are (order is not a gate, [
 
 ### 4. Philosophy Alignment (high-level only)
 
-Evaluate the overall goal — not every future cycle — against CLAUDE.md / README.md, using the **four canonical dimensions** of [philosophy-alignment-guide.md](${CLAUDE_SKILL_DIR}/../mindset/references/philosophy-alignment-guide.md) (Core Mission Fit · Scope Alignment · Pattern Consistency · User Base Impact). That guide is the single definition of "the four dimensions" across this plugin — `issue-triage`, `backlog-discover` and `telemetry-az` weigh against the same four, so do not maintain a divergent set here.
+Evaluate the overall goal — not every future cycle — against CLAUDE.md / README.md, using the **four canonical dimensions** of [philosophy-alignment-guide.md](${CLAUDE_SKILL_DIR}/../mindset/references/philosophy-alignment-guide.md) (Core Mission Fit · Scope Alignment · Pattern Consistency · User Base Impact). That guide is the single definition of the four dimensions across this plugin.
 
 One **run-specific** check rides alongside them, and it is not one of the four: **Dependency Direction** — no upstream→downstream leakage (a consuming project's domain concept must not be pushed into a library it consumes).
 
@@ -500,9 +507,9 @@ Termination is governed by rule 9(d).
 7.5. **No invention**: Data you did not directly observe (a command's output, a file's contents, a test result) stays "unknown" — never present a guess as fact. When something is unknown and matters, state it and take the step that would observe it rather than assuming.
 8. **Defect honesty**: Record issues openly. "It works" ≠ "It's good".
 9. **No idle early stop — park blockers, push unblocked work, quit last** *(normative home for the termination test — the trigger matrix, rule 2, and the value ladder all defer here)*: While cycles remain, termination is the last resort, reached in this order. (a) **Emergent derivation (STEP 5)** — derive the natural next capability from what you just built, across the user/developer/operator lenses; if a candidate passes the derivation gate, write `FRONTIER-OPEN:` and that *is* the next cycle (main loop, track ①). (b) When derivation first comes up dry, run the **goal-gap review** as the next cycle — the stated goal against the running product; gaps inside the declared role become backlog phases. Only after it do you climb the **Surplus-Cycle Value Ladder** (durable value → stability → efficiency), acting where the project shows a concrete signal; doc-sync is its always-applicable floor. (c) **Item-level human blockers never terminate the run** — park each `BLOCKED-ITEM` in the Blocked-on-Human ledger, carry it forward, and keep pushing every *unblocked* candidate (backlog phase, Carry-Forward defect, autonomous emergent capability, ladder signal). (d) Terminate early only once **no unblocked autonomous work remains anywhere** — every backlog phase, Carry-Forward item, autonomous-eligible emergent capability, and ladder signal is either done or parked in the ledger, each remaining `ROADMAP.md` phase and `HANDOFF.md` `## Next` item judged done · blocked (what it waits on named) · a design question (level and question stated) · startable — never parked for its place in the order ([continuity-docs.md §4](${CLAUDE_SKILL_DIR}/../_shared/continuity-docs.md)) — AND the log carries `FRONTIER-EXHAUSTED:` with its `goal-gap:` note AND the ladder surfaces no actionable *unblocked* signal. Log that judgment (and the full ledger of parked blockers) explicitly, and generate the **End-of-Run Report** before terminating. **`FRONTIER-EXHAUSTED:` is audited, not taken on trust** — the Stop hook hands the claim, with this log, the one before it, `ROADMAP.md` and `HANDOFF.md`'s `## Next`, to a separate read-only auditor, and blocks if work plainly remains unparked — a backlog phase, a `## Next` item, a scope in the log, a ledger entry dropped between the two logs — naming it back to you. Answering a finding by relabelling is judged by the reason given, so a cycle that only reclassifies cannot pass it. Write the token as a claim you could defend, never as a way to stop. Throughout: reversible work, large or small, is done (STEP 2→4) and ledgered; only L2 and discussion-class work is proposed in Derive-Next, never self-decided.
-10. **Continuity chain**: Always read the previous cycle's Carry-Forward, Next-Cycle Scope, and Roadmap Revisions before STEP 0. The previous cycle's Next-Cycle Scope is this cycle's starting scope.
+10. **Continuity chain**: the previous cycle's Next-Cycle Scope is this cycle's starting scope (STEP 0).
 11. **Latent work priority**: The best cycles surface structural improvements nobody thought to ask about — take them on as L1 scope, rationale in the Decisions Ledger. Never fold them in silently.
-12. **Cost discipline**: STEP 0 is bounded (~5 min). If drift check seems to require deep analysis, that is a RE-PLAN signal — handle it explicitly rather than letting STEP 0 bloat.
+12. **Cost discipline**: STEP 0 is bounded (~5 min); a drift check that needs deep analysis is a RE-PLAN signal.
 
 ## Start
 
