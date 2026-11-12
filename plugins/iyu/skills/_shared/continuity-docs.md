@@ -249,7 +249,12 @@ Apply whenever continuity docs are written — every `run-cycle` STEP 5, every `
    detail is living at the wrong layer: split phase detail into `<root>/plans/` and leave links.
    Budgets are in characters, not lines — a single line can carry thousands of characters.
 7. **Run the structural checks** (§7) on the docs as this pass leaves them — run the script,
-   `sh <this directory>/scripts/docs-lint.sh <root>` — and fix what fails.
+   `sh <this directory>/scripts/docs-lint.sh <root> [file...]` — and fix what fails. Moving content
+   between files is what breaks relative links (a section moved to `plans/` keeps links written for
+   its old directory), so name every file this pass wrote or moved content into outside the four
+   continuity docs as a `[file]` argument (a path relative to `<root>`): it gets the `L07` link
+   check, resolved from its own directory. The archives (`HISTORY-ARCHIVE-*.md`,
+   `STRANDS-ARCHIVE-*.md`) are checked without being named.
 
 Hygiene is doc upkeep. It never gates a run's termination: inside `run-cycle` a failed check is
 fixed in the same pass or carried into the next one, and the run goes on. Only `handoff` — the step
@@ -392,7 +397,7 @@ one fails.
 |---|---|---|
 | `L04` | No completed item remains in `ROADMAP.md` or in `HANDOFF.md`'s `## In flight` / `## Next` — no `[x]`, no item marked done | a finished item migrates (§3 step 1). A finished sub-piece of an item still open is **removed** — its record is the cycle log and git, and `HISTORY.md` receives it when the item itself closes; the item's line then speaks only of what remains |
 | `L05` | Every `## Waiting on you` entry carries `Registered` and `Blocks`; a resource-blocked entry also `Blocker` · `Tried` · `Unblocks` | add the missing field from the evidence. A missing `Registered` is the date of the commit that first added the entry (`git log -S'<entry heading>'`); only when that finds nothing is it today's, marked `(recovered)` |
-| `L07` | Every relative link in a continuity doc resolves | correct the path, or drop the link if its target is gone |
+| `L07` | Every relative link in a continuity doc, in the cold-storage archives, and in any file the pass named as an argument (§3 step 7) resolves | correct the path (for a moved section, rewrite it for the new directory), or drop the link if its target is gone |
 | `L10` | `HISTORY.md` ≤ 30 live entries · `## 완료·졸업` ≤ 10 entries · each of the three `STRANDS.md` heading lines occurs exactly once · no `STRANDS.md` entry has lines beneath it | archive the overflow (§3 steps 2, 4). Lines under a strand entry are relocated to the current `STRANDS-ARCHIVE-{NN}.md` under a heading `## {strand} — relocated progress ({date})`, so the archive keeps graduated entries and relocated detail apart — relocated, never deleted. A missing or duplicated heading is the one failure not to repair (§3 step 4): report it |
 
 **Warn class** — report, never block.

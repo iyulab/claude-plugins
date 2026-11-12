@@ -1,0 +1,10 @@
+{
+  "why": "the same moved section with every relative link reaching its target (from plans/) passes, and an unnamed plans/ file with a broken link is not scanned",
+  "exit": 0,
+  "args": [
+    "plans/ROADMAP-context.md"
+  ],
+  "notContains": [
+    "does not resolve"
+  ]
+}

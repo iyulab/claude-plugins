@@ -22,6 +22,13 @@ bugs or docs. MAJOR is never bumped automatically.
   directories, the latest of them is the most recently modified one (and there is no "previous" log
   for the audit). Two fixtures pin this (`v-` budget reached, `w-` mid-run count). A single-directory
   repository behaves as before.
+- **The hygiene pass checks the links of the files it moves content into.** Moving a section out
+  of `ROADMAP.md` into another directory (`plans/`, an archive) leaves its relative links written
+  for the old location, and `L07` only read the four continuity docs, so dozens of broken links
+  survived until a later cycle found them by hand. `docs-lint.sh <root> [file...]` now link-checks
+  every `[file]` the pass names (resolved from the file's own directory, link check only — no
+  budgets) and the `HISTORY-ARCHIVE-*.md` / `STRANDS-ARCHIVE-*.md` archives automatically;
+  `continuity-docs.md` §3 step 7 says to name the files the pass wrote. Three fixtures pin it.
 
 ## [1.50.1] — 2026-11-12
 

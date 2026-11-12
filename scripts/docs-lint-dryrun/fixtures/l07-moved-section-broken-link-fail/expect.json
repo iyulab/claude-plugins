@@ -1,0 +1,18 @@
+{
+  "why": "a section the hygiene pass moved to plans/ keeps its old relative links; the file is named as an extra argument, its links resolve from plans/, the one that no longer reaches anything fails L07 - and the file's long item does not raise L01 (link check only)",
+  "exit": 1,
+  "args": [
+    "plans/ROADMAP-context.md"
+  ],
+  "verdicts": {
+    "L07": "FAIL"
+  },
+  "contains": [
+    "plans/ROADMAP-context.md:3  link does not resolve: plans/../reports/summary.md"
+  ],
+  "notContains": [
+    "plans/../HISTORY.md",
+    "plans/export.md",
+    "item of"
+  ]
+}

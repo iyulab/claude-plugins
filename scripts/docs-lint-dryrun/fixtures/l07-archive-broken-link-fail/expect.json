@@ -1,0 +1,13 @@
+{
+  "why": "the cold-storage archive beside the continuity docs is link-checked without being named: an entry moved there with a path that does not reach its target fails L07",
+  "exit": 1,
+  "verdicts": {
+    "L07": "FAIL"
+  },
+  "contains": [
+    "HISTORY-ARCHIVE-01.md:3  link does not resolve: plans/gone.md"
+  ],
+  "notContains": [
+    "item of"
+  ]
+}

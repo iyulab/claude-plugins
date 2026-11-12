@@ -1,9 +1,13 @@
 #!/bin/sh
 # Structural checks for a continuity root: continuity-docs.md section 7, by its codes.
 #
-# Usage:  sh docs-lint.sh <root>
+# Usage:  sh docs-lint.sh <root> [file...]
 #         <root> is the continuity root the caller already resolved (continuity-docs.md section 1);
-#         this script never resolves or guesses one.
+#         this script never resolves or guesses one. Each [file] is a path relative to <root> that
+#         the hygiene pass wrote or moved content into (a section moved to plans/, say): it gets the
+#         L07 link check only, with links resolved from the file's own directory. The cold-storage
+#         archives beside the continuity docs (HISTORY-ARCHIVE-*.md, STRANDS-ARCHIVE-*.md) get the
+#         same check without being named.
 # Output: one verdict line per code, in section 7's order, each followed by its findings:
 #           L04 FAIL (error) - 2 finding(s)
 #             ROADMAP.md:12  completed item: - [x] ...
@@ -43,6 +47,7 @@ all_unchecked() {
 
 root=${1:-}
 [ -n "$root" ] || all_unchecked 'no continuity root given'
+[ "$#" -gt 0 ] && shift
 [ -d "$root" ] || all_unchecked "continuity root not found: $root"
 cd "$root" 2>/dev/null || all_unchecked "continuity root not readable: $root"
 
@@ -51,6 +56,13 @@ for d in ROADMAP HANDOFF STRANDS HISTORY; do
     [ -r "$d.md" ] && files="$files $d.md"
 done
 [ -n "$files" ] || all_unchecked "no continuity docs in $root"
+# Link-only files: the archives, then any file the caller names (an unreadable or repeated one is skipped).
+for d in HISTORY-ARCHIVE-*.md STRANDS-ARCHIVE-*.md "$@"; do
+    case $d in *' '*) continue ;; esac
+    [ -f "$d" ] && [ -r "$d" ] || continue
+    case " $files " in *" $d "*) continue ;; esac
+    files="$files $d"
+done
 
 today=${DOCS_LINT_TODAY:-$(date +%Y-%m-%d 2>/dev/null)}
 tab=$(printf '\t')
@@ -73,7 +85,7 @@ function snip(s,    i, n) {
         if (substr(s, i, 1) !~ /[\200-\277]/ && ++n == 78) break
     return substr(s, 1, i - 1) "..."
 }
-function fnd(code, loc, msg) { printf "FND\t%s\t%s\t%s\n", code, loc, msg }
+function fnd(code, loc, msg) { if (code == "L01" && linkonly) return; printf "FND\t%s\t%s\t%s\n", code, loc, msg }
 function unc(code, f, why) { printf "UNC\t%s\t%s\t%s\n", code, f, why }
 function chk(code, f) { printf "CHK\t%s\t%s\n", code, f }
 function isdate(d) { return d ~ /^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$/ }
@@ -129,6 +141,7 @@ function link_target(t) {
     if (t ~ /^</) { sub(/^</, "", t); sub(/>.*$/, "", t) } else sub(/[ \t].*$/, "", t)
     if (t == "" || t ~ /^#/ || t ~ /^[A-Za-z][A-Za-z0-9+.-]*:/ || t ~ /^[\/\\]/ || t ~ /[{}$]/) return
     sub(/#.*$/, "", t); sub(/\?.*$/, "", t); gsub(/%20/, " ", t)
+    if (t != "" && index(F, "/")) { d = F; sub(/\/[^\/]*$/, "", d); t = d "/" t }  # resolve from the files directory
     if (t != "") printf "LINK\t%s\t%d\t%s\n", F, FNR, t
 }
 function scan_links(s) {
@@ -169,6 +182,7 @@ function end_entry() { # HANDOFF ## Waiting on you entry
 
 function start_file(f) {
     F = f; T = f; sub(/\.md$/, "", T)
+    linkonly = (T !~ /^(ROADMAP|HANDOFF|STRANDS|HISTORY)$/)
     infence = 0; chars = 0; blen = 0; bstart = 0; marked = 0; done = 0
     sec = ""; structured = 0; waiting = 0; estart = 0
     h_run = 0; h_int = 0; h_grad = 0; grad = 0; entry = 0; beneath_at = 0
@@ -180,7 +194,8 @@ function end_file() {
     flush_block()
     budget = (T == "ROADMAP") ? 60000 : (T == "HANDOFF") ? 30000 : (T == "STRANDS") ? 12000 : 0
     if (budget && chars > budget) fnd("L01", F, fmt(chars) " characters (budget " fmt(budget) ")")
-    chk("L01", F); chk("L07", F)
+    if (!linkonly) chk("L01", F)
+    chk("L07", F)
     if (T == "ROADMAP") {
         if (marked) chk("L04", F)
         else unc("L04", F, "marks nothing as open or done (prose); the next migration brings it into a checkable shape")

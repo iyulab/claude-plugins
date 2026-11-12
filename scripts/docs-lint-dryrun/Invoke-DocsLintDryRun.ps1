@@ -9,7 +9,8 @@
   For each fixture the script:
     1. copies `fixtures/<name>/tree` to a fresh temp directory and, when expect.json sets `crlf`,
        rewrites every Markdown file there with CRLF line ends and a UTF-8 BOM;
-    2. runs the lint on that directory (or on `root` from expect.json, relative to it) under the same
+    2. runs the lint on that directory (or on `root` from expect.json, relative to it, with the extra
+       file arguments in `args`) under the same
        sh that Claude Code uses (Git Bash on Windows), with DOCS_LINT_TODAY set to the fixture's
        `today` (default 2026-10-18);
     3. asserts the exit code, the lines the report must and must not contain, and that no file in
@@ -63,7 +64,8 @@ function Invoke-LintRun($fx, $expect, [string]$sh, [string]$lint) {
     $saved = $env:DOCS_LINT_TODAY
     try {
         $env:DOCS_LINT_TODAY = if ($expect.today) { $expect.today } else { '2026-10-18' }
-        $out = (& $sh $lint ($target -replace '\\', '/') 2>&1 | Out-String).Trim() -replace "`r", ''
+        $extra = @($expect.args | Where-Object { $_ })
+        $out = (& $sh $lint ($target -replace '\\', '/') @extra 2>&1 | Out-String).Trim() -replace "`r", ''
         $exit = $LASTEXITCODE
     } finally { $env:DOCS_LINT_TODAY = $saved }
 

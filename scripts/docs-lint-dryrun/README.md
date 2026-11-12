@@ -44,6 +44,9 @@ a single sub-check. Removing a check from the script fails the fixture named for
 | `l05-resource-missing-tried-fail` | L05 FAIL | An entry with a `Blocker` also needs `Tried` and `Unblocks` |
 | `l05-narrative-handoff-unchecked` | L05, L08 UNCHECKED | A `HANDOFF.md` outside the handoff format |
 | `l07-broken-link-fail` | L07 FAIL | A relative link whose target is gone (anchor stripped) |
+| `l07-moved-section-broken-link-fail` | L07 FAIL | A section moved to `plans/` and named as an extra argument: links resolve from `plans/`, the one that reaches nothing fails, and the file's long item does not raise `L01` |
+| `l07-moved-section-links-pass` | PASS | The same moved section with every link reaching its target; a `plans/` file that is not named is not scanned |
+| `l07-archive-broken-link-fail` | L07 FAIL | The `HISTORY-ARCHIVE-*.md` archive is link-checked without being named |
 | `l10-history-over-cap-fail` | L10 FAIL | 31 live `HISTORY.md` entries |
 | `l10-history-unrecognized-unchecked` | PASS, HISTORY unchecked | A table-form `HISTORY.md` is not counted |
 | `l10-graduated-over-cap-fail` | L10 FAIL | 11 entries under `## 완료·졸업` |
