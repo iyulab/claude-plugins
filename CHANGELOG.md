@@ -22,6 +22,15 @@ bugs or docs. MAJOR is never bumped automatically.
   directories, the latest of them is the most recently modified one (and there is no "previous" log
   for the audit). Two fixtures pin this (`v-` budget reached, `w-` mid-run count). A single-directory
   repository behaves as before.
+- **A project can decline a roadmap line, and the audit reads it as decided.** A project whose own
+  documents say it builds only what someone receives has roadmap lines it has judged not worth doing;
+  the exhaustion audit counted them as unstarted phases, so a run could not stop and filled its
+  budget with work the project had ruled out. A line that opens with `✗` and states both the clause
+  of the project's own documents that rules it out (the ground) and a reopening condition now counts
+  as done for the audit and for `resume` (`continuity-docs.md` §4). The ground is what keeps it a
+  decision: effort, low expected return, few users and place in the order are not grounds, and an
+  audit prompt says so. Two fixtures pin it, checked against the real auditor model too.
+
 - **The hygiene pass checks the links of the files it moves content into.** Moving a section out
   of `ROADMAP.md` into another directory (`plans/`, an archive) leaves its relative links written
   for the old location, and `L07` only read the four continuity docs, so dozens of broken links

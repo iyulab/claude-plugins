@@ -281,7 +281,18 @@ later phase wait. Each remaining phase is exactly one of: **done** · **blocked*
 waits on (a person, an external party, or an unfinished phase it builds on) · **a design question**
 for a human, its level and the question stated · **startable**. «Later in the order» or «the owner
 set the order» is none of the first three. A phase stated only as a direction is startable — its
-first task is decomposing it — not empty. Why: [design-rationale.md](../run-cycle/references/design-rationale.md#why-order-is-not-a-gate).
+first task is decomposing it — not empty.
+
+**A declined line.** A project may decide a line is not for it. It records that in `ROADMAP.md` as
+one line that opens with `✗` and states both the clause of its own documents that rules the line out
+(its declared non-goals or scope — the ground) and the condition under which it would be reopened:
+`✗ <line> — declined (ground: <document and clause> · reopen when: <condition>)`, written in the
+project's language. Such a line counts as **done** for every reader (the audit, `resume`, a later
+run); it stays listed so the decision and its way back are visible, and it is startable again when
+its reopening condition holds. The ground is what makes it a decision and not a parking: effort, a
+low expected return, few people who would use it, and its place in the order are not grounds — the
+same reasons that never made a phase blocked. A `✗` line without a cited clause or without a
+reopening condition is an ordinary remaining line. Why: [design-rationale.md](../run-cycle/references/design-rationale.md#why-order-is-not-a-gate).
 
 So `## Next` is not a prefix of `ROADMAP.md`: when the front phases are blocked, keep descending the
 order and add startable phases until they fill one session or run, and keep the blocked ones listed

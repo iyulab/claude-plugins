@@ -61,6 +61,8 @@ hook and by continuity-root resolution, both of which look for `cycle-logs/cycle
 | `u-exhausted-no-goal-gap-block` | BLOCK | `FRONTIER-EXHAUSTED:` with budget left and no `goal-gap:` note: the run is sent to compare its stated goal with the running product before it may stop; decided by the script, the auditor is not asked |
 | `v-umbrella-two-dirs-budget-allow` | ALLOW | An umbrella run (`Start: 227`, `Budget: 6`) logs three cycles in one submodule's `cycle-logs/` and three in another's (indexes 100–102, below `Start`); the newest log is in the second directory. The run is counted across both, the budget is reached, and the report in the first directory satisfies the check |
 | `w-umbrella-two-dirs-mid-run-block` | BLOCK | The same run with five of six done: the count is `5 of 6`, never `0 of 6` from reading the second directory alone |
+| `x-exhausted-declined-line-allow` | ALLOW | `FRONTIER-EXHAUSTED:` with budget left; the roadmap's last phase is a `✗` line citing the clause of the project's own scope document and a reopening condition. The auditor is told such a line counts as completed (prompt asserted), and the claim passes (live: 2/2) |
+| `y-exhausted-declined-for-return-block` | BLOCK | The same line declined only for low return and few users: not a clause of the project's own documents, so the auditor is told it is not a ground and the reason names the phase (live: 2/2) |
 
 Add a fixture as a new directory with a `tree/` and an `expect.json`:
 
