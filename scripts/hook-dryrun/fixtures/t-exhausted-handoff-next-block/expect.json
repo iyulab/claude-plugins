@@ -1,0 +1,86 @@
+{
+  "ok": false,
+  "why": "cycle 3 of 10 claims FRONTIER-EXHAUSTED in a project with no roadmap whose work list is the handoff's Next section; the handoff is handed to the auditor, which finds an unstarted, unparked item there",
+  "auditor": "fail: the handoff Next section still lists the CSV export, not started and not parked",
+  "reasonContains": [
+    "CSV export",
+    "FRONTIER-EXHAUSTED",
+    "handoff"
+  ],
+  "liveReasonContains": [
+    "CSV"
+  ],
+  "reasonNotContains": [
+    "RUN-SUMMARY"
+  ],
+  "transcript": [
+    {
+      "type": "user",
+      "userType": "external",
+      "origin": {
+        "kind": "human"
+      },
+      "message": {
+        "role": "user",
+        "content": "<command-message>iyu:run-cycle</command-message>\n<command-name>/iyu:run-cycle</command-name>\n<command-args>10</command-args>"
+      }
+    },
+    {
+      "type": "user",
+      "userType": "external",
+      "isMeta": true,
+      "message": {
+        "role": "user",
+        "content": [
+          {
+            "type": "text",
+            "text": "Base directory for this skill: …\n# Development Cycle Runner"
+          }
+        ]
+      }
+    },
+    {
+      "type": "assistant",
+      "message": {
+        "role": "assistant",
+        "content": [
+          {
+            "type": "text",
+            "text": "Cycle 03 done; frontier exhausted, report written."
+          }
+        ]
+      }
+    },
+    {
+      "type": "user",
+      "userType": "external",
+      "isMeta": true,
+      "message": {
+        "role": "user",
+        "content": [
+          {
+            "type": "text",
+            "text": "Stop hook feedback:\nUnblocked autonomous work remains."
+          }
+        ]
+      }
+    },
+    {
+      "type": "assistant",
+      "message": {
+        "role": "assistant",
+        "content": [
+          {
+            "type": "text",
+            "text": "Report and handoff are done."
+          }
+        ]
+      }
+    }
+  ],
+  "promptContains": [
+    "HANDOFF.md",
+    "only its \"## Next\" section",
+    "The handoff's other sections are not work lists"
+  ]
+}

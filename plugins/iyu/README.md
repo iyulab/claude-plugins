@@ -58,7 +58,7 @@ Each cycle: Scope → Research → Implement → Test → Evaluate → Carry-For
 
 **Early termination is audited, not self-declared.** A run may stop before `N` when the frontier is
 genuinely exhausted — but that claim is checked: the Stop hook has a separate, read-only model audit
-it against `ROADMAP.md` and the last two cycle logs, and blocks the stop if work plainly remains
+it against `ROADMAP.md`, `HANDOFF.md`'s `## Next` and the last two cycle logs, and blocks the stop if work plainly remains
 unparked, naming it back into the run. A token the same agent writes and reads is not verification,
 so the check is made by a reader the run does not control. It needs the `claude` CLI on `PATH`;
 without it the stop is allowed and you are told the claim went unaudited.

@@ -8,6 +8,18 @@ bugs or docs. MAJOR is never bumped automatically.
 > History is reconstructed from git from v1.11.0 onward. Earlier versions live in
 > the git log only.
 
+## [Unreleased]
+
+### Fixed
+
+- **The early-termination audit reads the handoff's `## Next`, not only the roadmap.** A run takes
+  its opening scope from `HANDOFF.md` when one exists, but the `FRONTIER-EXHAUSTED:` audit was handed
+  only the two newest cycle logs and `ROADMAP.md`. A project that keeps its work list in the handoff
+  — or has no roadmap at all — gave the auditor nothing to check against, so an unstarted `## Next`
+  item never counted against the claim. The hook now resolves `HANDOFF.md` beside the roadmap and
+  the auditor judges its `## Next` items by the same reasons as roadmap phases; rule 9(d) names both.
+  New dry-run fixture `t-exhausted-handoff-next-block`.
+
 ## [1.49.1] — 2026-11-06
 
 ### Changed

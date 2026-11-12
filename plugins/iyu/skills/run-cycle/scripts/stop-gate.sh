@@ -291,6 +291,12 @@ roadmap=
 for r in "$dir/../ROADMAP.md" "$dir/../../ROADMAP.md"; do
     if [ -f "$r" ]; then roadmap=$r; break; fi
 done
+# The handoff's "## Next" is where a run takes its opening scope (Preparation step 3), so a project
+# that keeps its work list there has nothing in the roadmap for the audit to check against.
+handoff=
+for h in "$dir/../HANDOFF.md" "$dir/../../HANDOFF.md"; do
+    if [ -f "$h" ]; then handoff=$h; break; fi
+done
 
 audit_prompt() {
     cat <<PROMPT
@@ -300,13 +306,15 @@ A development run stopped early: cycle log $latest ends with FRONTIER-EXHAUSTED:
 - the latest cycle log: $latest
 - the cycle log before it: ${prev:-none}
 - the roadmap (a phase backlog): ${roadmap:-none}
+- the handoff, only its "## Next" section (the scope the run opened from): ${handoff:-none}
 
 The claim FAILS only if one of these is plainly true:
 1. The latest log itself still names unblocked autonomous work: a Next-Cycle Scope that is not "None", an actionable Carry-Forward item, an autonomous-eligible candidate, or an actionable value-ladder signal.
 2. An entry in the previous log's Blocked-on-Human or Decisions ledger is neither carried forward in the latest log nor recorded there as resolved (silently dropped).
 3. The roadmap holds a phase that is plainly not completed and that the latest log does not account for as either blocked (in its Blocked-on-Human ledger, naming the person, external party or unfinished item the phase waits on) or a design question for a human (under its Pending Human Decisions, stating the question). Coming later in the roadmap order, or the owner having set that order, is not a dependency: a phase parked or deferred for that reason alone is not accounted for. Judge the reason a phase is parked, not its label, including a phase reclassified in answer to an earlier audit finding. These reasons never account for a phase, because none of them is something its start waits on or a decision only a person can make: how much work it is, that it brings no user-visible benefit, that it would be a breaking change in a project still below 1.0, or that a person is to check or sign off the result once it is finished. A condition on closing or approving the work does not block starting it. A phase blocked or questioned for any other stated reason never counts against the claim.
+4. The handoff's "## Next" section lists a work item that is plainly not completed and that the latest log does not account for in the way rule 3 requires of a roadmap phase. The reasons rule 3 rejects are rejected here too. An item the section itself marks as waiting on a named person, external party or date is accounted for. The handoff's other sections are not work lists; do not judge them.
 
-Judge only what is plain; you are spotting obviously remaining autonomous work, not adjudicating wording. A missing file, an empty roadmap, or a genuinely ambiguous case passes.
+Judge only what is plain; you are spotting obviously remaining autonomous work, not adjudicating wording. A missing file, an empty roadmap or "## Next" section, or a genuinely ambiguous case passes.
 
 Answer with exactly one JSON object and nothing else:
 {"ok": true, "reason": "<one line>"} when the claim holds;
@@ -340,7 +348,7 @@ EOF
 
 case $audit_ok in
     false)
-        block "$progress Cycle $latest_n claims FRONTIER-EXHAUSTED:, but an audit of the logs and roadmap found unblocked work: ${why:-see the roadmap}. Continue with it: $next_step. If an item is in fact blocked, park it in the Blocked-on-Human ledger naming what it waits on, or record the design question it raises under Pending Human Decisions, then re-derive STEP 5; its place in the roadmap order is not a reason. $token_shapes" ;;
+        block "$progress Cycle $latest_n claims FRONTIER-EXHAUSTED:, but an audit of the logs, roadmap and handoff found unblocked work: ${why:-see the roadmap}. Continue with it: $next_step. If an item is in fact blocked, park it in the Blocked-on-Human ledger naming what it waits on, or record the design question it raises under Pending Human Decisions, then re-derive STEP 5; its place in the roadmap order is not a reason. $token_shapes" ;;
     true) ;;
     *) [ -n "$audit_note" ] || audit_note="run-cycle: the FRONTIER-EXHAUSTED claim in $latest could not be audited (the auditor gave no verdict); the stop was allowed." ;;
 esac

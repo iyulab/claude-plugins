@@ -116,7 +116,8 @@ The four canonical philosophy dimensions live only in
    `Start:` · `Status:` · `Run: cycles a–b` are strings the hook parses. Rewording one silently
    disables the check it gates. The hook has no session context — anything it needs must be written
    into a header. On the exhaustion path it hands `FRONTIER-EXHAUSTED:` to a separate read-only
-   auditor model, with the latest log, the one before it and `<logs dir>/../ROADMAP.md`, to check it
+   auditor model, with the latest log, the one before it, `<logs dir>/../ROADMAP.md` and the `## Next`
+   section of `<logs dir>/../HANDOFF.md` (a project may keep its work list in either), to check it
    as a *claim* rather than accept it as a fact — a token the same agent both writes and reads is not
    verification.
 2. **The roadmap is a phase backlog.** No cycle numbers, dates, or durations anywhere — in
