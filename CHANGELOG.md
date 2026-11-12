@@ -10,6 +10,24 @@ bugs or docs. MAJOR is never bumped automatically.
 
 ## [Unreleased]
 
+### Added
+
+- **`/iyu:walk` — measure a product from its users' purposes, not its feature list.** Stage
+  scenarios, the evaluator, the goal-gap review and dogfooding all drive the real product, but in
+  each the session that picks what to try already knows the build, so the list drifts toward what
+  the build does, and nothing re-walkable is kept. `walk` sets **missions** (a situation, a trigger,
+  an observable goal, expectations, variations — no screens or commands) for 3–5 personas through a
+  **blind setter**: `walk/scripts/set-missions.sh` runs a separate model call in an empty temporary
+  directory with no tools, no settings sources, no MCP servers and the setter brief as its whole
+  system prompt, fed only the project's quoted statement of purpose. A **walker** subagent then tries
+  each mission and variation on the running product as that person would (source only after a
+  verdict, to name a cause) and is the only writer of verdicts — `achieved`, `friction`, `blocked`,
+  `absent`, `unverified`. The skill routes every finding: defects to issue drafts, gaps to the open
+  stage, `parking.md` or the roadmap, contract concerns to the owner. Missions live in
+  `<root>/missions/`, a contract artifact like `<root>/stages/`, defined once in
+  `_shared/missions.md`; they are deliberately **not** a stage pass condition. Pinned by the
+  `walk-requires-purpose` eval and `scripts/walk-setter-dryrun/`.
+
 ### Fixed
 
 - **The Stop hook counts a run across every `cycle-logs/` directory it wrote to.** In an umbrella

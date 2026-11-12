@@ -90,6 +90,7 @@ the user-facing description. Read the skill file before changing a skill.
 | `/iyu:charter` | Interview → **stage contract** (`<root>/stages/`, defined in `_shared/stages.md`): ladder of self-contained stages, scenarios, calibrated bar, claims ledger, owner decisions collected up front. Builds nothing | capable **product owner's partner** |
 | `/iyu:drive` | Pushes the one open stage to its bar: pick one failing scenario → build through the seam → independent evaluator → repeat; ends on pass (owner sees a demo) or on a measured stall (one question with evidence). No `backlog-discover`, no release. **No Stop hook yet** | capable **employee** |
 | `/iyu:accept` | Dispatches the evaluator subagent (`accept/references/evaluator.md`); the only writer of `passes`, claim `state`, `status` | independent **QA** |
+| `/iyu:walk` | Missions (`<root>/missions/`, defined in `_shared/missions.md`): a blind setter — `walk/scripts/set-missions.sh`, a separate model call with no tools, settings or project instructions, in an empty directory — writes personas and missions from the quoted purpose only; a walker subagent (`walk/references/walker.md`) tries them on the running product as those people would and is the only writer of verdicts; the skill routes every finding. Not a stage pass condition. No product code | independent **user researcher** |
 | `/iyu:ship` | Bump → commit → push → watch CI → publish, each stage stoppable | — |
 | `/iyu:backlog-discover` | Research playbook → diagnosis, ranking, staged proposal; adopts into `ROADMAP.md` only items grounded in the project's own evidence and inside its declared role, proposes the rest | capable **owner-manager** |
 | `/iyu:telemetry-az` | App Insights triage: defect issues + report-only usage trends | capable **analyst** |
@@ -101,6 +102,7 @@ copies of a rule become four rules the moment one is edited:
 |---|---|---|
 | `continuity-docs.md` | root resolution · what belongs in each doc · one home per fact · hygiene pass · next-scope derivation · structural checks (`L01`–`L11`) | run-cycle, handoff, resume, backlog-discover, telemetry-az |
 | `stages.md` | the stage contract: what a stage is · `<root>/stages/` layout · `stages.json` fields · who may write which field · what "passed" means · the claims ledger · the seam · parking | charter, drive, accept, resume, handoff, backlog-discover, run-cycle (goal-gap review) |
+| `missions.md` | missions and walks: what a mission is (purpose, not script) · why the setter is blind and what purpose material it may see · `<root>/missions/` layout · `missions.json` fields · who may write which field · verdicts and finding types · where each finding goes · missions are not a stage pass condition · products without a screen · cost | walk |
 | `release-cadence.md` | three stages/three costs · the placement test (with a named receiver) · the frozen-batch gate, fixed before the work · cadence declaration incl. minimum interval · reorder-don't-explain · a run's release grant (permission, read once at run end) | run-cycle, handoff, ship |
 | `decision-briefing.md` | the entry shapes (resource-blocked incl. owner-gated act · decision-class · criterion request) · the four parts of a briefing · the guards (decide ≠ act; ask for resources and criteria, never a pick) | run-cycle, resume, ship |
 | `decision-lenses.md` | the five co-equal lenses (근본/정석/표준/세련/철학) · what is *not* a lens (scope size, request count, pre-1.0 breaking) · reversibility belongs to the act, not the edit · the four causes a pick won't form — (b)/(c) trigger bounded research, (a)/(d) turn into a criterion request | run-cycle (self-decide), resume (brief), mindset, philosophy-alignment-guide |
@@ -160,6 +162,9 @@ The four canonical philosophy dimensions live only in
    reaches no verdict passes as `UNCHECKED`, one awk scans every document — and has its own suite,
    `scripts/docs-lint-dryrun/`, one fixture per sub-check, every code's verdict asserted. Run it after
    any change to the script or to the rules in `continuity-docs.md` §7 it implements.
+   `walk/scripts/set-missions.sh` (the blind mission setter) has `scripts/walk-setter-dryrun/`: a
+   stubbed model pins where it runs and what reaches it, and `-Live` runs the real call against a
+   canary project. Run it after any change to the script or to how it calls the model.
 9. **A skill's `description`/`when_to_use` is behavior, and the trigger evals are its test.** A
    model-invoked skill that is never chosen does nothing — `mindset` sat at 0/3 until its description
    said what it does and when. After editing either field, run

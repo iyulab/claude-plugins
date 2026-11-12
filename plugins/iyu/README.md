@@ -33,6 +33,7 @@ Productivity toolkit for open-source library maintainers and developers.
 | `/iyu:charter` | Skill | Manual | Interview the owner and write the stage contract (ladder of self-contained stages, scenarios, bar, decisions) |
 | `/iyu:drive` | Skill | Manual | Push the open stage to its agreed bar with an independent evaluator each round; stops only on pass or a real blocker |
 | `/iyu:accept` | Skill | Manual | Independent verdict on the open stage from the running build — judgment only |
+| `/iyu:walk` | Skill | Manual | Measure the product from its users' purposes: a blind setter writes personas and missions from the stated purpose only, an independent walker tries them on the running product, every finding is routed — changes no product code |
 | `/iyu:backlog-discover` | Skill | Manual | Playbook-driven backlog discovery + diagnose/rank/stage — adopts only grounded, in-role items; proposes the rest |
 
 ## Commands
