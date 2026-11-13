@@ -10,6 +10,10 @@ bugs or docs. MAJOR is never bumped automatically.
 
 ## [Unreleased]
 
+### Added
+
+- **`## Watching` — what waits on time or a third party no longer reaches the owner as an H.** `Waiting on you` held every blocked item in one shape, so an item the owner can do nothing about (a vendor ticket being processed, a registry catching up) was re-read as an H in every briefing. The test is who unblocks it: the owner's hand, decision or approval → Waiting on you (H / G / Q); time or a third party's processing, with a read-only command the agent can run and no owner act → a `Watching` entry (Check · Next check · Last seen · Raise when). `/iyu:resume` runs the due checks, keeps the entry if nothing changed and shows it as one count line (`Watching N — next check <date>`), raises it when its condition fires, and promotes it to Waiting on you if its check can no longer be run — the list cannot go stale in silence. `/iyu:handoff` writes the section; the shape and the test live in `_shared/decision-briefing.md` §1. The structural checks (`docs-lint.sh`) do not read the section yet.
+
 ## [1.52.0] — 2026-11-13
 
 ### Changed

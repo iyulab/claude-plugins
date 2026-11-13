@@ -196,6 +196,8 @@ already answer the question? An assumed blocker parks work that could have proce
 Apply **[decision-briefing.md](${CLAUDE_SKILL_DIR}/../_shared/decision-briefing.md) §1** for the
 entry shapes — but stop at naming, not briefing:
 
+- **Watching, not waiting.** An item that waits on **time or a third party's processing**, whose state the agent can read with a **command**, and that **no act of the owner** (a hand, a decision, an approval) would change is not a "Waiting on you" entry — it is a **Watching** entry. If the owner's hand, decision or approval is what unblocks it, it stays in Waiting on you (H / G / Q). No check command, or a nudge that would itself have to be the owner's act, means it is not a Watching item. Write it under `## Watching` (shape: decision-briefing.md §1,
+  "Watching"), with a Check you ran now and a Next check — an entry without both is not Watching.
 - **Resource-blocked** entries keep their short factual form (§1): blocker · what was tried · what
   would unblock it. This is a fact, not a decision, so it is written here in full, same as always.
 - **Decision-class** entries get **one line** — plus the two facts every entry carries (below): the
@@ -268,6 +270,16 @@ second resource-blocked.}
 - **Blocker**: {the missing credential / access / dependency}
 - **Tried**: {what was actually attempted}
 - **Unblocks**: {the specific thing you need}
+
+## Watching
+{"None", or one entry per item that waits on time or a third party and that the agent can check by command —
+never one the owner's hand, decision or approval would unblock. Omit the section when there is none.}
+
+### {W-01} {what is awaited, and from whom}
+- **Registered**: {YYYY-MM-DD} · **Blocks**: {item IDs, or "nothing"}
+- **Check**: {the read-only command that shows the state}
+- **Next check**: {date, or the event that makes checking worthwhile} · **Last seen**: {YYYY-MM-DD — state}
+- **Raise when**: {the observed state that moves it to Waiting on you or a decision, and what it becomes}
 
 ## Decided this session
 {Reversible self-made decisions: decision · trade-off · to correct. Or "None". When the project

@@ -60,6 +60,12 @@ owner supplies is a correction, not a choice (§3).
   revision · the decision under the revision**. What the owner confirms is the criterion, not an
   option.
 
+### Watching — what is not an entry here at all
+
+An item that waits on **time or a third party's processing**, whose state the agent can read with a **command**, and that **no act of the owner** (a hand, a decision, an approval) would change is not a "Waiting on you" entry — it is a **Watching** entry. If the owner's hand, decision or approval is what unblocks it, it stays in Waiting on you (H / G / Q). No check command, or a nudge that would itself have to be the owner's act, means it is not a Watching item.
+
+Watching entries live in `HANDOFF.md` `## Watching`, one per item: **Registered** · **Blocks** · **Check** (the read-only command that shows the state) · **Next check** (a date, or the event that makes checking worthwhile) · **Last seen** (date — state) · **Raise when** (the observed state that moves it to Waiting on you or to a decision, and what it becomes then). The owner never reads an unchanged Watching entry: the briefing carries one count line and only what changed. A Watching list that quietly goes stale is the failure this shape must not have — an entry whose Next check has passed and whose Check cannot be run (command gone, access lost) is promoted to Waiting on you, never left.
+
 ---
 
 ## 2. The four parts of a decision-class briefing

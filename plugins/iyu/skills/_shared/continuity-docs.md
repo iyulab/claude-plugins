@@ -111,6 +111,7 @@ two answers and no way to tell which is current.
 |---|---|---|
 | Remaining work and its phase order | `ROADMAP.md` | `HANDOFF.md` `## Next` holds the next session's slice of it, by reference |
 | What waits on a human — owner-gated acts, resource blocks, criterion requests | `HANDOFF.md` `## Waiting on you` | cited by ID (`HD-03`) |
+| What waits on time or a third party and the agent can check by command, with no owner act — the test is who unblocks it ([decision-briefing.md §1](decision-briefing.md)) | `HANDOFF.md` `## Watching` | cited by ID (`W-03`); the briefing carries a count and what changed, not the entries |
 | Decisions and their review state | the project's decision ledger, when its instructions define one; otherwise `HANDOFF.md` `## Decided this session` | with a ledger, `HANDOFF.md` carries the entry IDs, a count and the link — not the entries |
 | Open and interrupted strands | `STRANDS.md` | — |
 | Completed work, released versions | `HISTORY.md` — or, for versions, the project's own release record (`CHANGELOG.md`, tags) when it keeps one | linked, never re-listed |

@@ -116,12 +116,18 @@ work and the wait. A recommendation, once formed, *is* the decision: recorded `p
 is only what you genuinely cannot — a resource from outside, the owner's hand on a gated act, or a
 criterion.
 
+**Run the due checks of `## Watching` first** (those whose Next check has come): each Check is a read-only
+command, so run it, update Last seen / Next check, and decide per **Raise when** — fired → it becomes a
+Waiting on you entry or a decision here; a due entry whose Check cannot be run → promote it to Waiting on
+you (the list must not go stale in silence); unchanged → it stays and is only counted in the card.
+
 For each entry, classify and handle:
 
 - **Resource-blocked** (blocker · tried · unblocks) — re-run the self-unblock check (the same
   "Self-unblock before parking" logic `run-cycle` applies): is the resource *actually* still missing?
-  Time has passed since it was parked. Still blocked → it stays in Waiting on you. Resolved → say so
-  and drop it.
+  Time has passed since it was parked. Still blocked → it stays in Waiting on you — unless it turns out the owner is not the resource and the
+  agent can check it by command (waiting on time or a third party): then it moves to `## Watching`. Resolved →
+  say so and drop it.
 - **Decision-class** — brief it per
   [decision-briefing.md §2](${CLAUDE_SKILL_DIR}/../_shared/decision-briefing.md): the decision in one
   line, **at least two grounded options** (feasibility and cost from what you read in step 2 or the
@@ -230,12 +236,14 @@ Waiting on you holds only blockers and criterion requests, the session-opening w
 skill does not proceed into implementation from here.** Present the settled scope as one **briefing
 card** — always this order, an empty block is one line ("None"), the labels in the session's language:
 
-1. **State** (≤ 5 lines) — where things stand, staleness flags, what changed since the handoff.
+1. **State** (≤ 5 lines) — where things stand, staleness flags, what changed since the handoff; when the
+   handoff has a `## Watching` section, one line `Watching N — next check <date>` and only the entries whose
+   state changed (an unchanged one is never counted as an H).
 2. **Q** to confirm — criterion requests, plus any decision the project's own policy reserves for the
    owner (step 4 resolves nothing else this way): each with the recommendation, the alternative and when
    it wins, the one fact that would flip it, and what stands if there is no reply.
 3. **G** to approve — gated acts whose decision is settled: each names the act and **what a yes opens
-   — that act only**. **H** to provide — what only the owner can supply (the step, never the secret).
+   — that act only**. **H** to provide — what only the owner can supply (the step, never the secret); never an item that only waits on time or a third party (that is Watching).
 4. **D** decided by me — this session's provisional decisions, each with its reverse action.
 5. **C** code / **N** non-code — the settled `## Next` in order; each row `[auto]` (startable with no
    answer) or `[after Gn]` / `[after Hn]` (the one row it waits on).
@@ -255,9 +263,10 @@ answers with feedback instead, handle it per step 5's feedback rules, then stop 
 1. **`HANDOFF.md` is the only file this skill writes** — plus the project's decision ledger, when
    its instructions define one, for the decisions step 4 made. It never migrates `ROADMAP.md` →
    `HISTORY.md`, never touches `ROADMAP.md`, `CLAUDE.md`, or `AGENTS.md`, and never runs
-   `/iyu:handoff`'s hygiene pass. Inside `HANDOFF.md` it writes exactly three things (step 5):
+   `/iyu:handoff`'s hygiene pass. Inside `HANDOFF.md` it writes exactly four things (step 5):
    `## Decided this session` entries, `## Next` (a decided reorder, and any criterion-persistence
-   item), and `## Waiting on you` (what step 4 left there). Phase-level order in `ROADMAP.md` stays
+   item), `## Waiting on you` (what step 4 left there), and `## Watching` (Last seen / Next check after the
+   due checks, and promotions out of it). Phase-level order in `ROADMAP.md` stays
    `/iyu:handoff`'s to apply.
 2. **Ground options and proposals in what was actually read or run.** A step-3 reorder or
    prerequisite needs a stated reason grounded in step 2's read, not a hunch. An unknown that

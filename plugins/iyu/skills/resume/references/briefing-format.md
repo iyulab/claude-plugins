@@ -27,10 +27,10 @@ Write the labels in the session's language
 
 | Block | Holds | Owner's part |
 |---|---|---|
-| **State** (≤ 5 lines) | where things stand now; every staleness flag; what changed since the last handoff; the open stage, if a stage contract exists | read |
+| **State** (≤ 5 lines) | where things stand now; every staleness flag; what changed since the last handoff; the open stage, if a stage contract exists; one `Watching N — next check <date>` line when the handoff has a `## Watching` section, plus only the entries whose state changed | read |
 | **Q — to confirm** | criterion requests (an irreducible lens conflict, a defective criterion) and any decision the project's own policy reserves for the owner — step 4 resolves nothing else this way; every other decision is a `D` | confirm or change |
 | **G — to approve** | acts only a human may open (push, publish, issue or PR registration, a major bump, anything leaving the organization, spend, a new dependency) whose *decision* is already settled | approve |
-| **H — to provide** | what only the owner can supply: a credential, an account screen, a physical step, a fact | provide |
+| **H — to provide** | what only the owner can supply: a credential, an account screen, a physical step, a fact — never an item that only waits on time or a third party and that the agent can check by command (that is a Watching entry; its count is on the State line) | provide |
 | **D — decided by me** | provisional decisions made this session, reversible, each with its reverse action | correct only |
 | **C — code work** / **N — non-code work** | the settled `## Next`, in order, split as step 3 splits it | none unless marked |
 | **Reply** | the grammar of §4, with one example built from this card's own codes | — |

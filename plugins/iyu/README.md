@@ -212,7 +212,9 @@ waits, listed as a blocker whose missing resource is your approval. And when a d
 even after research — the lenses conflict irreducibly, or a criterion is ambiguous or, followed
 faithfully, contradicts common sense — you are asked for the **criterion**, not the option: which
 rule is at fault, the proposed fix, and the decision under it. After resume, "Waiting on you" holds
-only external blockers, owner-gated acts, and criterion requests.
+only external blockers, owner-gated acts, and criterion requests; what only waits on time or a third
+party — and the agent can check by command — sits under `## Watching` and reaches the briefing as one
+count line plus what changed.
 
 **Overrides tune the criteria.** If you pick something other than the recommendation, resume applies
 your pick and then asks which criterion weighed differently — revise it, or treat this as a one-off?
