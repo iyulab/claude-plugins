@@ -10,6 +10,8 @@ bugs or docs. MAJOR is never bumped automatically.
 
 ## [Unreleased]
 
+## [1.52.0] — 2026-11-13
+
 ### Changed
 
 - **`/iyu:resume` ends on one coded briefing card.** Step 6 listed what to present but not how, and
