@@ -10,6 +10,17 @@ bugs or docs. MAJOR is never bumped automatically.
 
 ## [Unreleased]
 
+### Changed
+
+- **`/iyu:resume` ends on one coded briefing card.** Step 6 listed what to present but not how, and
+  sessions produced dozens of different layouts; owners spent their first reply asking for the part they
+  act on (the decisions and approvals, each with a recommendation) and answered with a bare "approve all"
+  whose reach was ambiguous. The card has a fixed order — State, **Q** to confirm, **G** to approve, **H** to
+  provide, **D** decided by me, **C** code / **N** non-code work (each row `[auto]` or `[after Gn]`) — numbered
+  per briefing with the durable id beside it. Every `G` row states what a yes opens, and the reply grammar
+  keeps "adopt all" from opening any gated act. Layout, row shapes, guards and an example:
+  `resume/references/briefing-format.md`.
+
 ## [1.51.0] — 2026-11-12
 
 ### Added

@@ -11,6 +11,10 @@ reaches the person who owns it. Three consumers read it:
 | `run-cycle` End-of-Run Report part 2 | the **deferred-decisions (L2)** section of `RUN-SUMMARY-{date}.md` |
 | `ship` step 0 | the **question itself** — asked interactively, and the run waits for the answer |
 
+At the end of `resume` the same entries reach the owner as one coded card — Q (to confirm), G (to
+approve), H (to provide), D (decided) — defined in
+[resume/references/briefing-format.md](../resume/references/briefing-format.md).
+
 `handoff` still *writes* the "Waiting on you" section, but only the entry shape (§1) — it names a
 decision-class item in one line and stops there. The four-part briefing below is produced by `resume`,
 not by `handoff`: flagging happens where the decision is discovered (session close), briefing happens

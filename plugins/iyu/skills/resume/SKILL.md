@@ -227,11 +227,28 @@ resume does not wait for it.
 
 Once In flight / Next is settled (including step 3's proposals), every decision is recorded, and
 Waiting on you holds only blockers and criterion requests, the session-opening work is done. **This
-skill does not proceed into implementation from here.** Present the settled scope — what's in flight,
-what's next in the (possibly reordered) sequence, what got decided (each with its to-correct line),
-and what still needs the owner — and stop. Starting the work is a separate, explicit act: the human
-instructs it directly, or `/iyu:run-cycle` is invoked. A settled scope is not that instruction. If
-the owner answers with feedback instead, handle it per step 5's feedback rules, then stop again.
+skill does not proceed into implementation from here.** Present the settled scope as one **briefing
+card** — always this order, an empty block is one line ("None"), the labels in the session's language:
+
+1. **State** (≤ 5 lines) — where things stand, staleness flags, what changed since the handoff.
+2. **Q** to confirm — criterion requests, plus any decision the project's own policy reserves for the
+   owner (step 4 resolves nothing else this way): each with the recommendation, the alternative and when
+   it wins, the one fact that would flip it, and what stands if there is no reply.
+3. **G** to approve — gated acts whose decision is settled: each names the act and **what a yes opens
+   — that act only**. **H** to provide — what only the owner can supply (the step, never the secret).
+4. **D** decided by me — this session's provisional decisions, each with its reverse action.
+5. **C** code / **N** non-code — the settled `## Next` in order; each row `[auto]` (startable with no
+   answer) or `[after Gn]` / `[after Hn]` (the one row it waits on).
+6. **Reply** — the grammar and one example built from this card's codes: "adopt all" confirms every Q
+   at its recommendation and every D and opens **no** G or H; "approve G1 G3" opens exactly those
+   acts; "Q2 → alternative" / "revert D3" overrides (step 5 then asks which criterion differed); ", start"
+   is the explicit instruction below; no reply leaves Q and D standing and runs no G.
+
+Number rows per briefing (`Q1`, `G2`), with the durable id beside it when one exists (`HD-12`). Row
+shapes, guards and a worked example: [references/briefing-format.md](${CLAUDE_SKILL_DIR}/references/briefing-format.md).
+Then stop. Starting the work is a separate, explicit act: the human instructs it directly (a reply ending
+"start" counts), or `/iyu:run-cycle` is invoked. A settled scope is not that instruction. If the owner
+answers with feedback instead, handle it per step 5's feedback rules, then stop again.
 
 ## Rules
 
