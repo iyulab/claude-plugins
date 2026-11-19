@@ -10,6 +10,10 @@ bugs or docs. MAJOR is never bumped automatically.
 
 ## [Unreleased]
 
+### Changed
+
+- **`## Watching` holds an entry only while the move is still the other side's.** An entry written as "when the answer arrives" stayed in Watching after the answer had arrived (the tracker turn was already ours), so the next exhaustion count read "nothing startable" and the work started a cycle late. `handoff` now reads the tracker turn when it writes or carries an entry forward and moves an already-answered entry to `## Next`; `resume` does the same when it runs the due Checks and says the list was stale; `run-cycle` runs every Watching Check once before it declares the frontier exhausted and counts an answered entry as startable.
+
 ## [1.53.0] — 2026-11-19
 
 ### Added

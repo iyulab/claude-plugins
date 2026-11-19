@@ -483,7 +483,7 @@ Status: {in-progress | complete}
 
 ## When STEP 5 comes up dry (summary — procedure in references)
 
-A passionate maintainer whose task list empties does not down tools. Two things come before
+A passionate maintainer whose task list empties does not down tools. First run every `## Watching` Check once: an entry whose third party has already answered (the tracker turn is yours) is startable work, not a waiting row, and is counted so in the exhaustion table. Then two things come before
 `FRONTIER-EXHAUSTED:`, in this order:
 
 1. **Goal-gap review** — once per run: compare what the project says it is for with the product as

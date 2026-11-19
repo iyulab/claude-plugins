@@ -125,6 +125,9 @@ command, so run it, update Last seen / Next check, and decide per **Raise when**
 Waiting on you entry or a decision here; a due entry whose Check cannot be run → promote it to Waiting on
 you (the list must not go stale in silence); unchanged → it stays and is only counted in the card.
 
+A Check that shows the third party **already answered** (the tracker turn is yours) takes the entry out of
+`## Watching`: it is startable work, so it goes to `## Next` as `[auto]` and the card says the handoff list was stale.
+
 For each entry, classify and handle:
 
 - **Resource-blocked** (blocker · tried · unblocks) — re-run the self-unblock check (the same
