@@ -10,6 +10,8 @@ bugs or docs. MAJOR is never bumped automatically.
 
 ## [Unreleased]
 
+## [1.53.0] — 2026-11-19
+
 ### Added
 
 - **Decided work belongs in the work lists.** The exhaustion table counts the rows of `HANDOFF.md` `## Next` and `ROADMAP.md`, so a decision that reached the decision ledger but never got a row there — "decided, nothing left to decide, nobody has started it" — was invisible to it: a project reported "no autonomous work left" for days while a confirmed first step sat in the ledger. `_shared/continuity-docs.md` §4 now says where such work lives (a row carrying the decision's id, put there when the decision is recorded) and that a reader who finds a carry-out with no row adds it and classifies it like any other row; `/iyu:resume` looks for it when it reads the lists, `/iyu:handoff` gives a still-open carry-out its `## Next` row in the same pass, and `run-cycle` rule 9(d) counts it among the rows judged before `FRONTIER-EXHAUSTED:`. The Stop hook's auditor still reads only the logs, `ROADMAP.md` and `## Next`; it cannot know where a project keeps its ledger, so the check is an instruction to the agent, not a gate.
