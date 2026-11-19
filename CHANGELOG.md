@@ -10,6 +10,8 @@ bugs or docs. MAJOR is never bumped automatically.
 
 ## [Unreleased]
 
+## [1.54.0] — 2026-11-20
+
 ### Changed
 
 - **Run-cycle STEP 4 bounds structural improvements and guards test removal.** Improvements stay immediate and reversible, but are done only when the gain is measurable or the work at hand needs them, one structural change per commit, stopping when the measure stops improving; deleting, skipping or weakening a test goes in its own commit with the reason, never together with the change that made it fail.
