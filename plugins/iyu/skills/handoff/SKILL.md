@@ -283,7 +283,9 @@ never one the owner's hand, decision or approval would unblock. Omit the section
 
 ## Decided this session
 {Reversible self-made decisions: decision · trade-off · to correct. Or "None". When the project
-keeps a decision ledger, the entry IDs and a link instead (continuity-docs.md §2).}
+keeps a decision ledger, the entry IDs and a link instead (continuity-docs.md §2). A decision whose
+carry-out is still open also gets its `## Next` row, named by the decision's id, in the same pass —
+the section records the decision, `## Next` carries the work (continuity-docs.md §4).}
 
 ## State of play
 {Build/test/lint status with the actual output, or explicitly "unverified". Branch, the **post-commit**

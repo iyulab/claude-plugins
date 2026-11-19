@@ -77,6 +77,10 @@ Don't just replay `## In flight` / `## Next` as written — apply judgment to wh
   reason (step 4 decides it).
 - **Derive prerequisites** the plan is missing — a step it silently assumes is already done, a
   dependency it doesn't name. Add these as visible insertions, not silent edits.
+- **Find decided work with no row.** Read the project's decision ledger (or `## Decided this session`)
+  against `## Next` and `ROADMAP.md`: a decision whose carry-out is not done and has no row is work the
+  lists failed to show ([continuity-docs.md §4](${CLAUDE_SKILL_DIR}/../_shared/continuity-docs.md)).
+  Add it as a visible insertion with the decision's id, classified like any other row.
 - **Object** to anything in `## Next` that no longer looks reasonable given current state — say why,
   and what you'd do instead.
 

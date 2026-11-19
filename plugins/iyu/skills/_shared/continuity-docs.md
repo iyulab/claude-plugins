@@ -300,6 +300,17 @@ So `## Next` is not a prefix of `ROADMAP.md`: when the front phases are blocked,
 order and add startable phases until they fill one session or run, and keep the blocked ones listed
 above them as waiting. The order is kept; only independent work stops waiting behind a blocked item.
 
+**Decided work belongs in the lists.** A decision the project has recorded as decided — in its
+decision ledger when its instructions define one, otherwise in `HANDOFF.md` `## Decided this session`
+— carries work out: the thing the decision says to build, change or announce. That work lives in
+`HANDOFF.md` `## Next` or `ROADMAP.md` like any other, with the decision's id on its row, and it is
+put there when the decision is recorded: the ledger says *what was decided*, the lists say *what is
+left to do*. A decided carry-out that is not done and has no row in either list is invisible to every
+count of those lists, including the exhaustion table — so a reader that finds one adds the row and
+classifies it like any other (done · blocked · a design question · startable) instead of reading the
+lists as complete. The ledger is read for this, not mirrored into the lists: a decision that needs no
+further work (a rule adopted, an option rejected) has no row.
+
 **Standing tracks.** Some work is not a phase that finishes but a level to reach and hold — parity
 with a named alternative on a benchmark, coverage of a lifecycle, the quality of a public site.
 `ROADMAP.md` carries it as a *standing track*: its **gate** (the measurable level that counts as
