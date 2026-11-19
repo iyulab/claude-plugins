@@ -368,7 +368,7 @@ Assess six dimensions:
 
 **Defect vs. improvement distinction**:
 - **Defects** (bugs, broken edges, violations) → fix before leaving STEP 4. Loop: discover → fix → re-verify. A structural defect this cycle could only route around is fixed at the root now, widening scope as needed.
-- **Structural improvements** (better patterns, refactoring candidates) → reversible inside the repo, so **L1**: judged on the lenses, done this cycle or set as the next one's scope, recorded in the Decisions Ledger. Never silent, never parked as a proposal.
+- **Structural improvements** (better patterns, refactoring candidates) → reversible inside the repo, so **L1**: judged on the lenses, done this cycle or set as the next one's scope, recorded in the Decisions Ledger. Never silent, never parked as a proposal. **Bound it:** do it when the gain is measurable (complexity, duplication or coupling drops) or it unblocks the work at hand; one structural change per commit, and stop when the measure stops improving — an open-ended "tidy more" has no stopping point and an agent will keep editing. A test is deleted, skipped or weakened only in its own commit with the reason stated, never together with the change that made it fail.
 - **Orphans** (unused code, unreferenced files, stale docs) → remove immediately, note in cycle log.
 
 Only **L2** (Pending Human Decisions, STEP 5) is exempt; size and pre-1.0 breaking never qualify ([why](${CLAUDE_SKILL_DIR}/../_shared/decision-lenses.md#reversibility-belongs-to-the-act-not-the-edit)).
