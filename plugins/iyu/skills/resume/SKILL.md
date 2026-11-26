@@ -134,7 +134,10 @@ For each entry, classify and handle:
   "Self-unblock before parking" logic `run-cycle` applies): is the resource *actually* still missing?
   Time has passed since it was parked. Still blocked → it stays in Waiting on you — unless it turns out the owner is not the resource and the
   agent can check it by command (waiting on time or a third party): then it moves to `## Watching`. Resolved →
-  say so and drop it.
+  say so and drop it. **Then split it by what you can run yourself** — the self-run test
+  ([decision-briefing.md §1](${CLAUDE_SKILL_DIR}/../_shared/decision-briefing.md)), on every such entry,
+  carried ones included: a step you can run now with no gate moves to `## Next` as `[auto]`, a runnable but
+  gated one is a G, and only a step you cannot run stays as an H, saying what stops you.
 - **Decision-class** — brief it per
   [decision-briefing.md §2](${CLAUDE_SKILL_DIR}/../_shared/decision-briefing.md): the decision in one
   line, **at least two grounded options** (feasibility and cost from what you read in step 2 or the
@@ -189,7 +192,8 @@ decision to fill the section.
 `/iyu:handoff` uses — decision · trade-off · **to correct: <the reverse action>** — marked
 `provisional`, with the lenses that carried it. In the same edit, rewrite `## Waiting on you` to what
 step 4 left there: a flag that got decided moves out (its gated act, if any, stays as a
-resource-blocked entry pointing at the decision); criterion requests go in. Do this now, not at the
+resource-blocked entry pointing at the decision); criterion requests go in; a step the self-run test
+found runnable moves to `## Next`. Do this now, not at the
 next `/iyu:handoff` — a session that ends first must not lose it.
 
 Every entry left standing keeps its **Registered** date and **Blocks** line from `/iyu:handoff`
@@ -250,7 +254,7 @@ card** — always this order, an empty block is one line ("None"), the labels in
    owner (step 4 resolves nothing else this way): each with the recommendation, the alternative and when
    it wins, the one fact that would flip it, and what stands if there is no reply.
 3. **G** to approve — gated acts whose decision is settled: each names the act and **what a yes opens
-   — that act only**. **H** to provide — what only the owner can supply (the step, never the secret); never an item that only waits on time or a third party (that is Watching).
+   — that act only**. **H** to provide — only the steps you cannot run yourself (step 4's self-run test), each with what stops you (never the secret); never an item that only waits on time or a third party (that is Watching).
 4. **D** decided by me — this session's provisional decisions, each with its reverse action.
 5. **C** code / **N** non-code — the settled `## Next` in order; each row `[auto]` (startable with no
    answer) or `[after Gn]` / `[after Hn]` (the one row it waits on).
@@ -271,8 +275,8 @@ answers with feedback instead, handle it per step 5's feedback rules, then stop 
    its instructions define one, for the decisions step 4 made. It never migrates `ROADMAP.md` →
    `HISTORY.md`, never touches `ROADMAP.md`, `CLAUDE.md`, or `AGENTS.md`, and never runs
    `/iyu:handoff`'s hygiene pass. Inside `HANDOFF.md` it writes exactly four things (step 5):
-   `## Decided this session` entries, `## Next` (a decided reorder, and any criterion-persistence
-   item), `## Waiting on you` (what step 4 left there), and `## Watching` (Last seen / Next check after the
+   `## Decided this session` entries, `## Next` (a decided reorder, any criterion-persistence
+   item, and the runnable steps step 4 moved out of Waiting on you), `## Waiting on you` (what step 4 left there), and `## Watching` (Last seen / Next check after the
    due checks, and promotions out of it). Phase-level order in `ROADMAP.md` stays
    `/iyu:handoff`'s to apply.
 2. **Ground options and proposals in what was actually read or run.** A step-3 reorder or

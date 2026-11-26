@@ -191,7 +191,9 @@ Two lists, kept apart because they behave differently:
 
 Before writing any "waiting on you" entry, run the self-unblock check: is the resource *actually*
 missing (look, don't assume), and does a governing doc, an accepted issue, or a prior decision
-already answer the question? An assumed blocker parks work that could have proceeded.
+already answer the question? An assumed blocker parks work that could have proceeded. Then apply the
+self-run test (decision-briefing.md §1) to what the entry asks, carried entries included: a step you
+can run with no gate goes to `## Next`, not here.
 
 Apply **[decision-briefing.md](${CLAUDE_SKILL_DIR}/../_shared/decision-briefing.md) §1** for the
 entry shapes — but stop at naming, not briefing:

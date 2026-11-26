@@ -30,7 +30,7 @@ Write the labels in the session's language
 | **State** (≤ 5 lines) | where things stand now; every staleness flag; what changed since the last handoff; the open stage, if a stage contract exists; one `Watching N — next check <date>` line when the handoff has a `## Watching` section, plus only the entries whose state changed | read |
 | **Q — to confirm** | criterion requests (an irreducible lens conflict, a defective criterion) and any decision the project's own policy reserves for the owner — step 4 resolves nothing else this way; every other decision is a `D` | confirm or change |
 | **G — to approve** | acts only a human may open (push, publish, issue or PR registration, a major bump, anything leaving the organization, spend, a new dependency) whose *decision* is already settled | approve |
-| **H — to provide** | what only the owner can supply: a credential, an account screen, a physical step, a fact — never an item that only waits on time or a third party and that the agent can check by command (that is a Watching entry; its count is on the State line) | provide |
+| **H — to provide** | only the steps the agent cannot run itself ([the self-run test](../../_shared/decision-briefing.md#the-self-run-test--what-is-left-for-the-owner-to-supply)): a credential, an account screen, a physical step, a fact — never a step the agent can run (that is a C / N row, or a G when gated), and never an item that only waits on time or a third party and that the agent can check by command (that is a Watching entry; its count is on the State line) | provide |
 | **D — decided by me** | provisional decisions made this session, reversible, each with its reverse action | correct only |
 | **C — code work** / **N — non-code work** | the settled `## Next`, in order, split as step 3 splits it | none unless marked |
 | **Reply** | the grammar of §4, with one example built from this card's own codes | — |
@@ -57,9 +57,10 @@ read again after the code list has scrolled away.
 > `G1 (HD-12)` Push 4 local commits to `main`. **Opens: the push only** — no release. Decision settled in
 > `D-31`. Checked: suite and build green at `a1b2c3d`.
 
-**H** — what, why only the owner, where it lives (never the value):
+**H** — the one step, what stops the agent from running it, where it lives (never the value):
 
-> `H1` Add the repo to the release app's installation (account screen). Blocks: central publishing for it.
+> `H1` Add the repo to the release app's installation — a settings screen only the account holder can open.
+> Blocks: central publishing for it.
 
 **D** — the decision and how to reverse it:
 
@@ -94,6 +95,9 @@ not widen it.
   ([decision-briefing.md §3](../../_shared/decision-briefing.md)).
 - **A Q is not an "A or B?"** It carries the recommendation and what stands without an answer.
 - **A yes opens one thing.** A `G` row names its act; an "adopt" never reaches it.
+- **H is tested, not carried over.** An `H` row carried from an earlier session passes the self-run test
+  again before it appears, and a mixed one shows only the owner's step — its runnable part is on the card
+  as a C / N or G row with the same durable id.
 - **Keep it short.** Aim for what fits a phone screen: about 2,500 characters, rarely beyond 4,000. More
   `D` than five → list five and give the count with the `HANDOFF.md` pointer. Rows that need nothing from
   the owner belong in `HANDOFF.md`, not here.

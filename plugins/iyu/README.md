@@ -214,7 +214,9 @@ faithfully, contradicts common sense — you are asked for the **criterion**, no
 rule is at fault, the proposed fix, and the decision under it. After resume, "Waiting on you" holds
 only external blockers, owner-gated acts, and criterion requests; what only waits on time or a third
 party — and the agent can check by command — sits under `## Watching` and reaches the briefing as one
-count line plus what changed.
+count line plus what changed. A blocker is also tested step by step: what the agent can run with the
+access it already has leaves your list (it becomes next work, or an approval when the act is gated),
+and what is left for you to provide is only what it cannot run.
 
 **Overrides tune the criteria.** If you pick something other than the recommendation, resume applies
 your pick and then asks which criterion weighed differently — revise it, or treat this as a one-off?

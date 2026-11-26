@@ -60,6 +60,27 @@ owner supplies is a correction, not a choice (§3).
   revision · the decision under the revision**. What the owner confirms is the criterion, not an
   option.
 
+### The self-run test — what is left for the owner to supply
+
+"Is the resource still missing?" does not ask whether the agent can do the step itself, so a row can
+stay the owner's although part of it, or all of it, is runnable. Before something goes up as the
+owner's to supply — and again each time such an entry is carried forward — split what it asks into
+steps and test each one: **can the agent run this step now, with the tools and access this session
+already has?** Settle it by looking (the command, the API, the browser, the project's access notes),
+not from the entry's wording.
+
+| The step | Where it goes |
+|---|---|
+| The agent can run it, and no gate covers it | Not an entry: a `## Next` row, `[auto]` |
+| The agent can run it, but it is an act the project leaves to a human (push, publish, issue registration, spend, a message leaving the organization, a write to production or to access and security settings) | **G** — the gate shape above: the owner says yes, the agent runs it |
+| The agent cannot run it: a physical step, a screen only the account holder can open, two-factor authentication, a command only a user may invoke, a secret or a fact only the owner holds, an appointment only the owner can make | **H** — the entry keeps this step only, and its `Blocker` line says what stops the agent |
+
+"Can" never means "could find a way". A step that needs credentials the project's access notes do not
+point to, a way around a bot check or a login wall, or access granted for another purpose is one the
+agent cannot run. A choice is not a step — it takes one of the decision shapes above — and a wait on
+time or a third party is Watching. A mixed entry is split: the runnable steps leave it now, and only
+work that depends on the owner's step is marked `[after Hn]`.
+
 ### Watching — what is not an entry here at all
 
 An item that waits on **time or a third party's processing**, whose state the agent can read with a **command**, and that **no act of the owner** (a hand, a decision, an approval) would change is not a "Waiting on you" entry — it is a **Watching** entry. If the owner's hand, decision or approval is what unblocks it, it stays in Waiting on you (H / G / Q). No check command, or a nudge that would itself have to be the owner's act, means it is not a Watching item.

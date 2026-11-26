@@ -10,6 +10,10 @@ bugs or docs. MAJOR is never bumped automatically.
 
 ## [Unreleased]
 
+### Changed
+
+- **Only steps the agent cannot run are left for the owner to provide.** The check before parking an entry asked whether the resource was still missing, not whether the agent could do the step itself, so the briefing's H block mixed runnable chores with the owner's. `/iyu:resume` and `/iyu:handoff` now split such an entry step by step, carried entries included, against the tools and access the session already has: a runnable step with no gate becomes a `## Next` row, a runnable but gated one a G, and H keeps only what the agent cannot run, with the reason. The definition is "The self-run test" in `_shared/decision-briefing.md` §1.
+
 ## [1.54.0] — 2026-11-20
 
 ### Changed

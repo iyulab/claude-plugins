@@ -36,6 +36,17 @@ skill keeps intact:
 What is left for the owner is what an employee genuinely cannot supply: a resource from outside
 (a credential, an access grant, the owner's own hand on a gated act) — and a **criterion**.
 
+## Why an H row is tested step by step
+
+An entry parked as the owner's is usually written as one bundle — "rotate the key and update the
+three services", "check the vendor's terms and decide on the paid tier". Asking only whether the
+resource is still missing answers yes for the whole bundle, and the entry is carried session after
+session, often as a bare id on the card. The owner reads a list of chores, most of them partly or
+wholly runnable by the agent, and the few steps that really need the owner are lost in it. Testing
+each step moves the runnable ones to where they get done and leaves a list short enough to act on.
+The test asks about access the session already has, so that "I could run it" never becomes a reason
+to go looking for access, and it keeps the gate: being able to run an act is not permission to run it.
+
 ## Why the owner is asked for a criterion, not a decision
 
 When a decision will not settle — the lenses conflict irreducibly, or the governing criterion is
